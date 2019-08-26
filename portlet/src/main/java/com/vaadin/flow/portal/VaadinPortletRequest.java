@@ -63,7 +63,7 @@ public class VaadinPortletRequest extends PortletRequestWrapper
             return ((ClientDataRequest) getRequest()).getContentLength();
         } catch (ClassCastException e) {
             throw new IllegalStateException(
-                    "Content lenght only available for ClientDataRequests");
+                    "Content length only available for ClientDataRequests");
         }
     }
 

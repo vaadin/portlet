@@ -20,14 +20,19 @@ import javax.portlet.PortletContext;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.function.DeploymentConfiguration;
+import com.vaadin.flow.internal.UsageStatistics;
 import com.vaadin.flow.server.PwaRegistry;
 import com.vaadin.flow.server.RequestHandler;
 import com.vaadin.flow.server.ServiceException;
@@ -36,11 +41,19 @@ import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.server.Version;
 import com.vaadin.flow.server.WebBrowser;
 import com.vaadin.flow.server.WrappedSession;
 import com.vaadin.flow.theme.AbstractTheme;
 
 public class VaadinPortletService extends VaadinService {
+    private static final String PROJECT_NAME = "vaadin-portlet";
+
+    private static final String VERSION_PROPERTIES_NAME = "version.properties";
+    private static final String PORTLET_VERSION_PROPERTY = "portlet.version";
+
+    private static final Properties PROPERTIES_FILE = loadPropertiesFile();
+
     private final VaadinPortlet portlet;
 
     public VaadinPortletService(VaadinPortlet portlet,
@@ -48,7 +61,26 @@ public class VaadinPortletService extends VaadinService {
             throws ServiceException {
         super(deploymentConfiguration);
         this.portlet = portlet;
+        verifyLicense(deploymentConfiguration.isProductionMode());
+    }
 
+    private void verifyLicense(boolean productionMode) {
+        if (!productionMode) {
+
+            UsageStatistics.markAsUsed(PROJECT_NAME, getPortletVerion());
+            UsageStatistics.markAsUsed("vaadin", Version.getFullVersion());
+        }
+    }
+
+    public static String getPortletVerion() {
+        String portletVersion = PROPERTIES_FILE
+                .getProperty(PORTLET_VERSION_PROPERTY);
+        if (portletVersion == null || portletVersion.isEmpty()) {
+            throw new IllegalStateException(String.format(
+                    "Unable to determine Portlet version: had successfully loaded the resource file '%s' but failed to find property '%s' in it. Double check jar package integrity.",
+                    VERSION_PROPERTIES_NAME, PORTLET_VERSION_PROPERTY));
+        }
+        return portletVersion;
     }
 
     @Override
@@ -289,6 +321,32 @@ public class VaadinPortletService extends VaadinService {
     @Override
     protected VaadinContext constructVaadinContext() {
         return new VaadinPortletContext(getPortlet().getPortletContext());
+    }
+
+    private static Properties loadPropertiesFile() {
+        ClassLoader classLoader;
+        VaadinPortletService currentService = (VaadinPortletService) VaadinPortletService
+                .getCurrent();
+        if (currentService != null) {
+            classLoader = currentService.getClassLoader();
+        } else {
+            classLoader = VaadinPortletService.class.getClassLoader();
+        }
+
+        Properties properties = new Properties();
+        try {
+            properties.load(classLoader
+                    .getResourceAsStream(VERSION_PROPERTIES_NAME));
+        } catch (IOException e) {
+            throw new UncheckedIOException(String.format(
+                    "Failed to load the resource file '%s'. Double check jar package integrity.",
+                    VERSION_PROPERTIES_NAME), e);
+        }
+        return properties;
+    }
+
+    private Logger getLogger() {
+        return LoggerFactory.getLogger(getClass());
     }
 
 }

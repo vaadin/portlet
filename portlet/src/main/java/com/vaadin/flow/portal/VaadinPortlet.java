@@ -58,7 +58,7 @@ import com.vaadin.flow.server.webcomponent.WebComponentConfigurationRegistry;
  *
  * @since
  */
-public class VaadinPortlet extends GenericPortlet {
+public abstract class VaadinPortlet extends GenericPortlet {
 
     private VaadinPortletService vaadinService;
     private String webComponentProviderURL;

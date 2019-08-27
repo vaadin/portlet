@@ -45,6 +45,7 @@ import com.vaadin.flow.server.Version;
 import com.vaadin.flow.server.WebBrowser;
 import com.vaadin.flow.server.WrappedSession;
 import com.vaadin.flow.theme.AbstractTheme;
+import com.vaadin.pro.licensechecker.LicenseChecker;
 
 public class VaadinPortletService extends VaadinService {
     private static final String PROJECT_NAME = "vaadin-portlet";
@@ -66,8 +67,10 @@ public class VaadinPortletService extends VaadinService {
 
     private void verifyLicense(boolean productionMode) {
         if (!productionMode) {
+            String portletVersion = getPortletVerion();
+            LicenseChecker.checkLicense(PROJECT_NAME, portletVersion);
 
-            UsageStatistics.markAsUsed(PROJECT_NAME, getPortletVerion());
+            UsageStatistics.markAsUsed(PROJECT_NAME, portletVersion);
             UsageStatistics.markAsUsed("vaadin", Version.getFullVersion());
         }
     }

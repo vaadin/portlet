@@ -28,6 +28,13 @@
             <version>${flow.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>license-checker</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+
         <!--Portlet API -->
         <dependency>
             <groupId>javax.portlet</groupId>

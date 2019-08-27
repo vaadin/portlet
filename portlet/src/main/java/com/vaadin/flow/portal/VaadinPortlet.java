@@ -58,7 +58,7 @@ import com.vaadin.flow.server.webcomponent.WebComponentConfigurationRegistry;
  *
  * @since
  */
-public abstract class VaadinPortlet extends GenericPortlet {
+public class VaadinPortlet extends GenericPortlet {
 
     private VaadinPortletService vaadinService;
     private String webComponentProviderURL;
@@ -91,8 +91,7 @@ public abstract class VaadinPortlet extends GenericPortlet {
         try {
             vaadinService = createPortletService(deploymentConfiguration);
         } catch (ServiceException e) {
-            throw new PortletException("Could not initialize VaadinPortlet",
-                    e);
+            throw new PortletException("Could not initialize VaadinPortlet", e);
         }
         // Sets current service even though there are no request and response
         VaadinService.setCurrent(null);
@@ -297,10 +296,4 @@ public abstract class VaadinPortlet extends GenericPortlet {
         return webComponentUIDLRequestHandlerURL;
     }
 
-    /**
-     * Get the name of the portlet. This should correspond to the war filename.
-     *
-     * @return portlet name
-     */
-    public abstract String getName();
 }

@@ -236,7 +236,7 @@ public class VaadinPortletService extends VaadinService {
             VaadinResponse response) {
         // TODO Figure out a better way to deal with
         // SessionExpiredExceptions
-        LoggerFactory.getLogger(getClass()).debug("A user session has expired");
+        getLogger().debug("A user session has expired");
     }
 
     private WrappedPortletSession getWrappedPortletSession(
@@ -268,7 +268,8 @@ public class VaadinPortletService extends VaadinService {
 
     @Override
     protected PwaRegistry getPwaRegistry() {
-        // TODO Auto-generated method stub
+        getLogger()
+                .debug("PWA is not supported for portlets. Returning null reference");
         return null;
     }
 
@@ -291,33 +292,39 @@ public class VaadinPortletService extends VaadinService {
 
     @Override
     public URL getStaticResource(String url) {
-        return VaadinPortletService.class.getClassLoader().getResource(url);
+        getLogger()
+                .debug("Static resources are loaded and served by the server.");
+        return null;
     }
 
     @Override
     public URL getResource(String url, WebBrowser browser,
             AbstractTheme theme) {
-        // TODO Auto-generated method stub
+        getLogger()
+                .debug("Servlet resources are loaded and served by the server.");
         return null;
     }
 
     @Override
     public InputStream getResourceAsStream(String url, WebBrowser browser,
             AbstractTheme theme) {
-        // TODO Auto-generated method stub
+        getLogger()
+                .debug("Servlet resources are loaded and served by the server.");
         return null;
     }
 
     @Override
     public String resolveResource(String url, WebBrowser browser) {
-        // TODO Auto-generated method stub
+        getLogger()
+                .debug("Servlet resources are loaded and served by the server.");
         return null;
     }
 
     @Override
     public Optional<String> getThemedUrl(String url, WebBrowser browser,
             AbstractTheme theme) {
-        // TODO Auto-generated method stub
+        getLogger()
+                .debug("Theme is present in the bundle. No theme resolution is done for portlets.");
         return null;
     }
 

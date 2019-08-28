@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.vaadin</groupId>
-        <artifactId>portlet-support</artifactId>
+        <artifactId>vaadin-portlet-parent</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>portlet-integration-tests</artifactId>
+    <artifactId>vaadin-portlet-integration-tests</artifactId>
     <name>Portlet Integration Tests</name>
     <packaging>war</packaging>
 
@@ -28,7 +28,7 @@
     <dependencies>
         <dependency>
             <groupId>com.vaadin</groupId>
-            <artifactId>portlet</artifactId>
+            <artifactId>vaadin-portlet</artifactId>
             <version>${project.version}</version>
         </dependency>
 

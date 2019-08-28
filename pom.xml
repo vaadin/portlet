@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>portlet-support</artifactId>
+    <artifactId>vaadin-portlet-parent</artifactId>
     <name>Portlet support</name>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
@@ -16,8 +16,8 @@
     </parent>
 
     <modules>
-        <module>portlet</module>
-        <module>portlet-integration-tests</module>
+        <module>vaadin-portlet</module>
+        <module>vaadin-portlet-integration-tests</module>
     </modules>
 
     <organization>

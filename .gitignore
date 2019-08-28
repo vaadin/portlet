@@ -12,8 +12,8 @@
 .classpath
 *.project
 *.settings
-portlet-integration-tests/node_modules
-portlet-integration-tests/package.json
-portlet-integration-tests/package-lock.json
-portlet-integration-tests/webpack.config.js
-portlet-integration-tests/webpack.generated.js
+vaadin-portlet-integration-tests/node_modules
+vaadin-portlet-integration-tests/package.json
+vaadin-portlet-integration-tests/package-lock.json
+vaadin-portlet-integration-tests/webpack.config.js
+vaadin-portlet-integration-tests/webpack.generated.js

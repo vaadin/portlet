@@ -2,7 +2,6 @@ package com.vaadin.flow.portal;
 
 import com.vaadin.flow.component.WebComponentExporter;
 import com.vaadin.flow.component.webcomponent.WebComponent;
-import com.vaadin.flow.shared.util.SharedUtil;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 
@@ -11,15 +10,14 @@ import com.vaadin.flow.theme.lumo.Lumo;
  * Should be automated later on.
  */
 @Theme(value = Lumo.class)
-public class PortletContentExporter extends WebComponentExporter<PortletOne> {
-    public PortletContentExporter() {
-        super("my-portlet");
+public class SecondPortletContentExporter extends WebComponentExporter<PortletTwo> {
+    public SecondPortletContentExporter() {
+        super("my-second-portlet");
     }
 
     @Override
-    protected void configureInstance(WebComponent<PortletOne> webComponent,
-            PortletOne component) {
+    protected void configureInstance(WebComponent<PortletTwo> webComponent,
+            PortletTwo component) {
 
     }
-
 }

@@ -12,11 +12,10 @@
 .classpath
 *.project
 *.settings
-vaadin-portlet-integration-tests/node_modules
-vaadin-portlet-integration-tests/package.json
-vaadin-portlet-integration-tests/package-lock.json
-vaadin-portlet-integration-tests/webpack.config.js
-vaadin-portlet-integration-tests/webpack.generated.js
+/**/package.json
+/**/package-lock.json
+/**/webpack.config.js
+/**/webpack.generated.js
 
 # JS
-/**/node_modules/**
+/**/node_modules/*

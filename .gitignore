@@ -17,3 +17,6 @@ vaadin-portlet-integration-tests/package.json
 vaadin-portlet-integration-tests/package-lock.json
 vaadin-portlet-integration-tests/webpack.config.js
 vaadin-portlet-integration-tests/webpack.generated.js
+
+# JS
+/**/node_modules/**

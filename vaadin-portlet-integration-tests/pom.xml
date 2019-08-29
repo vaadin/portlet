@@ -10,7 +10,7 @@
     </parent>
     <artifactId>vaadin-portlet-integration-tests</artifactId>
     <name>Portlet Integration Tests</name>
-    <packaging>war</packaging>
+    <packaging>pom</packaging>
 
     <properties>
         <javax.validation.version>2.0.0.Final</javax.validation.version>
@@ -24,6 +24,10 @@
 
         <failOnMissingWebXml>false</failOnMissingWebXml>
     </properties>
+
+    <modules>
+        <module>tests-generic</module>
+    </modules>
 
     <dependencies>
         <dependency>

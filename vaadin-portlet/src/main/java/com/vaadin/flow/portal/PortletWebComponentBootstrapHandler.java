@@ -15,8 +15,9 @@
  */
 package com.vaadin.flow.portal;
 
+import com.vaadin.flow.function.DeploymentConfiguration;
+import com.vaadin.flow.server.DevModeHandler;
 import com.vaadin.flow.server.VaadinRequest;
-import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.server.communication.WebComponentBootstrapHandler;
 
 public class PortletWebComponentBootstrapHandler
@@ -33,6 +34,17 @@ public class PortletWebComponentBootstrapHandler
         // Require that the static files are available from the server root
         path = path.replaceFirst("^.VAADIN/", "./VAADIN/");
         if (path.startsWith("./VAADIN/")) {
+            DeploymentConfiguration deploymentConfiguration = VaadinPortletService
+                    .getCurrent().getDeploymentConfiguration();
+            if (deploymentConfiguration.isProductionMode()
+                    || !deploymentConfiguration.enableDevServer()) {
+                // Without dev server we serve static files from the vaadin-portlet-static.war
+                return "/vaadin-portlet-static/" + path;
+            } else if (DevModeHandler.getDevModeHandler() != null) {
+                // With dev server running request directly from dev server
+                return String.format("http://localhost:%s/%s",
+                        DevModeHandler.getDevModeHandler().getPort(), path);
+            }
             return "/" + path;
         }
         return super.modifyPath(basePath, path);

@@ -15,6 +15,10 @@
  */
 package com.vaadin.flow.portal;
 
+import java.io.IOException;
+
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.server.DevModeHandler;
 import com.vaadin.flow.server.VaadinRequest;
@@ -40,7 +44,8 @@ public class PortletWebComponentBootstrapHandler
                     || !deploymentConfiguration.enableDevServer()) {
                 // Without dev server we serve static files from the vaadin-portlet-static.war
                 return "/vaadin-portlet-static/" + path;
-            } else if (DevModeHandler.getDevModeHandler() != null) {
+            } else if (DevModeHandler.getDevModeHandler() != null
+                    && checkWebpackConnection()) {
                 // With dev server running request directly from dev server
                 return String.format("http://localhost:%s/%s",
                         DevModeHandler.getDevModeHandler().getPort(), path);
@@ -48,5 +53,26 @@ public class PortletWebComponentBootstrapHandler
             return "/" + path;
         }
         return super.modifyPath(basePath, path);
+    }
+
+    private boolean checkWebpackConnection() {
+        if (VaadinPortlet.getCurrent().getPortletContext()
+                .getAttribute(DevModeHandler.class.getName()) != null) {
+            return (Boolean) VaadinPortlet.getCurrent().getPortletContext()
+                    .getAttribute(DevModeHandler.class.getName());
+        }
+        try {
+            DevModeHandler.getDevModeHandler().prepareConnection("/", "GET")
+                    .getResponseCode();
+            VaadinPortlet.getCurrent().getPortletContext()
+                    .setAttribute(DevModeHandler.class.getName(), true);
+            return true;
+        } catch (IOException e) {
+            LoggerFactory.getLogger(getClass())
+                    .debug("Error checking webpack dev server connection", e);
+        }
+        VaadinPortlet.getCurrent().getPortletContext()
+                .setAttribute(DevModeHandler.class.getName(), false);
+        return false;
     }
 }

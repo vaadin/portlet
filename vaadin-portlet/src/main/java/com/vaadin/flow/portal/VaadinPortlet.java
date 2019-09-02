@@ -36,8 +36,10 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.WebComponentExporter;
+import com.vaadin.flow.component.webcomponent.WebComponent;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.server.Command;
@@ -47,6 +49,7 @@ import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.webcomponent.WebComponentConfigurationRegistry;
+import com.vaadin.flow.shared.util.SharedUtil;
 
 //import com.vaadin.flow.portal.impl.VaadinGateInRequest;
 //import com.vaadin.flow.portal.impl.VaadinLiferayRequest;
@@ -64,6 +67,18 @@ public abstract class VaadinPortlet extends GenericPortlet {
     private String webComponentProviderURL;
     private String webComponentBootstrapHandlerURL;
     private String webComponentUIDLRequestHandlerURL;
+
+    public abstract Class<? extends Component> getComponentClass();
+
+    public Component getComponent() {
+        try {
+            // yikes!
+            return getComponentClass().newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     @Override
     public void init(PortletConfig config) throws PortletException {

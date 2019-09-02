@@ -77,7 +77,9 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
             portlet.setWebComponentUIDLRequestHandlerURL(url.toString());
         }
         writer.write("<script src='" + scriptUrl + "'></script>");
-        writer.write("<" + tag + "></" + tag + ">");
+        // just making sure the portlet's do not cross lines
+        writer.write("<" + tag + " portlet='"+portlet.getClass().getCanonicalName()+
+                "'></" + tag + ">");
         return true;
     }
 

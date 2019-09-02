@@ -13,6 +13,9 @@
     <artifactId>tests-generic</artifactId>
     <name>Integration Tests, Generic</name>
 
+    <properties>
+        <pluto.version>3.0.1</pluto.version>
+    </properties>
     <dependencies>
 
         <dependency>
@@ -144,22 +147,51 @@
                         <executions>
                             <execution>
                                 <id>download-files</id>
-                                <phase>pre-integration-test</phase>
+                                <phase>package</phase>
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
                                     <tasks>
-                                        <get src="ftp://ftp.funet.fi/pub/mirrors/apache.org/portals/pluto/pluto-bundle-3.0.1.zip"
+                                        <get src="ftp://ftp.funet.fi/pub/mirrors/apache.org/portals/pluto/pluto-bundle-${pluto.version}.zip"
                                              dest="${project.build.directory}/pluto.zip"
                                              verbose="false" usetimestamp="true"/>
                                         <unzip
                                                 src="${project.build.directory}/pluto.zip"
                                                 dest="${project.build.directory}"/>
                                         <copy file="${project.build.directory}/${project.artifactId}.war"
-                                              todir="${project.build.directory}/pluto-3.0.1/webapps"/>
+                                              todir="${project.build.directory}/pluto-${pluto.version}/webapps"/>
                                         <copy file="${project.build.directory}/vaadin-portlet-static.war"
-                                              todir="${project.build.directory}/pluto-3.0.1/webapps"/>
+                                              todir="${project.build.directory}/pluto-${pluto.version}/webapps"/>
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>autocopy</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>download-files</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <copy file="${project.build.directory}/${project.artifactId}.war"
+                                              todir="${project.build.directory}/pluto-${pluto.version}/webapps"/>
+                                        <copy file="${project.build.directory}/vaadin-portlet-static.war"
+                                              todir="${project.build.directory}/pluto-${pluto.version}/webapps"/>
                                     </tasks>
                                 </configuration>
                             </execution>

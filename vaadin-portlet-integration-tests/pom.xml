@@ -13,6 +13,8 @@
     <packaging>pom</packaging>
 
     <properties>
+        <pluto.version>3.1.0</pluto.version>
+
         <javax.validation.version>2.0.0.Final</javax.validation.version>
 
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -150,4 +152,73 @@
             </plugins>
         </pluginManagement>
     </build>
+    <profiles>
+        <profile>
+            <id>autosetup</id>
+            <build>
+                <pluginManagement>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>download-files</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <get src="ftp://ftp.funet.fi/pub/mirrors/apache.org/portals/pluto/pluto-bundle-${pluto.version}.zip"
+                                             dest="${project.build.directory}/pluto.zip"
+                                             verbose="false" usetimestamp="true"/>
+                                        <unzip
+                                                src="${project.build.directory}/pluto.zip"
+                                                dest="${project.build.directory}"/>
+                                        <copy file="${project.build.directory}/${project.artifactId}.war"
+                                              todir="${project.build.directory}/pluto-${pluto.version}/webapps"/>
+                                        <copy file="${project.build.directory}/vaadin-portlet-static.war"
+                                              todir="${project.build.directory}/pluto-${pluto.version}/webapps"/>
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </pluginManagement>
+            </build>
+        </profile>
+
+        <profile>
+            <id>autocopy</id>
+            <build>
+                <pluginManagement>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>download-files</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <copy file="${project.build.directory}/${project.artifactId}.war"
+                                              todir="${project.build.directory}/pluto-${pluto.version}/webapps"/>
+                                        <copy file="${project.build.directory}/vaadin-portlet-static.war"
+                                              todir="${project.build.directory}/pluto-${pluto.version}/webapps"/>
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
 </project>

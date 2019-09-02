@@ -13,10 +13,7 @@
     <artifactId>tests-generic</artifactId>
     <name>Integration Tests, Generic</name>
 
-    <properties>
-        <pluto.version>3.1.0</pluto.version>
-    </properties>
-    
+
     <dependencies>
 
         <dependency>
@@ -28,6 +25,16 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>flow-data</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-upload-flow</artifactId>
+            <version>2.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>flow-html-components</artifactId>
+            <version>${flow.version}</version>
         </dependency>
 
         <dependency>
@@ -137,66 +144,27 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <profile>
             <id>autosetup</id>
             <build>
+
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>download-files</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <tasks>
-                                        <get src="ftp://ftp.funet.fi/pub/mirrors/apache.org/portals/pluto/pluto-bundle-${pluto.version}.zip"
-                                             dest="${project.build.directory}/pluto.zip"
-                                             verbose="false" usetimestamp="true"/>
-                                        <unzip
-                                                src="${project.build.directory}/pluto.zip"
-                                                dest="${project.build.directory}"/>
-                                        <copy file="${project.build.directory}/${project.artifactId}.war"
-                                              todir="${project.build.directory}/pluto-${pluto.version}/webapps"/>
-                                        <copy file="${project.build.directory}/vaadin-portlet-static.war"
-                                              todir="${project.build.directory}/pluto-${pluto.version}/webapps"/>
-                                    </tasks>
-                                </configuration>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
         </profile>
-
         <profile>
             <id>autocopy</id>
             <build>
+
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>download-files</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <tasks>
-                                        <copy file="${project.build.directory}/${project.artifactId}.war"
-                                              todir="${project.build.directory}/pluto-${pluto.version}/webapps"/>
-                                        <copy file="${project.build.directory}/vaadin-portlet-static.war"
-                                              todir="${project.build.directory}/pluto-${pluto.version}/webapps"/>
-                                    </tasks>
-                                </configuration>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>

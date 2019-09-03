@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.vaadin</groupId>
@@ -13,6 +13,8 @@
     <packaging>pom</packaging>
 
     <properties>
+        <pluto.version>3.1.0</pluto.version>
+
         <javax.validation.version>2.0.0.Final</javax.validation.version>
 
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -29,109 +31,194 @@
         <module>tests-generic</module>
     </modules>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-portlet</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-portlet</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
-        <!-- Test dependency from components -->
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>flow-data</artifactId>
-            <version>${flow.version}</version>
-        </dependency>
+            <!-- Test dependency from components -->
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>flow-data</artifactId>
+                <version>${flow.version}</version>
+            </dependency>
 
-        <!-- Test components -->
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-button-flow</artifactId>
-            <version>2.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-ordered-layout-flow</artifactId>
-            <version>2.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-notification-flow</artifactId>
-            <version>2.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-testbench-core</artifactId>
-            <version>${testbench.version}</version>
-            <scope>test</scope>
-        </dependency>
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-testbench-core</artifactId>
+                <version>${testbench.version}</version>
+                <scope>test</scope>
+            </dependency>
 
 
-        <!-- Added to provide logging output as Flow uses -->
-        <!-- the unbound SLF4J no-operation (NOP) logger implementation -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>1.7.28</version>
-        </dependency>
+            <!-- Added to provide logging output as Flow uses -->
+            <!-- the unbound SLF4J no-operation (NOP) logger implementation -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>1.7.28</version>
+            </dependency>
 
-        <!-- Portlet API -->
-        <dependency>
-            <groupId>javax.portlet</groupId>
-            <artifactId>portlet-api</artifactId>
-            <version>2.0</version>
-            <scope>provided</scope>
-        </dependency>
+            <!-- Portlet API -->
+            <dependency>
+                <groupId>javax.portlet</groupId>
+                <artifactId>portlet-api</artifactId>
+                <version>2.0</version>
+                <scope>provided</scope>
+            </dependency>
 
-        <!-- Servlet API -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>flow-server-production-mode</artifactId>
-            <version>${flow.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-lumo-theme</artifactId>
-            <version>${flow.version}</version>
-        </dependency>
-    </dependencies>
+            <!-- Servlet API -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>3.1.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>flow-server-production-mode</artifactId>
+                <version>${flow.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-lumo-theme</artifactId>
+                <version>${flow.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
-        <finalName>${project.artifactId}</finalName>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
-            </plugin>
-            <plugin>
-                <groupId>com.vaadin</groupId>
-                <artifactId>flow-maven-plugin</artifactId>
-                <version>${flow.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-frontend</goal>
-                            <goal>build-frontend</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.2.3</version>
-                <configuration>
-                    <packagingExcludes>WEB-INF/classes/META-INF/VAADIN/build/**</packagingExcludes>
-                </configuration>
-            </plugin>
-        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.vaadin</groupId>
+                    <artifactId>flow-maven-plugin</artifactId>
+                    <version>${flow.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>prepare-frontend</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>3.2.3</version>
+                    <executions>
+                        <execution>
+                            <id>portlet-war</id>
+                            <goals>
+                                <goal>war</goal>
+                            </goals>
+                            <configuration>
+                                <packagingExcludes>WEB-INF/classes/META-INF/VAADIN/build/**,VAADIN/</packagingExcludes>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>static-files</id>
+                            <goals>
+                                <goal>war</goal>
+                            </goals>
+                            <configuration>
+                                <warName>vaadin-portlet-static</warName>
+                                <packagingIncludes>WEB-INF/lib/flow-client*.jar,VAADIN/</packagingIncludes>
+
+                                <webResources>
+                                    <resource>
+                                        <!-- this is relative to the pom.xml directory -->
+                                        <directory>target/classes/META-INF/</directory>
+                                        <includes>
+                                            <include>**</include>
+                                        </includes>
+                                        <excludes>
+                                            <exclude>VAADIN/config/**</exclude>
+                                        </excludes>
+                                    </resource>
+                                </webResources>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
+    <profiles>
+        <profile>
+            <id>autosetup</id>
+            <build>
+                <pluginManagement>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>download-files</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <get src="ftp://ftp.funet.fi/pub/mirrors/apache.org/portals/pluto/pluto-bundle-${pluto.version}.zip"
+                                             dest="${project.build.directory}/pluto.zip"
+                                             verbose="false" usetimestamp="true"/>
+                                        <unzip
+                                                src="${project.build.directory}/pluto.zip"
+                                                dest="${project.build.directory}"/>
+                                        <copy file="${project.build.directory}/${project.artifactId}.war"
+                                              todir="${project.build.directory}/pluto-${pluto.version}/webapps"/>
+                                        <copy file="${project.build.directory}/vaadin-portlet-static.war"
+                                              todir="${project.build.directory}/pluto-${pluto.version}/webapps"/>
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </pluginManagement>
+            </build>
+        </profile>
+
+        <profile>
+            <id>autocopy</id>
+            <build>
+                <pluginManagement>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>download-files</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <copy file="${project.build.directory}/${project.artifactId}.war"
+                                              todir="${project.build.directory}/pluto-${pluto.version}/webapps"/>
+                                        <copy file="${project.build.directory}/vaadin-portlet-static.war"
+                                              todir="${project.build.directory}/pluto-${pluto.version}/webapps"/>
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
 </project>

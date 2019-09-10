@@ -1,12 +1,13 @@
-package com.vaadin.flow.portal;
+package com.vaadin.flow.portal.basic;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.portal.VaadinPortlet;
 
-public class MainView extends VerticalLayout {
+public class BasicPortletContent extends VerticalLayout {
 
-    public MainView() {
+    public BasicPortletContent() {
         VaadinPortlet portlet = VaadinPortlet.getCurrent();
         String name = portlet.getPortletName();
         String serverInfo = portlet.getPortletContext().getServerInfo();

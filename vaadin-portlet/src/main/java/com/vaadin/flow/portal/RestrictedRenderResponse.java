@@ -15,10 +15,12 @@
  */
 package com.vaadin.flow.portal;
 
+import javax.portlet.ActionURL;
 import javax.portlet.CacheControl;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderResponse;
+import javax.portlet.RenderURL;
 import javax.portlet.ResourceURL;
 import javax.servlet.http.Cookie;
 import java.io.IOException;
@@ -41,6 +43,7 @@ import java.util.Collection;
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+import java.util.Collections;
 import java.util.Locale;
 
 import org.w3c.dom.DOMException;
@@ -115,6 +118,16 @@ class RestrictedRenderResponse implements RenderResponse, Serializable {
     }
 
     @Override
+    public RenderURL createRenderURL(Copy copy) {
+        return null;
+    }
+
+    @Override
+    public ActionURL createActionURL(Copy copy) {
+        return null;
+    }
+
+    @Override
     public PrintWriter getWriter() throws IOException {
         // write forbidden
         return null;
@@ -161,7 +174,7 @@ class RestrictedRenderResponse implements RenderResponse, Serializable {
 
     @Override
     public void setNextPossiblePortletModes(
-            Collection<PortletMode> portletModes) {
+            Collection<? extends PortletMode> portletModes) {
         // NOP
         // TODO throw?
     }
@@ -192,5 +205,20 @@ class RestrictedRenderResponse implements RenderResponse, Serializable {
     public Element createElement(String tagName) throws DOMException {
         // NOP
         return null;
+    }
+
+    @Override
+    public String getProperty(String s) {
+        return null;
+    }
+
+    @Override
+    public Collection<String> getPropertyValues(String s) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Collection<String> getPropertyNames() {
+        return Collections.emptyList();
     }
 }

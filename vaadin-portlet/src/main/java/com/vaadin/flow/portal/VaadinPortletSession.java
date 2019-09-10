@@ -42,6 +42,7 @@ import java.util.Set;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.internal.CurrentInstance;
+import com.vaadin.flow.server.StreamResourceRegistry;
 import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.WrappedSession;
@@ -79,6 +80,11 @@ public class VaadinPortletSession extends VaadinSession {
      */
     public VaadinPortletSession(VaadinPortletService service) {
         super(service);
+    }
+
+    @Override
+    protected StreamResourceRegistry createStreamResourceRegistry() {
+        return new PortletStreamResourceRegistry(this);
     }
 
     /**

@@ -94,7 +94,7 @@ public class VaadinPortletService extends VaadinService {
         handlers.add(new PortletWebComponentProvider());
         handlers.add(new PortletWebComponentBootstrapHandler());
         handlers.add(new PortletUidlRequestHandler());
-
+        handlers.add(new PortletStreamRequestHandler());
         return handlers;
     }
 

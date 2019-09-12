@@ -15,5 +15,6 @@ public class UploadPortletExporter extends WebComponentExporter<UploadPortletCon
     @Override
     protected void configureInstance(WebComponent<UploadPortletContent> webComponent,
                                      UploadPortletContent component) {
+        // No configuration required
     }
 }

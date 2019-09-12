@@ -18,5 +18,6 @@ public class BasicPortletExporter extends WebComponentExporter<BasicPortletConte
     @Override
     protected void configureInstance(WebComponent<BasicPortletContent> webComponent,
             BasicPortletContent component) {
+        // No configuration required
     }
 }

@@ -3,6 +3,9 @@ package com.vaadin.flow.portal.upload;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.upload.Upload;
@@ -28,12 +31,15 @@ public class UploadPortletContent extends VerticalLayout {
                      bytesRead++)
                     ;
                 uploadInfo.setText(Integer.toString(bytesRead));
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ioe) {
+                getLogger().error("Upload failed", ioe);
             }
         });
         upload.setAutoUpload(true);
         add(upload);
     }
 
+    private Logger getLogger() {
+        return LoggerFactory.getLogger(getClass());
+    }
 }

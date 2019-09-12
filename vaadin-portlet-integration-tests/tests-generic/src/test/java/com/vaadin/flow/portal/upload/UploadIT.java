@@ -9,6 +9,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.WrapsElement;
+import org.openqa.selenium.remote.LocalFileDetector;
+import org.openqa.selenium.remote.RemoteWebElement;
 
 import com.vaadin.flow.component.html.testbench.LabelElement;
 import com.vaadin.flow.component.upload.testbench.UploadElement;
@@ -26,6 +29,7 @@ public class UploadIT extends AbstractPlutoPortalTest {
         File file = createTempFile();
         UploadElement upload = $(UploadElement.class).first();
         WebElement input = getInShadowRoot(upload, By.id("fileInput"));
+        setLocalFileDetector(input);
         input.sendKeys(file.getAbsolutePath());
 
         // check that label indicates size of file
@@ -40,5 +44,23 @@ public class UploadIT extends AbstractPlutoPortalTest {
         writer.close();
         tempFile.deleteOnExit();
         return tempFile;
+    }
+
+    private void setLocalFileDetector(WebElement element) throws Exception {
+        if (getRunLocallyBrowser() != null) {
+            return;
+        }
+
+        if (element instanceof WrapsElement) {
+            element = ((WrapsElement) element).getWrappedElement();
+        }
+        if (element instanceof RemoteWebElement) {
+            ((RemoteWebElement) element)
+                    .setFileDetector(new LocalFileDetector());
+        } else {
+            throw new IllegalArgumentException(
+                    "Expected argument of type RemoteWebElement, received "
+                            + element.getClass().getName());
+        }
     }
 }

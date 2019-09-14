@@ -15,12 +15,58 @@
  */
 package com.vaadin.flow.portal.addressbook.grid;
 
-import com.vaadin.flow.component.html.Div;
+import java.util.Optional;
+
+import com.vaadin.flow.component.ClientCallable;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.ItemClickEvent;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.portal.addressbook.backend.Contact;
+import com.vaadin.flow.portal.addressbook.backend.ContactService;
+import com.vaadin.flow.portal.addressbook.form.FormPortlet;
 
 /**
  * @author Vaadin Ltd
  *
  */
-public class GridView extends Div {
+public class GridView extends Grid<Contact> {
+
+    private ListDataProvider<Contact> dataProvider;
+
+    public GridView() {
+        super(Contact.class);
+        dataProvider = new ListDataProvider<>(
+                ContactService.getDemoService().findAll(""));
+        setDataProvider(dataProvider);
+        removeColumnByKey("id");
+        setSelectionMode(SelectionMode.NONE);
+        addItemClickListener(this::notifyForm);
+        setWidth("300px");
+        setColumns("firstName", "lastName", "phoneNumber", "email",
+                "birthDate");
+    }
+
+    @ClientCallable
+    private void refresh(int id) {
+        Optional<Contact> contact = dataProvider.getItems().stream()
+                .filter(item -> item.getId().equals(id)).findFirst();
+        if (contact.isPresent()) {
+            Contact newContact = ContactService.getDemoService().findById(id)
+                    .get();
+            contact.get().setFirstName(newContact.getFirstName());
+            contact.get().setLastName(newContact.getLastName());
+            contact.get().setEmail(newContact.getEmail());
+            contact.get().setPhoneNumber(newContact.getPhoneNumber());
+            contact.get().setBirthDate(newContact.getBirthDate());
+            dataProvider.refreshItem(contact.get());
+        }
+    }
+
+    private void notifyForm(ItemClickEvent<Contact> event) {
+        getUI().get().getPage().executeJs(
+                "var form = document.querySelector($0).firstChild;"
+                        + "form.$server.show($1);",
+                FormPortlet.TAG, event.getItem().getId());
+    }
 
 }

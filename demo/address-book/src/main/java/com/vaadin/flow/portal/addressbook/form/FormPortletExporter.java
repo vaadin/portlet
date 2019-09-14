@@ -17,11 +17,14 @@ package com.vaadin.flow.portal.addressbook.form;
 
 import com.vaadin.flow.component.WebComponentExporter;
 import com.vaadin.flow.component.webcomponent.WebComponent;
+import com.vaadin.flow.theme.Theme;
+import com.vaadin.flow.theme.lumo.Lumo;
 
 /**
  * @author Vaadin Ltd
  *
  */
+@Theme(Lumo.class)
 public class FormPortletExporter extends WebComponentExporter<Form> {
 
     public FormPortletExporter() {

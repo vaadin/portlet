@@ -15,12 +15,6 @@
  */
 package com.vaadin.flow.portal.addressbook.form;
 
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
-
-import java.io.IOException;
-
 import com.vaadin.flow.portal.VaadinPortlet;
 
 /**
@@ -36,11 +30,4 @@ public class FormPortlet extends VaadinPortlet {
         return TAG;
     }
 
-    @Override
-    protected void handleRequest(PortletRequest request,
-            PortletResponse response) throws PortletException, IOException {
-        String namespace = response.getNamespace();
-        System.out.println("Xxxxxxxxxxx " + namespace);
-        super.handleRequest(request, response);
-    }
 }

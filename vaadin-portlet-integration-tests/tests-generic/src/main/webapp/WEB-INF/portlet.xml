@@ -5,30 +5,35 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd">
     <portlet>
-        <portlet-name>myportlet1</portlet-name>
-        <display-name>Flow Test Portlet</display-name>
-        <portlet-class>com.vaadin.flow.portal.MyPortlet</portlet-class>
+        <portlet-name>basic</portlet-name>
+        <display-name>Flow Basic Portlet with Button</display-name>
+        <portlet-class>com.vaadin.flow.portal.basic.BasicPortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
         </supports>
         <portlet-info>
-            <title>Flow Test Portlet - myportlet1</title>
-            <short-title>Flow myportlet1</short-title>
+            <title>Basic Portlet - basicportlet</title>
+            <short-title>basicportlet</short-title>
             <keywords></keywords>
         </portlet-info>
-        <security-role-ref>
-            <role-name>administrator</role-name>
-        </security-role-ref>
-        <security-role-ref>
-            <role-name>guest</role-name>
-        </security-role-ref>
-        <security-role-ref>
-            <role-name>power-user</role-name>
-        </security-role-ref>
-        <security-role-ref>
-            <role-name>user</role-name>
-        </security-role-ref>
     </portlet>
+
+    <portlet>
+        <portlet-name>upload</portlet-name>
+        <display-name>Flow Portlet with Upload</display-name>
+        <portlet-class>com.vaadin.flow.portal.upload.UploadPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>Upload Portlet - uploadportlet</title>
+            <short-title>uploadportlet</short-title>
+            <keywords></keywords>
+        </portlet-info>
+    </portlet>
+
 </portlet-app>

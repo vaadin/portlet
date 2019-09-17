@@ -39,12 +39,11 @@ public class UploadPortletContent extends VerticalLayout {
         Upload upload = new Upload(buffer);
 
         upload.addSucceededListener(event -> {
-            try {
-                int bytesRead = 0;
-                for (InputStream is = buffer.getInputStream();
-                     is.read() != -1;
-                     bytesRead++)
-                    ;
+            int bytesRead = 0;
+            try (InputStream is = buffer.getInputStream()) {
+                while (is.read() != -1) {
+                    bytesRead++;
+                }
                 uploadInfo.setText(Integer.toString(bytesRead));
             } catch (IOException ioe) {
                 getLogger().error("Upload failed", ioe);

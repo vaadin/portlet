@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2018 Vaadin Ltd.
+ * Copyright 2000-2019 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -22,8 +22,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import com.vaadin.flow.server.AbstractStreamResource;
+import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.StreamResourceRegistry;
 
+/**
+ * Portlet-specific registry for {@link StreamResource} instances. Creates the
+ * target URL with an additional suffix to direct the upload to the correct
+ * portlet.
+ */
 public class PortletStreamResourceRegistry extends StreamResourceRegistry {
 
     /**
@@ -37,7 +43,8 @@ public class PortletStreamResourceRegistry extends StreamResourceRegistry {
 
     @Override
     public URI getTargetURI(AbstractStreamResource resource) {
-        PortletResponse response = VaadinPortletService.getCurrentResponse().getPortletResponse();
+        PortletResponse response = VaadinPortletService.getCurrentResponse()
+                .getPortletResponse();
         if (response instanceof MimeResponse) {
             MimeResponse mimeResponse = (MimeResponse) response;
             ResourceURL resourceURL = mimeResponse.createResourceURL();

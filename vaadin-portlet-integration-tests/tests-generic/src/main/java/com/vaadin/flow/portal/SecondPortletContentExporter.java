@@ -22,15 +22,14 @@ public class SecondPortletContentExporter extends WebComponentExporter<PortletTw
     @Override
     protected void configureInstance(WebComponent<PortletTwo> webComponent,
             PortletTwo component) {
-        WindowState windowState = ((MySecondPortlet) VaadinPortlet.getCurrent())
-                .getWindowState();
+            WindowState windowState = component.getWindowState();
 
-        if (windowState.equals(WindowState.NORMAL)) {
-            component.renderNormal();
-        } else if (windowState.equals(WindowState.MAXIMIZED)) {
-            component.renderMaximized();
-        } else if (windowState.equals(WindowState.MINIMIZED)) {
-            component.renderMinimized();
-        }
+            if (windowState.equals(WindowState.MAXIMIZED)) {
+                component.renderMaximized();
+            } else if (windowState.equals(WindowState.MINIMIZED)) {
+                component.renderMinimized();
+            } else {
+                component.renderNormal();
+            }
     }
 }

@@ -2,33 +2,44 @@ package com.vaadin.flow.portal;
 
 import javax.portlet.WindowState;
 
-import com.vaadin.flow.component.HasElement;
-import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.HasComponents;
 
-public interface WindowStatePortletComponent extends HasElement {
+public abstract class WindowStatePortletComponent<T extends Component, P extends WindowStatePortlet>
+        extends Composite<T> implements HasComponents {
 
+    abstract void renderNormal();
 
-    default void maximize() {
-        getElement().executeJs(
-                "location.href = '" + ((MySecondPortlet) VaadinPortlet
-                        .getCurrent()).maximizeAction + "'");
+    abstract void renderMaximized();
+
+    abstract void renderMinimized();
+
+    public void maximize() {
+        changeState(WindowState.MAXIMIZED);
     }
 
-    default void normalize() {
-        getElement().executeJs(
-                "location.href = '" + ((MySecondPortlet) VaadinPortlet
-                        .getCurrent()).normalizeAction + "'");
+    public void normalize() {
+        changeState(WindowState.NORMAL);
     }
 
-    default void minimize() {
-        getElement().executeJs(
-                "location.href = '" + ((MySecondPortlet) VaadinPortlet
-                        .getCurrent()).minimizeAction + "'");
+    public void minimize() {
+        changeState(WindowState.MINIMIZED);
     }
 
-     void renderNormal();
+    public WindowState getWindowState() {
+        return ((P) VaadinPortlet.getCurrent()).getWindowState();
+    }
 
-     void renderMaximized();
+    private void changeState(WindowState state) {
+        String stateChangeScript = String
+                .format("location.href = '%s?state=%s'", getActionUrl(), state);
 
-     void renderMinimized();
+        getElement().executeJs(stateChangeScript);
+    }
+
+    private String getActionUrl() {
+        return ((P) VaadinPortlet.getCurrent()).getActionUrl();
+    }
+
 }

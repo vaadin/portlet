@@ -2,8 +2,6 @@ package com.vaadin.flow.portal;
 
 import javax.portlet.WindowState;
 
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.flow.component.WebComponentExporter;
 import com.vaadin.flow.component.webcomponent.WebComponent;
 import com.vaadin.flow.theme.Theme;
@@ -14,7 +12,8 @@ import com.vaadin.flow.theme.lumo.Lumo;
  * Should be automated later on.
  */
 @Theme(value = Lumo.class)
-public class SecondPortletContentExporter extends WebComponentExporter<PortletTwo> {
+public class SecondPortletContentExporter
+        extends WebComponentExporter<PortletTwo> {
     public SecondPortletContentExporter() {
         super(MySecondPortlet.TAG);
     }
@@ -22,14 +21,7 @@ public class SecondPortletContentExporter extends WebComponentExporter<PortletTw
     @Override
     protected void configureInstance(WebComponent<PortletTwo> webComponent,
             PortletTwo component) {
-            WindowState windowState = component.getWindowState();
-
-            if (windowState.equals(WindowState.MAXIMIZED)) {
-                component.renderMaximized();
-            } else if (windowState.equals(WindowState.MINIMIZED)) {
-                component.renderMinimized();
-            } else {
-                component.renderNormal();
-            }
+        WindowState windowState = component.getWindowState();
+        component.windowStateChange(windowState);
     }
 }

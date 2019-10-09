@@ -22,6 +22,6 @@ public class SecondPortletContentExporter
     protected void configureInstance(WebComponent<PortletTwo> webComponent,
             PortletTwo component) {
         WindowState windowState = component.getWindowState();
-        component.windowStateChange(windowState);
+        component.beforeWindowStateChange(windowState);
     }
 }

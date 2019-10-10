@@ -15,27 +15,7 @@
  */
 package com.vaadin.flow.portal;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.EventRequest;
-import javax.portlet.EventResponse;
-import javax.portlet.GenericPortlet;
-import javax.portlet.PortalContext;
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletContext;
-import javax.portlet.PortletException;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-import javax.portlet.ResourceRequest;
-import javax.portlet.ResourceResponse;
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.stream.Collectors;
-
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.WebComponentExporter;
 import com.vaadin.flow.function.DeploymentConfiguration;
@@ -48,17 +28,34 @@ import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.webcomponent.WebComponentConfigurationRegistry;
 
-//import com.vaadin.flow.portal.impl.VaadinGateInRequest;
-//import com.vaadin.flow.portal.impl.VaadinLiferayRequest;
-//import com.vaadin.flow.portal.impl.VaadinWebLogicPortalRequest;
-//import com.vaadin.flow.portal.impl.VaadinWebSpherePortalRequest;
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.EventRequest;
+import javax.portlet.EventResponse;
+import javax.portlet.GenericPortlet;
+import javax.portlet.HeaderRequest;
+import javax.portlet.HeaderResponse;
+import javax.portlet.PortalContext;
+import javax.portlet.PortletConfig;
+import javax.portlet.PortletContext;
+import javax.portlet.PortletException;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+import javax.portlet.ResourceRequest;
+import javax.portlet.ResourceResponse;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Vaadin implementation of the {@link GenericPortlet}.
  *
  * @since
  */
-public abstract class VaadinPortlet extends GenericPortlet {
+public abstract class VaadinPortlet<VIEW extends Component> extends GenericPortlet {
 
     private VaadinPortletService vaadinService;
     private String webComponentProviderURL;
@@ -126,6 +123,13 @@ public abstract class VaadinPortlet extends GenericPortlet {
     }
 
     @Override
+    public void renderHeaders(HeaderRequest request, HeaderResponse response)
+            throws PortletException, IOException {
+        super.renderHeaders(request, response);
+        response.addDependency("PortletHub", "javax.portlet", "3.0.0");
+    }
+
+    @Override
     protected void doDispatch(RenderRequest request, RenderResponse response)
             throws PortletException, IOException {
         try {
@@ -156,24 +160,7 @@ public abstract class VaadinPortlet extends GenericPortlet {
      */
     protected VaadinPortletRequest createVaadinRequest(PortletRequest request) {
         PortalContext portalContext = request.getPortalContext();
-        String portalInfo = portalContext.getPortalInfo()
-                .toLowerCase(Locale.ROOT).trim();
         VaadinPortletService service = getService();
-        //
-        //        if (portalInfo.contains("gatein")) {
-        //            return new VaadinGateInRequest(request, service);
-        //        }
-        //
-        //        if (portalInfo.contains("liferay")) {
-        //            return new VaadinLiferayRequest(request, service);
-        //        }
-        //
-        //        if (portalInfo.contains("websphere portal")) {
-        //            return new VaadinWebSpherePortalRequest(request, service);
-        //        }
-        //        if (portalInfo.contains("weblogic portal")) {
-        //            return new VaadinWebLogicPortalRequest(request, service);
-        //        }
 
         return new VaadinPortletRequest(request, service);
     }
@@ -185,24 +172,24 @@ public abstract class VaadinPortlet extends GenericPortlet {
 
     @Override
     public void serveResource(ResourceRequest request,
-            ResourceResponse response) throws PortletException, IOException {
+            ResourceResponse response) throws PortletException {
         handleRequest(request, response);
     }
 
     @Override
     public void processAction(ActionRequest request, ActionResponse response)
-            throws PortletException, IOException {
+            throws PortletException {
         handleRequest(request, response);
     }
 
     @Override
     public void processEvent(EventRequest request, EventResponse response)
-            throws PortletException, IOException {
+            throws PortletException {
         handleRequest(request, response);
     }
 
     protected void handleRequest(PortletRequest request,
-            PortletResponse response) throws PortletException, IOException {
+            PortletResponse response) throws PortletException {
 
         CurrentInstance.clearAll();
 

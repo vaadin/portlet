@@ -4,15 +4,15 @@ Vaadin Portlet Support for Vaadin 14.2+ is built on top of the <<Portlet 3.0
 specification>>.
 
 == Topics
-. <</asd,Creating Vaadin Portlets>>
+. <<creating-vaadin-portlets#,Creating Vaadin Portlets>>
 +
 Instructs the reader on how to build their own Vaadin Portlets and how to run
 it on Pluto 3.0 reference implementation.
-. <<creating-vaadin-portlets#,Handling Portlet Lifecycle>>
+. <<handling-portlet-lifecycle#,Handling Portlet Lifecycle>>
 +
 Introduces the different `interfaces` the reader can use to interact with the
 Portlet lifecycle and Portlet requests.
-. <</asd,Inter-Portlet Communication>>
+. <<inter-portlet-communication#,Inter-portlet Communication>>
 +
 Outlines how the reader can enable their Portlets to communicate with other
 Portlets (be they Vaadin Portlets or not) on the Portal page.

@@ -1,61 +1,73 @@
 package com.vaadin.flow.portal;
 
+import javax.portlet.WindowState;
+
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.ItemClickEvent;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.ListDataProvider;
-import org.apache.commons.io.IOUtils;
+import com.vaadin.flow.portal.handler.WindowStateEvent;
+import com.vaadin.flow.portal.handler.WindowStateHandler;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-public class GridPortletView extends Grid<Contact> {
+public class GridPortletView extends VerticalLayout implements
+        WindowStateHandler {
 
     private ListDataProvider<Contact> dataProvider;
 
+    private Button windowState;
+
     public GridPortletView() {
-        super(Contact.class);
-        registerHub();
+        setWidthFull();
+        GridPortlet portlet = GridPortlet.getCurrent();
+        portlet.registerHub(getElement());
+
         dataProvider = new ListDataProvider<>(
                 ContactService.getInstance().getContacts());
-        setDataProvider(dataProvider);
-        removeColumnByKey("id");
-        setSelectionMode(SelectionMode.NONE);
-        addItemClickListener(this::fireSelectionEvent);
-        setColumns("firstName", "lastName", "phoneNumber", "email",
+
+        Grid<Contact> grid = new Grid<>(Contact.class);
+        grid.setDataProvider(dataProvider);
+        grid.removeColumnByKey("id");
+        grid.setSelectionMode(Grid.SelectionMode.NONE);
+        grid.addItemClickListener(this::fireSelectionEvent);
+        grid.setColumns("firstName", "lastName", "phoneNumber", "email",
                 "birthDate");
         setMinWidth("450px");
-    }
 
-    private void registerHub() {
-        try {
-            String portletRegistryName = VaadinPortletService
-                    .getCurrentResponse()
-                    .getPortletResponse().getNamespace();
-            String registerPortlet = IOUtils.toString(
-                    GridPortletView.class.getClassLoader()
-                            .getResourceAsStream("PortletHubRegistration.js"),
-                    StandardCharsets.UTF_8);
-            getElement().executeJs(registerPortlet, portletRegistryName,
-                    getElement());
-        } catch (IOException e) {
-        }
+        windowState = new Button(
+                WindowState.NORMAL.equals(portlet.getWindowState()) ?
+                        "Maximize" :
+                        "Normalize", event -> switchWindowState());
+
+        add(windowState, grid);
+        setHorizontalComponentAlignment(Alignment.END, windowState);
     }
 
     private void fireSelectionEvent(
             ItemClickEvent<Contact> contactItemClickEvent) {
-        Integer id = contactItemClickEvent.getItem().getId();
-        dispatchSelectionEvent(getFormPortletPortletId(),id);
+        GridPortlet portlet = GridPortlet.getCurrent();
+        portlet
+                .sendContactSelectionEvent(contactItemClickEvent.getItem(),
+                        getElement());
+        // Normalize the maximized window
+        if(WindowState.MAXIMIZED.equals(portlet.getWindowState())) {
+            switchWindowState();
+        }
     }
 
-    private String getFormPortletPortletId() {
-        // Get form layout somehow from VaadinPortletRequest.getCurrentPortletRequest().requestContext.url.portletIds
-        // or any other way that we can get the actual registered name
-        return "";
+    private void switchWindowState() {
+        GridPortlet portlet = GridPortlet.getCurrent();
+        if (WindowState.NORMAL.equals(portlet.getWindowState())) {
+            portlet.setWindowState(WindowState.MAXIMIZED);
+            windowState.setText("Normalize");
+        } else if (WindowState.MAXIMIZED.equals(portlet.getWindowState())) {
+            portlet.setWindowState(WindowState.NORMAL);
+            windowState.setText("Maximize");
+        }
     }
 
-    private void dispatchSelectionEvent(String target, Integer itemId) {
-        // dispatch an event to given portlet target with the itemId and new render Mode EDIT
+    @Override
+    public void windowStateChange(WindowStateEvent event) {
 
     }
-
 }

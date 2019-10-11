@@ -1,9 +1,10 @@
 package com.vaadin.flow.portal;
 
+import java.io.Serializable;
 import java.net.URL;
 import java.time.LocalDate;
 
-public class Contact {
+public class Contact implements Serializable {
 
     private final Integer id;
 

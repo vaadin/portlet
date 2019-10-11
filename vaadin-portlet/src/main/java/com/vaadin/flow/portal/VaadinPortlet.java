@@ -15,19 +15,6 @@
  */
 package com.vaadin.flow.portal;
 
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.WebComponentExporter;
-import com.vaadin.flow.function.DeploymentConfiguration;
-import com.vaadin.flow.internal.CurrentInstance;
-import com.vaadin.flow.server.Command;
-import com.vaadin.flow.server.Constants;
-import com.vaadin.flow.server.DefaultDeploymentConfiguration;
-import com.vaadin.flow.server.ServiceException;
-import com.vaadin.flow.server.VaadinService;
-import com.vaadin.flow.server.VaadinSession;
-import com.vaadin.flow.server.webcomponent.WebComponentConfigurationRegistry;
-
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.EventRequest;
@@ -46,16 +33,32 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.stream.Collectors;
+
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.WebComponentExporter;
+import com.vaadin.flow.function.DeploymentConfiguration;
+import com.vaadin.flow.internal.CurrentInstance;
+import com.vaadin.flow.server.Command;
+import com.vaadin.flow.server.Constants;
+import com.vaadin.flow.server.DefaultDeploymentConfiguration;
+import com.vaadin.flow.server.ServiceException;
+import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.server.webcomponent.WebComponentConfigurationRegistry;
 
 /**
  * Vaadin implementation of the {@link GenericPortlet}.
  *
  * @since
  */
-public abstract class VaadinPortlet<VIEW extends Component> extends GenericPortlet {
+public abstract class VaadinPortlet<VIEW extends Component>
+        extends GenericPortlet {
 
     private VaadinPortletService vaadinService;
     private String webComponentProviderURL;
@@ -96,6 +99,19 @@ public abstract class VaadinPortlet<VIEW extends Component> extends GenericPortl
         portletInitialized();
 
         CurrentInstance.clearAll();
+    }
+
+    public boolean isViewInstanceOf(Class instance) {
+        return instance.isAssignableFrom(getViewClass());
+    }
+
+    protected final Class<VIEW> getViewClass() {
+        Type t = ((ParameterizedType) getClass().getGenericSuperclass())
+                .getActualTypeArguments()[0];
+        if (t instanceof ParameterizedType) {
+            t = ((ParameterizedType) t).getRawType();
+        }
+        return (Class<VIEW>) t;
     }
 
     protected DeploymentConfiguration createDeploymentConfiguration(

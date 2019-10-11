@@ -13,4 +13,8 @@ public class PortletModeEvent {
     public PortletMode getPortletMode() {
         return portletMode;
     }
+
+    public boolean isEditMode() {
+        return PortletMode.EDIT.equals(portletMode);
+    }
 }

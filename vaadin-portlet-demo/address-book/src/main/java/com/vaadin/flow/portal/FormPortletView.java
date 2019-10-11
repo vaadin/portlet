@@ -1,10 +1,14 @@
 package com.vaadin.flow.portal;
 
-import com.vaadin.flow.component.ClientCallable;
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+import java.util.Optional;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -12,40 +16,50 @@ import com.vaadin.flow.portal.handler.PortletModeEvent;
 import com.vaadin.flow.portal.handler.PortletModeHandler;
 import com.vaadin.flow.portal.handler.WindowStateEvent;
 import com.vaadin.flow.portal.handler.WindowStateHandler;
-import org.apache.commons.io.IOUtils;
 
-import javax.portlet.PortletMode;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
+public class FormPortletView extends VerticalLayout
+        implements WindowStateHandler, PortletModeHandler, SelectHandler {
 
-public class FormPortletView extends FormLayout implements
-        WindowStateHandler, PortletModeHandler {
-
+    public static final String ACTION_EDIT = "Edit";
+    public static final String ACTION_SAVE = "Save";
+    public static final String WINDOW_MAXIMIZE = "Maximize";
+    public static final String WINDOW_NORMALIZE = "Normalize";
     private Binder<Contact> binder;
-    private Button save;
+    private Button action;
     private Button cancel;
-    private Button normalize;
+    private Button windowState;
     private TextField firstName;
     private Image image;
 
     public FormPortletView() {
-        registerHub();
+        FormPortlet portlet = FormPortlet.getCurrent();
+        portlet.registerHub(getElement());
 
-        PortletMode portletMode = VaadinPortletRequest.getCurrent()
-                .getPortletMode();
+        PortletMode portletMode = portlet.getPortletMode();
+        portlet.setSelectHandler(this);
 
+        FormLayout formLayout = populateFormLayout(portletMode);
+        setupButtons(portlet);
+
+        HorizontalLayout actionButtons = new HorizontalLayout(action, cancel);
+        add(windowState, formLayout, actionButtons);
+        setHorizontalComponentAlignment(Alignment.END, windowState,
+                actionButtons);
+    }
+
+    private FormLayout populateFormLayout(PortletMode portletMode) {
+        FormLayout formLayout = new FormLayout();
         firstName = new TextField();
-        addFormItem(firstName, "First name");
+        formLayout.addFormItem(firstName, "First name");
 
         TextField lastName = new TextField();
-        addFormItem(lastName, "Last name");
+        formLayout.addFormItem(lastName, "Last name");
 
         TextField phone = new TextField();
-        addFormItem(phone, "Phone number");
+        formLayout.addFormItem(phone, "Phone number");
 
         EmailField email = new EmailField();
-        addFormItem(email, "Email");
+        formLayout.addFormItem(email, "Email");
 
         binder = new Binder<>(Contact.class);
         binder.bind(firstName, "firstName");
@@ -56,23 +70,42 @@ public class FormPortletView extends FormLayout implements
         binder.setReadOnly(PortletMode.VIEW.equals(portletMode));
 
         image = new Image();
-        add(image, new Span());
+        formLayout.add(image);
+        return formLayout;
+    }
 
-        save = new Button("Save", event -> save());
-        save.setEnabled(false);
+    private void setupButtons(FormPortlet portlet) {
+        action = new Button(PortletMode.EDIT
+                .equals(FormPortlet.getCurrent().getPortletMode()) ?
+                ACTION_SAVE :
+                ACTION_EDIT, event -> {
+            if (PortletMode.EDIT.equals(portlet.getPortletMode())) {
+                save();
+            } else {
+                portlet.setPortletMode(PortletMode.EDIT, getElement());
+            }
+        });
+
         cancel = new Button("Cancel", event -> cancel());
-        normalize = new Button("normalize", event -> normalize());
-        normalize.setVisible(false);
 
-        add(save, cancel, normalize);
+        windowState = new Button(
+                WindowState.NORMAL.equals(portlet.getWindowState()) ?
+                        WINDOW_MAXIMIZE :
+                        WINDOW_NORMALIZE, event -> switchWindowState());
     }
 
-    private void normalize() {
-
+    private void switchWindowState() {
+        FormPortlet portlet = FormPortlet.getCurrent();
+        if (WindowState.NORMAL.equals(portlet.getWindowState())) {
+            portlet.setWindowState(WindowState.MAXIMIZED);
+            windowState.setText(WINDOW_NORMALIZE);
+        } else if (WindowState.MAXIMIZED.equals(portlet.getWindowState())) {
+            portlet.setWindowState(WindowState.NORMAL);
+            windowState.setText(WINDOW_MAXIMIZE);
+        }
     }
 
-    @ClientCallable
-    private void select(int contactId) {
+    public void select(int contactId) {
         Optional<Contact> contact = ContactService.getInstance()
                 .findById(contactId);
         if (contact.isPresent()) {
@@ -80,55 +113,42 @@ public class FormPortletView extends FormLayout implements
 
             firstName.setValue(contact.get().getFirstName());
             image.setSrc(contact.get().getImage().toString());
-            save.setEnabled(true);
         } else {
             cancel();
         }
     }
 
     private void cancel() {
-        binder.setBean(null);
-        save.setEnabled(false);
+        if(binder.getBean() != null) {
+            binder.setBean(null);
+            FormPortlet.getCurrent().setPortletMode(PortletMode.VIEW, getElement());
+            action.setText(ACTION_EDIT);
+        }
     }
 
     private void save() {
         Contact contact = binder.getBean();
 
-        if (true) {
+        if (contact != null) {
             ContactService.getInstance().save(contact);
-            getUI().get().getPage().executeJs(
-                    "var grid = document.querySelector($0).firstChild;"
-                            + "grid.$server.refresh($1);",
-                    GridPortlet.TAG, contact.getId());
         }
+
+        FormPortlet.getCurrent().setPortletMode(PortletMode.VIEW, getElement());
     }
 
     @Override
     public void portletModeChange(PortletModeEvent event) {
         binder.setReadOnly(PortletMode.VIEW.equals(event.getPortletMode()));
+        if (event.isEditMode()) {
+            action.setText(ACTION_SAVE);
+        } else {
+            action.setText(ACTION_EDIT);
+        }
     }
 
     @Override
     public void windowStateChange(WindowStateEvent event) {
-        normalize.setVisible(event.isMaximized());
+
     }
 
-
-    private void registerHub() {
-        try {
-            String portletRegistryName = VaadinPortletService
-                    .getCurrentResponse()
-                    .getPortletResponse().getNamespace();
-            String registerPortlet = IOUtils.toString(
-                    GridPortletView.class.getClassLoader()
-                            .getResourceAsStream("PortletHubRegistration.js"),
-                    StandardCharsets.UTF_8);
-            getElement().executeJs(registerPortlet, portletRegistryName,
-                    getElement());
-            getElement().executeJs("var hub = window.Vaadin.Flow.Portlets.$0;" +
-                            "hub.addEventListener('selection', fucntion(id) {$1.$server.select(id);});", portletRegistryName,
-                    getElement());
-        } catch (IOException e) {
-        }
-    }
 }

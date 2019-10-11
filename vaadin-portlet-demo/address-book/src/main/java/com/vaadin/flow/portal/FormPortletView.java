@@ -33,7 +33,7 @@ public class FormPortletView extends VerticalLayout
 
     public FormPortletView() {
         FormPortlet portlet = FormPortlet.getCurrent();
-        portlet.registerHub(getElement());
+        portlet.registerHub();
 
         PortletMode portletMode = portlet.getPortletMode();
         portlet.setSelectHandler(this);
@@ -82,7 +82,7 @@ public class FormPortletView extends VerticalLayout
             if (PortletMode.EDIT.equals(portlet.getPortletMode())) {
                 save();
             } else {
-                portlet.setPortletMode(PortletMode.EDIT, getElement());
+                portlet.setPortletMode(PortletMode.EDIT);
             }
         });
 
@@ -119,9 +119,9 @@ public class FormPortletView extends VerticalLayout
     }
 
     private void cancel() {
-        if(binder.getBean() != null) {
+        if (binder.getBean() != null) {
             binder.setBean(null);
-            FormPortlet.getCurrent().setPortletMode(PortletMode.VIEW, getElement());
+            FormPortlet.getCurrent().setPortletMode(PortletMode.VIEW);
             action.setText(ACTION_EDIT);
         }
     }
@@ -133,7 +133,7 @@ public class FormPortletView extends VerticalLayout
             ContactService.getInstance().save(contact);
         }
 
-        FormPortlet.getCurrent().setPortletMode(PortletMode.VIEW, getElement());
+        FormPortlet.getCurrent().setPortletMode(PortletMode.VIEW);
     }
 
     @Override

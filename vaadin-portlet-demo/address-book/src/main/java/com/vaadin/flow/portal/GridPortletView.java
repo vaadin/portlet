@@ -1,17 +1,16 @@
 package com.vaadin.flow.portal;
 
 import javax.portlet.WindowState;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.ItemClickEvent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.ListDataProvider;
-import com.vaadin.flow.portal.handler.WindowStateEvent;
-import com.vaadin.flow.portal.handler.WindowStateHandler;
 
-public class GridPortletView extends VerticalLayout implements
-        WindowStateHandler {
+public class GridPortletView extends VerticalLayout {
 
     private ListDataProvider<Contact> dataProvider;
 
@@ -20,7 +19,7 @@ public class GridPortletView extends VerticalLayout implements
     public GridPortletView() {
         setWidthFull();
         GridPortlet portlet = GridPortlet.getCurrent();
-        portlet.registerHub(getElement());
+        portlet.registerHub();
 
         dataProvider = new ListDataProvider<>(
                 ContactService.getInstance().getContacts());
@@ -45,14 +44,14 @@ public class GridPortletView extends VerticalLayout implements
 
     private void fireSelectionEvent(
             ItemClickEvent<Contact> contactItemClickEvent) {
+        Integer contactId = contactItemClickEvent.getItem().getId();
+
+        Map<String, String> param = new HashMap<>();
+        param.put("selection", Integer.toString(contactId));
+        param.put("windowState", windowState.toString());
+
         GridPortlet portlet = GridPortlet.getCurrent();
-        portlet
-                .sendContactSelectionEvent(contactItemClickEvent.getItem(),
-                        getElement());
-        // Normalize the maximized window
-        if(WindowState.MAXIMIZED.equals(portlet.getWindowState())) {
-            switchWindowState();
-        }
+        portlet.sendEvent(param);
     }
 
     private void switchWindowState() {
@@ -64,10 +63,5 @@ public class GridPortletView extends VerticalLayout implements
             portlet.setWindowState(WindowState.NORMAL);
             windowState.setText("Maximize");
         }
-    }
-
-    @Override
-    public void windowStateChange(WindowStateEvent event) {
-
     }
 }

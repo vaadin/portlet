@@ -1,0 +1,207 @@
+/*
+ * Copyright 2000-2018 Vaadin Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+package com.vaadin.flow.portal;
+
+import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+import javax.portlet.WindowState;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
+
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.dom.Element;
+import com.vaadin.flow.portal.handler.PortletModeEvent;
+import com.vaadin.flow.portal.handler.PortletModeHandler;
+import com.vaadin.flow.portal.handler.WindowStateEvent;
+import com.vaadin.flow.portal.handler.WindowStateHandler;
+
+/**
+ * This portlet class denotes things that would be set to the actual
+ * VaadinPortlet class
+ *
+ * @param <VIEW>
+ */
+public abstract class TheseInVaadinPortlet<VIEW extends Component>
+        extends VaadinPortlet<VIEW> {
+
+    private WindowState windowState = WindowState.UNDEFINED;
+    private PortletMode mode = PortletMode.UNDEFINED;
+
+    /**
+     * This should be overridden with a method that knows the VIEW component
+     * instance.
+     *
+     * @param event
+     */
+    protected void fireModeChange(PortletModeEvent event) {
+    }
+
+    /**
+     * This should be overridden with a method that knows the VIEW component
+     * instance.
+     *
+     * @param event
+     */
+    protected void fireStateChange(WindowStateEvent event) {
+    }
+
+    @Override
+    public void render(RenderRequest request, RenderResponse response)
+            throws PortletException, IOException {
+        super.render(request, response);
+
+        PortletMode oldMode = mode;
+        mode = request.getPortletMode();
+        if (!oldMode.equals(mode) && isViewInstanceOf(
+                PortletModeHandler.class)) {
+            fireModeChange(new PortletModeEvent(mode));
+            // How do we get the Component??
+            // This would probably need to fire a push or generate a UIDL request!
+        }
+        WindowState oldState = windowState;
+        windowState = request.getWindowState();
+        if (!oldState.equals(windowState) && isViewInstanceOf(
+                WindowStateHandler.class)) {
+            fireStateChange(new WindowStateEvent(windowState));
+            // How do we get the Component??
+            // This would probably need to fire a push or generate a UIDL request!
+        }
+    }
+
+    /**
+     * Get the current window state
+     *
+     * @return current window state of the portlet
+     */
+    public WindowState getWindowState() {
+        return windowState;
+    }
+
+    /**
+     * Set a new window state for this portlet
+     *
+     * @param state
+     *         window state to set
+     */
+    public void setWindowState(WindowState state) {
+        StringBuilder stateChange = new StringBuilder();
+        stateChange.append(getHubString());
+        stateChange.append("var state = hub.newState();");
+        stateChange.append(String.format("state.windowState = '%s';", state));
+        stateChange.append("hub.setRenderState(state);");
+        stateChange.append(getReloadPoller());
+
+        UI.getCurrent().getElement().executeJs(stateChange.toString());
+    }
+
+    /**
+     * Get the current portlet mode for this portlet
+     *
+     * @return portlet window state
+     */
+    public PortletMode getPortletMode() {
+        return mode;
+    }
+
+    /**
+     * Set a new portlet mode for this portlet.
+     *
+     * @param portletMode
+     *         portlet mode to set
+     */
+    public void setPortletMode(PortletMode portletMode) {
+        StringBuilder modeChange = new StringBuilder();
+        modeChange.append(getHubString());
+        modeChange.append("var state = hub.newState();");
+        modeChange.append(String
+                .format("state.portletMode = '%s';", portletMode));
+        modeChange.append("hub.setRenderState(state);");
+        modeChange.append(getReloadPoller());
+
+        UI.getCurrent().getElement().executeJs(modeChange.toString());
+    }
+
+    /**
+     * This is a script that will handle page reload for page when hub has
+     * completed.
+     *
+     * @return portlet reload poller
+     */
+    private String getReloadPoller() {
+        StringBuilder reloader = new StringBuilder();
+        reloader.append("const poller = () => {");
+        reloader.append("  if(hub.isInProgress()) {");
+        reloader.append("    setTimeout(poller, 10);");
+        reloader.append("  } else {");
+        reloader.append("    location.reload();");
+        reloader.append("  }");
+        reloader.append("};");
+        reloader.append("poller();");
+        return reloader.toString();
+    }
+
+    /**
+     * Send an action event with the given parameters
+     *
+     * @param parameters
+     *         parameters to add to event action
+     */
+    public void sendEvent(Map<String, String> parameters) {
+        StringBuilder eventBuilder = new StringBuilder();
+        eventBuilder.append(getHubString());
+        eventBuilder.append("var params = hub.newParameters();");
+        eventBuilder.append("params['action'] = ['send'];");
+        parameters.forEach((key, value) -> eventBuilder
+                .append(String.format("params['%s'] = ['%s'];", key, value)));
+        eventBuilder.append("hub.action(params);");
+
+        UI.getCurrent().getElement().executeJs(eventBuilder.toString());
+    }
+
+    /**
+     * Register this portlet to the PortletHub.
+     */
+    public void registerHub() {
+        try {
+            String portletRegistryName = VaadinPortletService
+                    .getCurrentResponse().getPortletResponse().getNamespace();
+            String registerPortlet = IOUtils.toString(
+                    GridPortlet.class.getClassLoader()
+                            .getResourceAsStream("PortletHubRegistration.js"),
+                    StandardCharsets.UTF_8);
+            UI.getCurrent().getElement().executeJs(registerPortlet, portletRegistryName);
+        } catch (IOException e) {
+        }
+    }
+
+    /**
+     * Get the string for getting the hub variable stored for hub registration.
+     *
+     * @return js to get hub registration object
+     */
+    private String getHubString() {
+        String portletRegistryName = VaadinPortletService.getCurrentResponse()
+                .getPortletResponse().getNamespace();
+        return String.format("var hub = window.Vaadin.Flow.Portlets['%s'];",
+                portletRegistryName);
+    }
+}

@@ -47,12 +47,7 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
     public boolean synchronizedHandleRequest(VaadinSession session,
             VaadinRequest request, VaadinResponse response) throws IOException {
         VaadinPortlet portlet = VaadinPortlet.getCurrent();
-        String tag;
-        try {
-            tag = portlet.getMainComponentTag();
-        } catch (PortletException e) {
-            throw new IOException(e);
-        }
+        String tag = portlet.getTag();
         PrintWriter writer = response.getWriter();
 
         PortletResponse resp = ((VaadinPortletResponse) response)

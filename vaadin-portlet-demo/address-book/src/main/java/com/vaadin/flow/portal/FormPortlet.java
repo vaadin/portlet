@@ -31,10 +31,7 @@ public class FormPortlet extends TheseInVaadinPortlet<FormPortletView> {
     @Override
     public void processAction(ActionRequest request, ActionResponse response)
             throws PortletException {
-        if (request.getActionParameters().getNames().contains("state")) {
-            response.setWindowState(new WindowState(
-                    request.getActionParameters().getValue("state")));
-        } else if (request.getActionParameters().getNames()
+        if (request.getActionParameters().getNames()
                 .contains("selection")) {
             Integer contactId = Integer.parseInt(
                     request.getRenderParameters().getValue("contactId"));

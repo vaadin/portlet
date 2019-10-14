@@ -104,6 +104,8 @@ public abstract class TheseInVaadinPortlet<VIEW extends Component>
         stateChange.append(getHubString());
         stateChange.append("var state = hub.newState();");
         stateChange.append(String.format("state.windowState = '%s';", state));
+        stateChange.append(String
+                .format("state.portletMode = '%s';", mode));
         stateChange.append("hub.setRenderState(state);");
         stateChange.append(getReloadPoller());
 
@@ -131,6 +133,8 @@ public abstract class TheseInVaadinPortlet<VIEW extends Component>
         modeChange.append("var state = hub.newState();");
         modeChange.append(String
                 .format("state.portletMode = '%s';", portletMode));
+        modeChange.append(String
+                .format("state.windowState = '%s';", windowState));
         modeChange.append("hub.setRenderState(state);");
         modeChange.append(getReloadPoller());
 
@@ -183,7 +187,8 @@ public abstract class TheseInVaadinPortlet<VIEW extends Component>
     /**
      * Register this portlet to the PortletHub.
      * <p>
-     * eventlisteners should be in the format EventName, Event function payload which will get params type and state
+     * eventlisteners should be in the format EventName, Event function payload
+     * which will get params type and state
      */
     public void registerHub(Map<String, String> eventListeners) {
         String portletRegistryName = VaadinPortletService
@@ -226,3 +231,4 @@ public abstract class TheseInVaadinPortlet<VIEW extends Component>
                 portletRegistryName);
     }
 }
+

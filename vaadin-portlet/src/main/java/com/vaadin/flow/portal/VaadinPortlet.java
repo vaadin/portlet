@@ -41,7 +41,6 @@ import com.vaadin.flow.component.internal.ExportsWebComponent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.CurrentInstance;
-import com.vaadin.flow.internal.ReflectTools;
 import com.vaadin.flow.server.Command;
 import com.vaadin.flow.server.Constants;
 import com.vaadin.flow.server.DefaultDeploymentConfiguration;
@@ -67,12 +66,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private String webComponentProviderURL;
     private String webComponentBootstrapHandlerURL;
     private String webComponentUIDLRequestHandlerURL;
-
-    @Override
-    public Class<C> getComponentClass() {
-        return (Class<C>) ReflectTools.getGenericInterfaceType(
-                this.getClass(), VaadinPortlet.class);
-    }
 
     @Override
     public void init(PortletConfig config) throws PortletException {

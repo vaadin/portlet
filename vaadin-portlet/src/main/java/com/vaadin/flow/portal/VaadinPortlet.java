@@ -36,6 +36,7 @@ import java.util.Locale;
 import java.util.Properties;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.internal.ExportsWebComponent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.function.DeploymentConfiguration;
@@ -261,13 +262,18 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      */
     @Override
     public String getTag() {
-        String candidate = SharedUtil
-                .camelCaseToDashSeparated(getClass().getSimpleName())
-                .replaceFirst("^-", "");
-        if (!candidate.contains("-")) {
-            candidate = candidate + "-portlet";
+        if (getClass().isAnnotationPresent(Tag.class)) {
+            Tag tag = getClass().getAnnotation(Tag.class);
+            return tag.value();
+        } else {
+            String candidate = SharedUtil
+                    .camelCaseToDashSeparated(getClass().getSimpleName())
+                    .replaceFirst("^-", "");
+            if (!candidate.contains("-")) {
+                candidate = candidate + "-portlet";
+            }
+            return candidate;
         }
-        return candidate;
     }
 
     public void setWebComponentProviderURL(String url) {

@@ -21,14 +21,11 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Map;
-
-import org.apache.commons.io.IOUtils;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.portal.handler.PortletModeEvent;
 import com.vaadin.flow.portal.handler.PortletModeHandler;
 import com.vaadin.flow.portal.handler.WindowStateEvent;
@@ -165,32 +162,56 @@ public abstract class TheseInVaadinPortlet<VIEW extends Component>
      * @param parameters
      *         parameters to add to event action
      */
-    public void sendEvent(Map<String, String> parameters) {
+    public void sendEvent(String eventName, Map<String, String> parameters) {
         StringBuilder eventBuilder = new StringBuilder();
         eventBuilder.append(getHubString());
         eventBuilder.append("var params = hub.newParameters();");
         eventBuilder.append("params['action'] = ['send'];");
         parameters.forEach((key, value) -> eventBuilder
                 .append(String.format("params['%s'] = ['%s'];", key, value)));
-        eventBuilder.append("hub.action(params);");
+        eventBuilder.append(String
+                .format("hub.dispatchClientEvent('%s', params);", eventName));
 
         UI.getCurrent().getElement().executeJs(eventBuilder.toString());
     }
 
+
+    public void registerHub() {
+        registerHub(Collections.emptyMap());
+    }
+
     /**
      * Register this portlet to the PortletHub.
+     * <p>
+     * eventlisteners should be in the format EventName, Event function payload which will get params type and state
      */
-    public void registerHub() {
-        try {
-            String portletRegistryName = VaadinPortletService
-                    .getCurrentResponse().getPortletResponse().getNamespace();
-            String registerPortlet = IOUtils.toString(
-                    GridPortlet.class.getClassLoader()
-                            .getResourceAsStream("PortletHubRegistration.js"),
-                    StandardCharsets.UTF_8);
-            UI.getCurrent().getElement().executeJs(registerPortlet, portletRegistryName);
-        } catch (IOException e) {
-        }
+    public void registerHub(Map<String, String> eventListeners) {
+        String portletRegistryName = VaadinPortletService
+                .getCurrentResponse().getPortletResponse().getNamespace();
+        StringBuilder register = new StringBuilder();
+
+        register.append("if (!window.Vaadin.Flow.Portlets) {");
+        register.append(
+                "window.Vaadin.Flow['Portlets'] = {};");
+        register.append("}");
+        register.append("if (!window.Vaadin.Flow.Portlets.$0) {");
+        register.append("if (portlet) {");
+        register.append("portlet.register($0).then(function (hub) {");
+        register.append("window.Vaadin.Flow.Portlets[$0] = hub;");
+        register.append(
+                "hub.addEventListener('portlet.onStateChange', function (type, state) {});");
+        eventListeners.forEach((event, functionPayload) -> {
+            register.append("hub.addEventListener('").append(event)
+                    .append("',");
+            register.append("function(type, state){").append(functionPayload)
+                    .append("});");
+        });
+        register.append("});");
+        register.append("}");
+        register.append("}");
+
+        UI.getCurrent().getElement()
+                .executeJs(register.toString(), portletRegistryName);
     }
 
     /**

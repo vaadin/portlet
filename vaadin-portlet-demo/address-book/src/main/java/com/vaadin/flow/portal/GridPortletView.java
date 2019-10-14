@@ -12,6 +12,7 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 
 public class GridPortletView extends VerticalLayout {
 
+    public static final String SELECTION = "selection";
     private ListDataProvider<Contact> dataProvider;
 
     private Button windowState;
@@ -48,10 +49,11 @@ public class GridPortletView extends VerticalLayout {
 
         Map<String, String> param = new HashMap<>();
         param.put("selection", Integer.toString(contactId));
-        param.put("windowState", windowState.toString());
 
         GridPortlet portlet = GridPortlet.getCurrent();
-        portlet.sendEvent(param);
+        param.put("windowState", portlet.getWindowState().toString());
+
+        portlet.sendEvent(SELECTION, param);
     }
 
     private void switchWindowState() {

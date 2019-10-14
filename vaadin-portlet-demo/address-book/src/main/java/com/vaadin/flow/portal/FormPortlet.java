@@ -2,8 +2,6 @@ package com.vaadin.flow.portal;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.EventRequest;
-import javax.portlet.EventResponse;
 import javax.portlet.PortletException;
 import javax.portlet.WindowState;
 
@@ -36,19 +34,13 @@ public class FormPortlet extends TheseInVaadinPortlet<FormPortletView> {
         if (request.getActionParameters().getNames().contains("state")) {
             response.setWindowState(new WindowState(
                     request.getActionParameters().getValue("state")));
-        }
-    }
-
-    @Override
-    public void processEvent(EventRequest request, EventResponse response)
-            throws PortletException {
-        super.processEvent(request, response);
-        if ("Selection".equals(request.getEvent().getName())) {
+        } else if (request.getActionParameters().getNames()
+                .contains("selection")) {
             Integer contactId = Integer.parseInt(
                     request.getRenderParameters().getValue("contactId"));
             handler.select(contactId);
             if (request.getRenderParameters().getValue("windowState") != null) {
-                setWindowState(new WindowState(
+                response.setWindowState(new WindowState(
                         request.getRenderParameters().getValue("windowState")));
             }
         }

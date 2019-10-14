@@ -2,6 +2,8 @@ package com.vaadin.flow.portal;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import com.vaadin.flow.component.button.Button;
@@ -33,6 +35,9 @@ public class FormPortletView extends VerticalLayout
 
     public FormPortletView() {
         FormPortlet portlet = FormPortlet.getCurrent();
+
+        Map<String, String> events = new HashMap<>();
+        events.put(GridPortletView.SELECTION, getItemSelectFunction());
         portlet.registerHub();
 
         PortletMode portletMode = portlet.getPortletMode();
@@ -45,6 +50,21 @@ public class FormPortletView extends VerticalLayout
         add(windowState, formLayout, actionButtons);
         setHorizontalComponentAlignment(Alignment.END, windowState,
                 actionButtons);
+    }
+
+    private String getItemSelectFunction() {
+        StringBuilder selectAction = new StringBuilder();
+
+        selectAction.append("const poller = () => {");
+        selectAction.append(" if(hub.isInProgress()) {");
+        selectAction.append("  setTimeout(poller, 10);");
+        selectAction.append(" } else {");
+        selectAction.append("  hub.action(state);");
+        selectAction.append(" }");
+        selectAction.append("};");
+        selectAction.append("poller();");
+
+        return selectAction.toString();
     }
 
     private FormLayout populateFormLayout(PortletMode portletMode) {

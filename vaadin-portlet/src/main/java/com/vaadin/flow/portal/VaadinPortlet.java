@@ -261,9 +261,13 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      */
     @Override
     public String getTag() {
-        return SharedUtil
+        String candidate = SharedUtil
                 .camelCaseToDashSeparated(getClass().getSimpleName())
                 .replaceFirst("^-", "");
+        if (!candidate.contains("-")) {
+            candidate = candidate + "-portlet";
+        }
+        return candidate;
     }
 
     public void setWebComponentProviderURL(String url) {

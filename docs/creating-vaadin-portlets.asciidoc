@@ -1,25 +1,22 @@
 = Creating Vaadin Portlets
 
-In this chapter we will learn how to create Vaadin Portlets and how to deploy
-those Portlets to https://portals.apache.org/pluto/index.html[Pluto 3.1 Portal]
+In this chapter we will learn how to create Vaadin Portlets and how to deploy those Portlets to https://portals.apache.org/pluto/index.html[Pluto 3.1 Portal]
 running on a TomCat 8.0 web server.
 
-Pluto is a reference implementation for Portlet specification and while good
-for testing, it should not be used in a production environment.
+Pluto is a reference implementation for Portlet specification and while good for testing, it should not be used in a production environment.
 
 == Creating a Vaadin Portlet
-We have two ways to start the creation of our Vaadin Portlet: starting from
-scratch or from https://github.com/vaadin/base-starter-flow-portlet[base-starter-flow-portlet]
-project. The starter project contains everything needed to quickly create
-your own Vaadin Portlet, with the code laid out in advance.
+
+We have two ways to start the creation of our Vaadin Portlet: starting from scratch or from https://github.com/vaadin/base-starter-flow-portlet[base-starter-flow-portlet]
+project.
+The starter project contains everything needed to quickly create your own Vaadin Portlet, with the code laid out in advance.
 
 And thus, we start from scratch.
 
 === Setting up Portlet project
-Despite the above proclamation, we will start with some basics. First,
-download basic Vaadin starter from https://vaadin.com/start (select "Plain
-Java Servlet" as the technology stack) and follow the instructions in the
-sidebar.
+
+Despite the above proclamation, we will start with some basics.
+First, download basic Vaadin starter from https://vaadin.com/start (select "Plain Java Servlet" as the technology stack) and follow the instructions in the sidebar.
 
 Next, update your pom.xml:
 
@@ -56,22 +53,21 @@ Next, update your pom.xml:
 ----
 
 === Creating the Portlet (prototype text)
+
 In the most basic setup, Vaadin Portlets consist of two classes:
 
 * A class, which `extends VaadinPortlet`
 * A Vaadin Component, which `implements WindowStateHandler` (or one of the other handler interfaces)
 
-The class extending `VaadinPortlet` serves as the entry point for our Vaadin
-Portlet application. It serves a similar function to a Servlet, but in
-portlet context.
+The class extending `VaadinPortlet` serves as the entry point for our Vaadin Portlet application.
+It serves a similar function to a Servlet, but in portlet context.
 
-The second class is any Vaadin Component, which should be displayed as the
-contents of the Vaadin Portlet. You might take an existing component and
-implement the interface, create an entirely new component, or create a host
-component to which you add an existing Vaadin Component.
+The second class is any Vaadin Component, which should be displayed as the contents of the Vaadin Portlet.
+You might take an existing component and implement the interface, create an entirely new component, or create a host component to which you add an existing Vaadin Component.
 
 Find the `MainView.java` provided with the project and create `MyPortlet.java`
-in the same folder. Inside the file, add the following code:
+in the same folder.
+Inside the file, add the following code:
 
 [source,java]
 ----
@@ -80,23 +76,25 @@ public class MyPortlet extends VaadinPortlet<MainView> {
 }
 ----
 
-Next, open the `MainView.java`. Remove both the `@Route` and `@PWA`
-annotations - those do not make sense for our portlet. Then, add
+Next, open the `MainView.java`.
+Remove both the `@Route` and `@PWA`
+annotations - those do not make sense for our portlet.
+Then, add
 `implements WindowStateHandler` to the `MainView.class`.
 Implement the `public void onWindowStateChange(WindowStateEvent event)`
 method with the following code:
 
 [source,java]
 ----
+    @Override
     public void onWindowStateChange(WindowStateEvent event) {
         currentState = event.getState();
     }
 ----
 
-This callback allows our component to receive updates from the Vaadin
-Portlet, which is displaying this component. Specifically, we receive updates
-every time the window state of the portlet changes. The standard window
-states for a portlet are `normal`, `minimized`, and `maximized`.
+This callback allows our component to receive updates from the Vaadin Portlet, which is displaying this component.
+Specifically, we receive updates every time the window state of the portlet changes.
+The standard window states for a portlet are `normal`, `minimized`, and `maximized`.
 
 Define the new member variable `currentState` as:
 
@@ -121,27 +119,25 @@ public class MainView extends VerticalLayout implements WindowStateHandler {
         add(button);
     }
 
+    @Override
     public void onWindowStateChange(WindowStateChangeEvent event) {
         currentState = event.getState();
     }
 }
 ----
 
-When an user clicks on the button, a notification will be displayed informing
-the user about the current window state of the portlet. Not the most useful
-portlet ever created, but a strong first step.
+When an user clicks on the button, a notification will be displayed informing the user about the current window state of the portlet.
+Not the most useful portlet ever created, but a strong first step.
 
 == Deploying your Vaadin Portlet
 
 === Building Vaadin Portlet
 
-In order to build the portlet we just created, we must add some more
-configuration to the pom.xml. Vaadin Portlet deployments are packaged into
-two war files. One war file contains all the static resources shared by the
-Vaadin Portlets, and the other war file contains the actual portlets. This
-allows for more complex situations where multiple portlets come from separate
-war files. In the future, you will have tooling to create the asset bundle
-which fits all the deployed portlet war files.
+In order to build the portlet we just created, we must add some more configuration to the pom.xml.
+Vaadin Portlet deployments are packaged into two war files.
+One war file contains all the static resources shared by the Vaadin Portlets, and the other war file contains the actual portlets.
+This allows for more complex situations where multiple portlets come from separate war files.
+In the future, you will have tooling to create the asset bundle which fits all the deployed portlet war files.
 
 Add the following plugin configuration to the pom.xml:
 
@@ -203,11 +199,11 @@ Add the following plugin configuration to the pom.xml:
 . Download https://www.apache.org/dist/portals/pluto/pluto-bundle-3.1.0.zip[TomCat 8.0 + Pluto 3.1 bundle] and extract it to a location you prefer.
 . Copy all the `*.war` files from `{project directory}/target` into `{bundle extract location}/webapps`.
 . Start the web server by
-  * Opening a command prompt in the `{bundle extract directory}` folder
-  * Running the command `./bin/startup.sh` or `./bin/startup.bat` (unix/windows)
+* Opening a command prompt in the `{bundle extract directory}` folder
+* Running the command `./bin/startup.sh` or `./bin/startup.bat` (unix/windows)
 . Once the web server has started, navigate to http://localhost:8080/pluto
 . Sign in to the Portal
-  * Username: pluto
-  * Password: pluto
+* Username: pluto
+* Password: pluto
 . Add your Vaadin Portlet to one of the Portals pages
-  * ... TODO
+* ... TODO

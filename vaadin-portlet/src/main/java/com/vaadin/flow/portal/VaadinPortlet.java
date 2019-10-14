@@ -36,7 +36,7 @@ import java.util.Locale;
 import java.util.Properties;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ExportsWebComponent;
+import com.vaadin.flow.component.internal.ExportsWebComponent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.CurrentInstance;

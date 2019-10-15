@@ -80,7 +80,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private WindowState windowState = WindowState.UNDEFINED;
     private PortletMode portletMode = PortletMode.UNDEFINED;
 
-    private ActionURL actionURL;
+    private String actionURL;
 
     private boolean isPortlet3 = false;
 
@@ -155,8 +155,10 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     public void render(RenderRequest request, RenderResponse response)
             throws PortletException, IOException {
         super.render(request, response);
+        windowState = request.getWindowState();
+        portletMode = request.getPortletMode();
         if(!isPortlet3 && actionURL == null) {
-            actionURL = response.createActionURL();
+            actionURL = response.createActionURL().toString();
         }
     }
 
@@ -320,6 +322,24 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     }
 
     /**
+     * Get the window state for this portlet.
+     *
+     * @return window state
+     */
+    public WindowState getWindowState() {
+        return windowState;
+    }
+
+    /**
+     * Get the portlet mode for this portlet.
+     *
+     * @return portlet mode
+     */
+    public PortletMode getPortletMode() {
+        return portletMode;
+    }
+
+    /**
      * Set a new window state for this portlet
      *
      * @param windowState
@@ -341,7 +361,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         } else if (actionURL != null) {
             String stateChangeScript = String
                     .format("location.href = '%s?%s=%s&%s=%s'",
-                            actionURL.toString(), ACTION_STATE, windowState, ACTION_MODE,  portletMode);
+                            actionURL, ACTION_STATE, windowState, ACTION_MODE,  portletMode);
 
             UI.getCurrent().getPage().executeJs(stateChangeScript);
         }
@@ -368,8 +388,8 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             UI.getCurrent().getElement().executeJs(modeChange.toString());
         } else if (actionURL != null) {
             String stateChangeScript = String
-                    .format("location.href = '%s?state=%s&mode=%s'",
-                            actionURL.toString(), windowState, portletMode);
+                    .format("location.href = '%s?%s=%s&%s=%s'",
+                            actionURL, ACTION_STATE, windowState, ACTION_MODE,  portletMode);
 
             UI.getCurrent().getPage().executeJs(stateChangeScript);
         }

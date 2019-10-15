@@ -49,8 +49,7 @@ public final class PortletHubUtil {
         StringBuilder register = new StringBuilder();
 
         register.append("if (!window.Vaadin.Flow.Portlets) {");
-        register.append(
-                "window.Vaadin.Flow['Portlets'] = {};");
+        register.append("window.Vaadin.Flow['Portlets'] = {};");
         register.append("}");
         register.append("if (!window.Vaadin.Flow.Portlets.$0) {");
         register.append("if (portlet) {");
@@ -73,7 +72,32 @@ public final class PortletHubUtil {
     }
 
     /**
+     * Update the portlet state with the given windowState and portletMode.
+     *
+     * @param windowState
+     *         window state to send
+     * @param portletMode
+     *         portlet mode to send
+     */
+    public static void updatePortletState(String windowState,
+            String portletMode) {
+
+        StringBuilder stateChange = new StringBuilder();
+        stateChange.append(getHubString());
+        stateChange.append("var state = hub.newState();");
+        stateChange.append(String
+                .format("state.windowState = '%s';", windowState));
+        stateChange.append(String
+                .format("state.portletMode = '%s';", portletMode));
+        stateChange.append("hub.setRenderState(state);");
+        stateChange.append(getReloadPoller());
+
+        UI.getCurrent().getElement().executeJs(stateChange.toString());
+    }
+
+    /**
      * Get JavaScript string for getting the portlet hub registration object.
+     *
      * @return registration object stored as 'hub'
      */
     public static String getHubString() {
@@ -82,7 +106,6 @@ public final class PortletHubUtil {
         return String.format("var hub = window.Vaadin.Flow.Portlets['%s'];",
                 portletRegistryName);
     }
-
 
     /**
      * This is a script that will handle page reload for page when hub has

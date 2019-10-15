@@ -22,7 +22,6 @@ import javax.portlet.EventResponse;
 import javax.portlet.GenericPortlet;
 import javax.portlet.HeaderRequest;
 import javax.portlet.HeaderResponse;
-import javax.portlet.PortalContext;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
@@ -36,7 +35,8 @@ import javax.portlet.ResourceResponse;
 import javax.portlet.WindowState;
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.Locale;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import com.vaadin.flow.component.Component;
@@ -50,6 +50,7 @@ import com.vaadin.flow.server.Command;
 import com.vaadin.flow.server.Constants;
 import com.vaadin.flow.server.DefaultDeploymentConfiguration;
 import com.vaadin.flow.server.ServiceException;
+import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.shared.util.SharedUtil;
@@ -73,7 +74,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
     private String windowState = WindowState.UNDEFINED.toString();
     private String portletMode = PortletMode.UNDEFINED.toString();
-    private String actionURL;
+    private Map<String,String> actionURL = new HashMap<>();
 
     private boolean isPortlet3 = false;
 
@@ -150,8 +151,8 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         super.render(request, response);
         windowState = request.getWindowState().toString();
         portletMode = request.getPortletMode().toString();
-        if(!isPortlet3 && actionURL == null) {
-            actionURL = response.createActionURL().toString();
+        if(!isPortlet3 && !actionURL.containsKey(response.getNamespace())) {
+            actionURL.put(response.getNamespace(), response.createActionURL().toString());
         }
     }
 
@@ -332,57 +333,46 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     /**
      * Set a new window state for this portlet
      *
-     * @param windowState
+     * @param newWindowState
      *         window state to set
      */
-    public void setWindowState(WindowState windowState) {
+    public void setWindowState(WindowState newWindowState) {
         if (isPortlet3) {
-            StringBuilder stateChange = new StringBuilder();
-            stateChange.append(PortletHubUtil.getHubString());
-            stateChange.append("var state = hub.newState();");
-            stateChange.append(String
-                    .format("state.windowState = '%s';", windowState));
-            stateChange.append(String
-                    .format("state.portletMode = '%s';", portletMode));
-            stateChange.append("hub.setRenderState(state);");
-            stateChange.append(PortletHubUtil.getReloadPoller());
-
-            UI.getCurrent().getElement().executeJs(stateChange.toString());
-        } else if (actionURL != null) {
-            String stateChangeScript = String
-                    .format("location.href = '%s?%s=%s&%s=%s'",
-                            actionURL, ACTION_STATE, windowState, ACTION_MODE,  portletMode);
-
-            UI.getCurrent().getPage().executeJs(stateChangeScript);
+            PortletHubUtil
+                    .updatePortletState(newWindowState.toString(), portletMode);
+        } else if (actionURL.containsKey(getNamespace())) {
+            stateChangeAction(newWindowState.toString(), portletMode);
         }
     }
 
     /**
      * Set a new portlet mode for this portlet.
      *
-     * @param portletMode
+     * @param newPortletMode
      *         portlet mode to set
      */
-    public void setPortletMode(PortletMode portletMode) {
+    public void setPortletMode(PortletMode newPortletMode) {
         if (isPortlet3) {
-            StringBuilder modeChange = new StringBuilder();
-            modeChange.append(PortletHubUtil.getHubString());
-            modeChange.append("var state = hub.newState();");
-            modeChange.append(String
-                    .format("state.portletMode = '%s';", portletMode));
-            modeChange.append(String
-                    .format("state.windowState = '%s';", windowState));
-            modeChange.append("hub.setRenderState(state);");
-            modeChange.append(PortletHubUtil.getReloadPoller());
+            PortletHubUtil
+                    .updatePortletState(windowState, newPortletMode.toString());
+        } else if (actionURL.containsKey(getNamespace())) {
+            stateChangeAction(windowState, newPortletMode.toString());
+        }
+    }
 
-            UI.getCurrent().getElement().executeJs(modeChange.toString());
-        } else if (actionURL != null) {
+    private void stateChangeAction(String state, String mode) {
+        String namespace = getNamespace();
+        if (actionURL.containsKey(namespace)) {
             String stateChangeScript = String
-                    .format("location.href = '%s?%s=%s&%s=%s'",
-                            actionURL, ACTION_STATE, windowState, ACTION_MODE,  portletMode);
+                    .format("location.href = '%s?%s=%s&%s=%s'", actionURL.get(namespace),
+                            ACTION_STATE, state, ACTION_MODE, mode);
 
             UI.getCurrent().getPage().executeJs(stateChangeScript);
         }
     }
 
+    private String getNamespace() {
+        return VaadinPortletService.getCurrentResponse()
+                .getPortletResponse().getNamespace();
+    }
 }

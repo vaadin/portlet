@@ -24,6 +24,7 @@ import javax.portlet.PortalContext;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
@@ -39,8 +40,12 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.internal.ExportsWebComponent;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.webcomponent.WebComponent;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.CurrentInstance;
+import com.vaadin.flow.portal.handler.PortletModeEvent;
+import com.vaadin.flow.portal.handler.PortletModeHandler;
+import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.server.Command;
 import com.vaadin.flow.server.Constants;
 import com.vaadin.flow.server.DefaultDeploymentConfiguration;
@@ -59,6 +64,7 @@ import com.vaadin.flow.shared.util.SharedUtil;
  *
  * @since
  */
+@PreserveOnRefresh
 public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
          implements ExportsWebComponent<C> {
 
@@ -66,6 +72,12 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private String webComponentProviderURL;
     private String webComponentBootstrapHandlerURL;
     private String webComponentUIDLRequestHandlerURL;
+
+    // As a crutch, all events for now target the last instantiated view.
+    // TODO: Create a portlet-instance mapping (#45), to be used when
+    // dispatching the event
+    private C viewInstance = null;
+    private PortletMode mode = PortletMode.UNDEFINED;
 
     @Override
     public void init(PortletConfig config) throws PortletException {
@@ -101,6 +113,40 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         portletInitialized();
 
         CurrentInstance.clearAll();
+    }
+
+    @Override
+    public void configure(WebComponent<C> webComponent, C component) {
+        // can't use this as it is a temporary object created by
+        // WebComponentEporter handling logic
+        if (VaadinPortlet.getCurrent() != null) {
+            VaadinPortlet.getCurrent().viewInstance = component;
+        }
+    }
+
+    @Override
+    public void render(RenderRequest request, RenderResponse response)
+            throws PortletException, IOException {
+        super.render(request, response);
+
+        PortletMode oldMode = mode;
+        mode = request.getPortletMode();
+        if (!oldMode.equals(mode) && isViewInstanceOf(
+                PortletModeHandler.class)) {
+            fireModeChange(new PortletModeEvent(mode));
+            // How do we get the Component??
+            // This would probably need to fire a push or generate a UIDL request!
+        }
+    }
+
+    protected void fireModeChange(PortletModeEvent event) {
+        if (viewInstance!=null) {
+            ((PortletModeHandler)viewInstance).portletModeChange(event);
+        }
+    }
+
+    protected boolean isViewInstanceOf(Class<?> instance) {
+        return instance.isAssignableFrom(getComponentClass());
     }
 
     protected DeploymentConfiguration createDeploymentConfiguration(

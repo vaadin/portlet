@@ -15,6 +15,8 @@
  */
 package com.vaadin.flow.portal;
 
+import javax.portlet.PortletMode;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -30,6 +32,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import com.vaadin.flow.component.html.testbench.SelectElement;
 import com.vaadin.testbench.ScreenshotOnFailureRule;
 import com.vaadin.testbench.TestBench;
+import com.vaadin.testbench.TestBenchElement;
 import com.vaadin.testbench.parallel.ParallelTest;
 
 /**
@@ -116,6 +119,16 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
                         Function.identity(), (oldValue, newValue) -> oldValue));
         nameMap.get("page").selectByText(testPage);
         findElement(By.id("removePageButton")).click();
+    }
+
+    /**
+     * Set the mode of the first portlet on page via Pluto's header dropdown.
+     */
+    protected void setPortletMode(PortletMode portletMode) {
+        SelectElement modeSelector =
+                $(TestBenchElement.class).attribute("name","modeSelectionForm").first()
+                .$(SelectElement.class).first();
+        modeSelector.selectByText(portletMode.toString().toUpperCase());
     }
 
     /**

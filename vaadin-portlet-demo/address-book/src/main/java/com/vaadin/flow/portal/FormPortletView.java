@@ -20,7 +20,7 @@ import com.vaadin.flow.portal.handler.WindowStateEvent;
 import com.vaadin.flow.portal.handler.WindowStateHandler;
 
 public class FormPortletView extends VerticalLayout
-        implements WindowStateHandler, PortletModeHandler, SelectHandler {
+        implements WindowStateHandler, PortletModeHandler, EventHandler {
 
     public static final String ACTION_EDIT = "Edit";
     public static final String ACTION_SAVE = "Save";
@@ -41,7 +41,7 @@ public class FormPortletView extends VerticalLayout
         portlet.registerHub();
 
         PortletMode portletMode = portlet.getPortletMode();
-        portlet.setSelectHandler(this);
+        portlet.setPortletView(this);
 
         FormLayout formLayout = populateFormLayout(portletMode);
         setupButtons(portlet);
@@ -125,7 +125,9 @@ public class FormPortletView extends VerticalLayout
         }
     }
 
-    public void select(int contactId) {
+    public void handleEvent(PortletEvent event) {
+        Integer contactId = Integer
+                .parseInt(event.getParameters().get("contactId")[0]);
         Optional<Contact> contact = ContactService.getInstance()
                 .findById(contactId);
         if (contact.isPresent()) {

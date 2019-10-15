@@ -15,7 +15,7 @@
  */
 package com.vaadin.flow.portal;
 
-public interface SelectHandler {
+public interface EventHandler {
 
-    void select(int contactId);
+    void handleEvent(PortletEvent event);
 }

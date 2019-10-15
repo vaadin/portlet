@@ -5,6 +5,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.PortletException;
 import javax.portlet.WindowState;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.portal.handler.PortletModeEvent;
 import com.vaadin.flow.portal.handler.PortletModeHandler;
 import com.vaadin.flow.portal.handler.WindowStateEvent;
@@ -13,7 +14,7 @@ import com.vaadin.flow.portal.handler.WindowStateHandler;
 public class FormPortlet extends TheseInVaadinPortlet<FormPortletView> {
 
     public static final String TAG = "form-portlet";
-    private SelectHandler handler;
+    private Component portletView;
 
     @Override
     protected String getMainComponentTag() {
@@ -24,8 +25,8 @@ public class FormPortlet extends TheseInVaadinPortlet<FormPortletView> {
         return (FormPortlet) VaadinPortlet.getCurrent();
     }
 
-    public void setSelectHandler(SelectHandler handler) {
-        this.handler = handler;
+    public void setPortletView(Component portletView) {
+        this.portletView = portletView;
     }
 
     @Override
@@ -33,10 +34,10 @@ public class FormPortlet extends TheseInVaadinPortlet<FormPortletView> {
             throws PortletException {
         if (request.getActionParameters().getNames()
                 .contains("selection")) {
-            Integer contactId = Integer.parseInt(
-                    request.getRenderParameters().getValue("contactId"));
-            handler.select(contactId);
-            if (request.getRenderParameters().getValue("windowState") != null) {
+            if(portletView != null && portletView instanceof EventHandler) {
+                ((EventHandler)portletView).handleEvent(new PortletEvent("selection", request.getParameterMap()));
+            }
+            if (request.getActionParameters().getValue("windowState") != null) {
                 response.setWindowState(new WindowState(
                         request.getRenderParameters().getValue("windowState")));
             }
@@ -45,15 +46,15 @@ public class FormPortlet extends TheseInVaadinPortlet<FormPortletView> {
 
     @Override
     protected void fireModeChange(PortletModeEvent event) {
-        if (handler != null && handler instanceof PortletModeHandler) {
-            ((PortletModeHandler) handler).portletModeChange(event);
+        if (portletView != null && portletView instanceof PortletModeHandler) {
+            ((PortletModeHandler) portletView).portletModeChange(event);
         }
     }
 
     @Override
     protected void fireStateChange(WindowStateEvent event) {
-        if (handler != null && handler instanceof WindowStateHandler) {
-            ((WindowStateHandler) handler).windowStateChange(event);
+        if (portletView != null && portletView instanceof WindowStateHandler) {
+            ((WindowStateHandler) portletView).windowStateChange(event);
         }
     }
 }

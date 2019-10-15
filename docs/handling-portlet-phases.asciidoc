@@ -138,7 +138,7 @@ import javax.swing.text.ParagraphView;public class MyView extends Div
     @Override
     public void windowStateChange(WindowStateEvent event) {
         stateInformation.setText("Window state changed to " +
-                event.getPortletMode());
+                event.getWindowState());
     }
 }
 ----

@@ -50,7 +50,7 @@ Next, update your pom.xml:
 </dependency>
 ----
 
-=== Creating the Portlet (prototype text)
+=== Creating the Portlet
 
 In the most basic setup, Vaadin Portlets consist of two classes:
 
@@ -66,6 +66,7 @@ You might take an existing component, create an entirely new component, or creat
 Find the `MainView.java` provided with the project and create `MyPortlet.java` in the same folder.
 Inside the file, add the following code:
 
+MyPortlet.java
 [source,java]
 ----
 public class MyPortlet extends VaadinPortlet<MainView> {
@@ -78,6 +79,7 @@ Remove both the `@Route` and `@PWA` annotations - those do not make sense for ou
 
 The final code should look something like this:
 
+.MainView.java
 [source,java]
 ----
 public class MainView extends VerticalLayout {
@@ -92,6 +94,62 @@ public class MainView extends VerticalLayout {
 
 When an user clicks on the button, a notification with the text "Clicked!" should appear then the lower left corner of the browser window.
 Not the most useful portlet ever created, but a strong first step.
+
+=== Setting Portlet Deployment Descriptor
+
+In Portlet 3.0 specification portlet deployment descriptor can be configured in two ways:
+
+- portlet.xml (backwards compatible)
+- Annotations (only 3 .0)
+
+We will use the portlet.xml to configure our portlet deployment.
+The portlet.xml serves the same purpose as servlet.xml does for servlets.
+
+Create portlet.xml under `{project directory}/src/main/webapp/WEB-INF` and
+add the following contents:
+
+.portlet.xml
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<portlet-app xmlns="http://xmlns.jcp.org/xml/ns/portlet" version="3.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/portlet
+            http://xmlns.jcp.org/xml/ns/portlet/portlet-app_3_0.xsd">
+    <portlet>
+        <portlet-name>MyPortlet</portlet-name>
+        <display-name>My Test Portlet</display-name>
+        <portlet-class>com.vaadin.starter.skeleton.MyPortlet</portlet-class>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
+            <portlet-mode>help</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>My Test Portlet - MyPortlet</title>
+            <short-title>My Test Portlet</short-title>
+            <keywords></keywords>
+        </portlet-info>
+        <security-role-ref>
+            <role-name>administrator</role-name>
+        </security-role-ref>
+        <security-role-ref>
+            <role-name>guest</role-name>
+        </security-role-ref>
+        <security-role-ref>
+            <role-name>power-user</role-name>
+        </security-role-ref>
+        <security-role-ref>
+            <role-name>user</role-name>
+        </security-role-ref>
+    </portlet>
+</portlet-app>
+----
+
+The `<portlet-class>` points to your class extending `VaadinPortlet` with fully qualified name.
+The `<supports>` section contains all the standard `<portlet-mode>` options available.
+If you do not want your portlet to offer `HELP` mode, remove the correct line.
 
 == Deploying your Vaadin Portlet
 
@@ -165,9 +223,11 @@ Add the following plugin configuration to the pom.xml:
 . Start the web server by
 * Opening a command prompt in the `{bundle extract directory}` folder
 * Running the command `./bin/startup.sh` or `./bin/startup.bat` (unix/windows)
-. Once the web server has started, navigate to http://localhost:8080/pluto
+. Once the web server has started, navigate to http://localhost:8080/pluto/portal
 . Sign in to the Portal
 * Username: pluto
 * Password: pluto
-. Create a new page for your portlet, or add it to one of the existing pages
-* ... TODO
+. Select "Pluto Admin" from the sidebar
+* Under "Portal Pages": Create a new page for your portlet, or select one of the existing pages
+* Under "Portlet Application": Select your package and portlet and click "Add Portlet"
+

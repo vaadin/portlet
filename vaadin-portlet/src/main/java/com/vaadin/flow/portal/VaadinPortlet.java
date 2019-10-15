@@ -17,7 +17,6 @@ package com.vaadin.flow.portal;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.ActionURL;
 import javax.portlet.EventRequest;
 import javax.portlet.EventResponse;
 import javax.portlet.GenericPortlet;
@@ -55,11 +54,6 @@ import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.shared.util.SharedUtil;
 
-//import com.vaadin.flow.portal.impl.VaadinGateInRequest;
-//import com.vaadin.flow.portal.impl.VaadinLiferayRequest;
-//import com.vaadin.flow.portal.impl.VaadinWebLogicPortalRequest;
-//import com.vaadin.flow.portal.impl.VaadinWebSpherePortalRequest;
-
 /**
  * Vaadin implementation of the {@link GenericPortlet}.
  *
@@ -77,9 +71,8 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private String webComponentUIDLRequestHandlerURL;
 
 
-    private WindowState windowState = WindowState.UNDEFINED;
-    private PortletMode portletMode = PortletMode.UNDEFINED;
-
+    private String windowState = WindowState.UNDEFINED.toString();
+    private String portletMode = PortletMode.UNDEFINED.toString();
     private String actionURL;
 
     private boolean isPortlet3 = false;
@@ -155,8 +148,8 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     public void render(RenderRequest request, RenderResponse response)
             throws PortletException, IOException {
         super.render(request, response);
-        windowState = request.getWindowState();
-        portletMode = request.getPortletMode();
+        windowState = request.getWindowState().toString();
+        portletMode = request.getPortletMode().toString();
         if(!isPortlet3 && actionURL == null) {
             actionURL = response.createActionURL().toString();
         }
@@ -192,9 +185,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      * @return A wrapped version of the PortletRequest
      */
     protected VaadinPortletRequest createVaadinRequest(PortletRequest request) {
-        PortalContext portalContext = request.getPortalContext();
-        String portalInfo = portalContext.getPortalInfo()
-                .toLowerCase(Locale.ROOT).trim();
         VaadinPortletService service = getService();
         return new VaadinPortletRequest(request, service);
     }
@@ -327,7 +317,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      * @return window state
      */
     public WindowState getWindowState() {
-        return windowState;
+        return new WindowState(windowState);
     }
 
     /**
@@ -336,7 +326,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      * @return portlet mode
      */
     public PortletMode getPortletMode() {
-        return portletMode;
+        return new PortletMode(portletMode);
     }
 
     /**

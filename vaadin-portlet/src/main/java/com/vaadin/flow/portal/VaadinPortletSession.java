@@ -396,4 +396,13 @@ public class VaadinPortletSession extends VaadinSession {
         }
     }
 
+    /**
+     * Gets the currently used session.
+     *
+     * @return the current session instance if available, otherwise
+     *         <code>null</code>
+     */
+    public static VaadinPortletSession getCurrent() {
+        return CurrentInstance.get(VaadinPortletSession.class);
+    }
 }

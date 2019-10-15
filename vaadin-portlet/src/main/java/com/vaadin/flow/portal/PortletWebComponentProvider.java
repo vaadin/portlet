@@ -15,17 +15,36 @@
  */
 package com.vaadin.flow.portal;
 
+import java.io.IOException;
+
 import com.vaadin.flow.server.VaadinRequest;
+import com.vaadin.flow.server.VaadinResponse;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.communication.WebComponentProvider;
 
 public class PortletWebComponentProvider extends WebComponentProvider {
+
+    public PortletWebComponentProvider() {
+        // Disable tag-based cache because the same tag should yield different
+        // bootstrap responses in separate portlet namespaces.
+        setCacheEnabled(false);
+    }
+
+    @Override
+    public boolean synchronizedHandleRequest(VaadinSession session,
+                                             VaadinRequest request, VaadinResponse response) throws IOException {
+        return super.synchronizedHandleRequest(session, request, response);
+    }
+
     @Override
     protected String generateNPMResponse(
             String tagName, VaadinRequest request) {
+        VaadinPortletResponse response = VaadinPortletResponse.getCurrent();
+
+        String nameSpace = response.getPortletResponse().getNamespace();
         String webcomponentBootstrapUrl = VaadinPortlet.getCurrent()
-                .getWebComponentBootstrapHandlerURL();
+                .getWebComponentBootstrapHandlerURL(nameSpace);
         return "var bootstrapAddress='" + webcomponentBootstrapUrl + "';\n"
                 + bootstrapNpm();
-
     }
 }

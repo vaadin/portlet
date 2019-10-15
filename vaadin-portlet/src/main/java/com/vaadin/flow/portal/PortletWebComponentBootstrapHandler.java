@@ -35,7 +35,7 @@ public class PortletWebComponentBootstrapHandler
     @Override
     protected String getServiceUrl(VaadinRequest request) {
         return VaadinPortlet.getCurrent()
-                .getWebComponentUIDLRequestHandlerURL();
+                .getWebComponentUIDLRequestHandlerURL(VaadinPortletResponse.getCurrentPortletResponse().getNamespace());
     }
 
     @Override

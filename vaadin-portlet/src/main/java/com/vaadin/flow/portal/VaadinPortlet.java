@@ -39,6 +39,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
@@ -56,6 +59,7 @@ import com.vaadin.flow.server.Command;
 import com.vaadin.flow.server.Constants;
 import com.vaadin.flow.server.DefaultDeploymentConfiguration;
 import com.vaadin.flow.server.ServiceException;
+import com.vaadin.flow.server.SessionExpiredException;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.shared.util.SharedUtil;
@@ -73,19 +77,18 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private static final String ACTION_MODE = "mode";
 
     private VaadinPortletService vaadinService;
-    private String webComponentProviderURL;
-    private String webComponentBootstrapHandlerURL;
-    private String webComponentUIDLRequestHandlerURL;
-
-
-    private String windowState = WindowState.UNDEFINED.toString();
-    private String portletMode = PortletMode.UNDEFINED.toString();
-    private Map<String,String> actionURL = new HashMap<>();
 
     private boolean isPortlet3 = false;
-    // TODO: As a temporary crutch target the last instantiated view.
-    // TODO: Create a portlet-instance mapping (#45) for event dispatching.
-    private C viewInstance = null;
+
+    private Map<String,String> actionURL = new HashMap<>();
+
+    private Map<String,String> webComponentProviderURL = new HashMap<>();
+    private Map<String,String> webComponentBootstrapHandlerURL = new HashMap<>();
+    private Map<String,String> webComponentUIDLRequestHandlerURL =  new HashMap<>();
+
+    private final String VIEW_SESSION_SUBKEY = "view";
+    private final String MODE_SESSION_SUBKEY = "mode";
+    private final String WINDOWSTATE_SESSION_SUBKEY = "windowState";
 
     @Override
     public void init(PortletConfig config) throws PortletException {
@@ -124,12 +127,41 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     }
 
     @Override
-    public void configure(WebComponent<C> webComponent, C component) {
-        if (VaadinPortlet.getCurrent() != null) {
-            // Cannot use 'this' as it is only a temporary object created by
-            // WebComponentExporter handling logic
-            VaadinPortlet<C> thisPortlet =  VaadinPortlet.getCurrent();
-            thisPortlet.viewInstance = component;
+    public void configure(WebComponent<C> webComponent, C view) {
+        // Cannot use 'this' as it is only a temporary object created by
+        // WebComponentExporter handling logic
+        VaadinPortlet<C> portlet = VaadinPortlet.getCurrent();
+        PortletResponse response = VaadinPortletResponse.getCurrentPortletResponse();
+        VaadinSession session = null;
+        try {
+            session = portlet.getService().findVaadinSession(VaadinPortletRequest.getCurrent());
+        } catch (SessionExpiredException e) {
+            getLogger().error("no session", e);
+        }
+
+        if (portlet != null && response != null && session != null) {
+            // Initialize maps for view component, mode and window state if
+            // needed and add to session
+            Map<String, C> views = (Map<String, C>) session.getAttribute(getViewMapSessionKey(VIEW_SESSION_SUBKEY));
+            if (views == null) {
+                views = new HashMap<>();
+            }
+            views.put(response.getNamespace(), view);
+            session.setAttribute(getViewMapSessionKey(VIEW_SESSION_SUBKEY), views);
+
+            Map<String, String> modes = (Map<String, String>) session.getAttribute(getViewMapSessionKey(MODE_SESSION_SUBKEY));
+            if (modes == null) {
+                modes = new HashMap<>();
+            }
+            modes.put(response.getNamespace(), PortletMode.UNDEFINED.toString());
+            session.setAttribute(getViewMapSessionKey(MODE_SESSION_SUBKEY), modes);
+
+            Map<String, String> windowStates = (Map<String, String>) session.getAttribute(getViewMapSessionKey(WINDOWSTATE_SESSION_SUBKEY));
+            if (windowStates == null) {
+                windowStates = new HashMap<>();
+            }
+            windowStates.put(response.getNamespace(), WindowState.UNDEFINED.toString());
+            session.setAttribute(getViewMapSessionKey(WINDOWSTATE_SESSION_SUBKEY), windowStates);
         }
     }
 
@@ -196,32 +228,51 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     public void render(RenderRequest request, RenderResponse response)
             throws PortletException, IOException {
         super.render(request, response);
-        if(!isPortlet3 && !actionURL.containsKey(response.getNamespace())) {
-            actionURL.put(response.getNamespace(), response.createActionURL().toString());
+        String namespace = response.getNamespace();
+        if (!isPortlet3 && !actionURL.containsKey(response.getNamespace())) {
+            actionURL.put(namespace, response.createActionURL().toString());
         }
-        /*
-         * Note: mode update events must be sent to handlers before
-         * window state update events.
-         */
-        String oldMode = portletMode;
-        portletMode = request.getPortletMode().toString();
-        if (!oldMode.equals(portletMode)
-                && isViewInstanceOf(PortletModeHandler.class)
-                && viewInstance != null) {
-            fireModeChange((PortletModeHandler) viewInstance,
-                    new PortletModeEvent(new PortletMode(portletMode),
-                            new PortletMode(oldMode)));
+
+        VaadinPortletSession session = null;
+        try {
+            session = (VaadinPortletSession)
+                    getService().findVaadinSession(createVaadinRequest(request));
+        } catch (SessionExpiredException e) {
+            getLogger().error("no session", e);
+            return;
         }
-        String oldWindowState =
-                windowState;
-        windowState = request.getWindowState().toString();
-        if (!oldWindowState.equals(windowState)
-                && isViewInstanceOf(WindowStateHandler.class)
-                && viewInstance != null) {
-            fireWindowStateChange(
-                    (WindowStateHandler) viewInstance,
-                    new WindowStateEvent(new WindowState(windowState),
-                            new WindowState(oldWindowState)));
+        Map<String,C> views = (Map<String, C>) session.getAttribute(getViewMapSessionKey(VIEW_SESSION_SUBKEY));
+
+        if (views !=null && views.containsKey(namespace)) {
+            C viewInstance = views.get(namespace);
+            /*
+             * Note: mode update events must be sent to handlers before
+             * window state update events.
+             */
+            Map<String,String> portletMode = (Map<String, String>) session.getAttribute(getViewMapSessionKey(MODE_SESSION_SUBKEY));
+            String oldMode = portletMode.getOrDefault(namespace,
+                    PortletMode.UNDEFINED.toString());
+            String newMode = request.getPortletMode().toString();
+            if (!oldMode.equals(newMode)
+                    && isViewInstanceOf(PortletModeHandler.class)) {
+                portletMode.put(namespace,newMode);
+                fireModeChange((PortletModeHandler) viewInstance,
+                        new PortletModeEvent(new PortletMode(newMode),
+                                new PortletMode(oldMode)));
+            }
+
+            Map<String,String> windowState = (Map<String, String>) session.getAttribute(getViewMapSessionKey(WINDOWSTATE_SESSION_SUBKEY));
+            String oldWindowState = windowState.getOrDefault(namespace,
+                    WindowState.UNDEFINED.toString());
+            String newWindowState = request.getWindowState().toString();
+            if (!oldWindowState.equals(newWindowState)
+                    && isViewInstanceOf(WindowStateHandler.class)) {
+                windowState.put(namespace, newWindowState);
+                fireWindowStateChange(
+                        (WindowStateHandler) viewInstance,
+                        new WindowStateEvent(new WindowState(newWindowState),
+                                new WindowState(oldWindowState)));
+            }
         }
     }
 
@@ -358,28 +409,28 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         }
     }
 
-    public void setWebComponentProviderURL(String url) {
-        webComponentProviderURL = url;
+    public void setWebComponentProviderURL(String namespace, String url) {
+        webComponentProviderURL.put(namespace, url);
     }
 
-    public String getWebComponentProviderURL() {
-        return webComponentProviderURL;
+    public String getWebComponentProviderURL(String namespace) {
+        return webComponentProviderURL.get(namespace);
     }
 
-    public void setWebComponentBootstrapHandlerURL(String url) {
-        webComponentBootstrapHandlerURL = url;
+    public void setWebComponentBootstrapHandlerURL(String namespace, String url) {
+        webComponentBootstrapHandlerURL.put(namespace, url);
     }
 
-    public String getWebComponentBootstrapHandlerURL() {
-        return webComponentBootstrapHandlerURL;
+    public String getWebComponentBootstrapHandlerURL(String namespace) {
+        return webComponentBootstrapHandlerURL.get(namespace);
     }
 
-    public void setWebComponentUIDLRequestHandlerURL(String url) {
-        webComponentUIDLRequestHandlerURL = url;
+    public void setWebComponentUIDLRequestHandlerURL(String namespace, String url) {
+        webComponentUIDLRequestHandlerURL.put(namespace, url);
     }
 
-    public String getWebComponentUIDLRequestHandlerURL() {
-        return webComponentUIDLRequestHandlerURL;
+    public String getWebComponentUIDLRequestHandlerURL(String namespace) {
+        return webComponentUIDLRequestHandlerURL.get(namespace);
     }
 
     /**
@@ -388,7 +439,14 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      * @return window state
      */
     public WindowState getWindowState() {
-        return new WindowState(windowState);
+        String namespace = getNamespace();
+        VaadinPortletSession session = VaadinPortletSession.getCurrent();
+        Map<String,String> windowState = (Map<String, String>) session.getAttribute(getViewMapSessionKey(WINDOWSTATE_SESSION_SUBKEY));
+        if (windowState.containsKey(namespace)) {
+            return new WindowState(windowState.get(namespace));
+        } else {
+            return WindowState.UNDEFINED;
+        }
     }
 
     /**
@@ -397,7 +455,14 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      * @return portlet mode
      */
     public PortletMode getPortletMode() {
-        return new PortletMode(portletMode);
+        String namespace = getNamespace();
+        VaadinPortletSession session = VaadinPortletSession.getCurrent();
+        Map<String,String> portletMode = (Map<String, String>) session.getAttribute(getViewMapSessionKey(MODE_SESSION_SUBKEY));
+        if (portletMode.containsKey(namespace)) {
+            return new PortletMode(portletMode.get(namespace));
+        } else {
+            return PortletMode.UNDEFINED;
+        }
     }
 
     /**
@@ -409,9 +474,11 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     public void setWindowState(WindowState newWindowState) {
         if (isPortlet3) {
             PortletHubUtil
-                    .updatePortletState(newWindowState.toString(), portletMode);
+                    .updatePortletState(newWindowState.toString(),
+                            getPortletMode().toString());
         } else if (actionURL.containsKey(getNamespace())) {
-            stateChangeAction(newWindowState.toString(), portletMode);
+            stateChangeAction(newWindowState.toString(),
+                    getPortletMode().toString());
         }
     }
 
@@ -424,9 +491,11 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     public void setPortletMode(PortletMode newPortletMode) {
         if (isPortlet3) {
             PortletHubUtil
-                    .updatePortletState(windowState, newPortletMode.toString());
+                    .updatePortletState(getWindowState().toString(),
+                            newPortletMode.toString());
         } else if (actionURL.containsKey(getNamespace())) {
-            stateChangeAction(windowState, newPortletMode.toString());
+            stateChangeAction(getWindowState().toString(),
+                    newPortletMode.toString());
         }
     }
 
@@ -444,5 +513,13 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private String getNamespace() {
         return VaadinPortletService.getCurrentResponse()
                 .getPortletResponse().getNamespace();
+    }
+
+    private Logger getLogger() {
+        return LoggerFactory.getLogger(getClass());
+    }
+
+    private String getViewMapSessionKey(String subKey) {
+        return getClass().getName() + "-" + subKey;
     }
 }

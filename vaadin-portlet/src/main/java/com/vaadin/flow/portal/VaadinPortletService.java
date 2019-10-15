@@ -18,6 +18,7 @@ package com.vaadin.flow.portal;
 import javax.portlet.EventRequest;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import java.io.IOException;
@@ -211,6 +212,24 @@ public class VaadinPortletService extends VaadinService {
     }
 
     /**
+     * Gets the currently processed portlet response. The current portlet response
+     * is automatically defined when the request is started. The current portlet
+     * response can not be used in e.g. background threads because of the way
+     * server implementations reuse response instances.
+     *
+     * @return the current portlet response instance if available, otherwise
+     * <code>null</code>
+     */
+    public static PortletResponse getCurrentPortletResponse() {
+        VaadinPortletResponse currentRequest = getCurrentResponse();
+        if (currentRequest != null) {
+            return currentRequest.getPortletResponse();
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Gets the currently processed Vaadin portlet response. The current
      * response is automatically defined when the request is started. The
      * current response can not be used in e.g. background threads because of
@@ -251,21 +270,21 @@ public class VaadinPortletService extends VaadinService {
             VaadinSession session) {
         getWrappedPortletSession(wrappedSession)
                 .setAttribute(getSessionAttributeName(), session,
-                        PortletSession.APPLICATION_SCOPE);
+                        PortletSession.PORTLET_SCOPE);
     }
 
     @Override
     protected VaadinSession readFromHttpSession(WrappedSession wrappedSession) {
         return (VaadinSession) getWrappedPortletSession(wrappedSession)
                 .getAttribute(getSessionAttributeName(),
-                        PortletSession.APPLICATION_SCOPE);
+                        PortletSession.PORTLET_SCOPE);
     }
 
     @Override
     protected void removeFromHttpSession(WrappedSession wrappedSession) {
         getWrappedPortletSession(wrappedSession)
                 .removeAttribute(getSessionAttributeName(),
-                        PortletSession.APPLICATION_SCOPE);
+                        PortletSession.PORTLET_SCOPE);
     }
 
     @Override

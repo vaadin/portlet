@@ -16,6 +16,7 @@
 package com.vaadin.flow.portal;
 
 import javax.portlet.MimeResponse;
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.ResourceResponse;
 import javax.servlet.http.Cookie;
@@ -196,5 +197,31 @@ public class VaadinPortletResponse implements VaadinResponse {
     @Override
     public void addCookie(Cookie cookie) {
         response.addProperty(cookie);
+    }
+
+    /**
+     * Gets the currently processed portlet response. The current portlet response
+     * is automatically defined when the requests is started. The current portlet
+     * response can not be used in e.g. background threads because of the way
+     * server implementations reuse response instances.
+     *
+     * @return the current portlet response instance if available, otherwise
+     * <code>null</code>
+     */
+    public static PortletResponse getCurrentPortletResponse() {
+        return VaadinPortletService.getCurrentPortletResponse();
+
+    }
+    /**
+     * Gets the currently processed Vaadin portlet response. The current response
+     * is automatically defined when the request is started. The current response
+     * can not be used in e.g. background threads because of the way server
+     * implementations reuse response instances.
+     *
+     * @return the current Vaadin portlet response instance if available,
+     * otherwise <code>null</code>
+     */
+    public static VaadinPortletResponse getCurrent() {
+        return VaadinPortletService.getCurrentResponse();
     }
 }

@@ -30,12 +30,8 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
     }
 
     @Test
-    public void testEventHandlers() {
-        // NOTE 1: This can be split into two separate tests once multiple
-        // instances of the same portlet is supported
-
-        // NOTE 2: This test is neutral on whether an event for the initial mode
-        // /state should be sent
+    public void testModeChange() {
+        // This test is neutral on whether an event for the initial mode is sent
 
         setPortletModeInPortal(PortletMode.EDIT);
         waitUntil(driver -> PortletMode.EDIT.toString().equals(
@@ -48,7 +44,12 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
         setPortletModeInPortal(PortletMode.VIEW);
         waitUntil(driver -> PortletMode.VIEW.toString().equals(
                 getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
+    }
 
+    @Test
+    public void testWindowStateChange() {
+        // This test is neutral on whether an event for the initial state is
+        // sent
         setWindowStateInPortal(WindowState.MAXIMIZED);
         waitUntil(driver -> WindowState.MAXIMIZED.toString().equals(
                 getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID)));

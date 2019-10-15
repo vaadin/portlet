@@ -61,15 +61,15 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
             ResourceURL url = renderResponse.createResourceURL();
             url.setResourceID("/web-component/" + tag + ".js");
             scriptUrl = url.toString();
-            portlet.setWebComponentProviderURL(url.toString());
+            portlet.setWebComponentProviderURL(resp.getNamespace(), url.toString());
 
             url = renderResponse.createResourceURL();
             url.setResourceID("/web-component/web-component-ui.js");
-            portlet.setWebComponentBootstrapHandlerURL(url.toString());
+            portlet.setWebComponentBootstrapHandlerURL(resp.getNamespace(), url.toString());
 
             url = renderResponse.createResourceURL();
             url.setResourceID("/uidl");
-            portlet.setWebComponentUIDLRequestHandlerURL(url.toString());
+            portlet.setWebComponentUIDLRequestHandlerURL(resp.getNamespace(), url.toString());
         }
         writer.write("<script src='" + scriptUrl + "'></script>");
         writer.write("<script>customElements.whenDefined('" + tag

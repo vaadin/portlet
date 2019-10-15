@@ -34,10 +34,11 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.internal.ExportsWebComponent;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.WebComponentExporter;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.server.Command;
@@ -46,7 +47,7 @@ import com.vaadin.flow.server.DefaultDeploymentConfiguration;
 import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
-import com.vaadin.flow.server.webcomponent.WebComponentConfigurationRegistry;
+import com.vaadin.flow.shared.util.SharedUtil;
 
 //import com.vaadin.flow.portal.impl.VaadinGateInRequest;
 //import com.vaadin.flow.portal.impl.VaadinLiferayRequest;
@@ -58,7 +59,8 @@ import com.vaadin.flow.server.webcomponent.WebComponentConfigurationRegistry;
  *
  * @since
  */
-public abstract class VaadinPortlet extends GenericPortlet {
+public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
+         implements ExportsWebComponent<C> {
 
     private VaadinPortletService vaadinService;
     private String webComponentProviderURL;
@@ -247,29 +249,24 @@ public abstract class VaadinPortlet extends GenericPortlet {
     /**
      * Gets the tag for the main component in the portlet.
      * <p>
-     * By default uses the one and only exported web component.
+     * By default derives the tag name from the class name.
      *
      * @return the tag of the main component to use
-     * @throws PortletException
-     *         if the main component could not be detected
      */
-    protected String getMainComponentTag() throws PortletException {
-        WebComponentConfigurationRegistry registry = WebComponentConfigurationRegistry
-                .getInstance(getService().getContext());
-        int exportedComponents = registry.getConfigurations().size();
-        if (exportedComponents == 0) {
-            throw new PortletException("No web components exported. Add a "
-                    + WebComponentExporter.class.getSimpleName()
-                    + " which exports your main component");
-        } else if (exportedComponents > 1) {
-            String definedComponents = registry.getConfigurations().stream()
-                    .map(conf -> conf.getTag())
-                    .collect(Collectors.joining(", "));
-            throw new PortletException(
-                    "Multiple web components are exported: " + definedComponents
-                            + ". Export only one web component or override getMainComponentTag in the portlet class");
+    @Override
+    public String getTag() {
+        if (getClass().isAnnotationPresent(Tag.class)) {
+            Tag tag = getClass().getAnnotation(Tag.class);
+            return tag.value();
+        } else {
+            String candidate = SharedUtil
+                    .camelCaseToDashSeparated(getClass().getSimpleName())
+                    .replaceFirst("^-", "");
+            if (!candidate.contains("-")) {
+                candidate = candidate + "-portlet";
+            }
+            return candidate;
         }
-        return registry.getConfigurations().iterator().next().getTag();
     }
 
     public void setWebComponentProviderURL(String url) {

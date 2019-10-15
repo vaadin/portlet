@@ -7,16 +7,14 @@ Pluto is a reference implementation for Portlet specification and while good for
 
 == Creating a Vaadin Portlet
 
-We have two ways to start the creation of our Vaadin Portlet: starting from scratch or from https://github.com/vaadin/base-starter-flow-portlet[base-starter-flow-portlet]
-project.
+We have two ways to start the creation of our Vaadin Portlet: starting from scratch or from https://github.com/vaadin/base-starter-flow-portlet[base-starter-flow-portlet] project.
 The starter project contains everything needed to quickly create your own Vaadin Portlet, with the code laid out in advance.
 
-And thus, we start from scratch.
+Here we will walk through all the steps for setting up a portlet project.
 
 === Setting up Portlet project
 
-Despite the above proclamation, we will start with some basics.
-First, download basic Vaadin starter from https://vaadin.com/start (select "Plain Java Servlet" as the technology stack) and follow the instructions in the sidebar.
+First, download Vaadin base starter from https://vaadin.com/start (select "Plain Java Servlet" as the technology stack) and follow the instructions in the sidebar.
 
 Next, update your pom.xml:
 
@@ -57,16 +55,15 @@ Next, update your pom.xml:
 In the most basic setup, Vaadin Portlets consist of two classes:
 
 * A class, which `extends VaadinPortlet`
-* A Vaadin Component, which `implements WindowStateHandler` (or one of the other handler interfaces)
+* A Vaadin Component, which defines the portlet's view contents
 
 The class extending `VaadinPortlet` serves as the entry point for our Vaadin Portlet application.
 It serves a similar function to a Servlet, but in portlet context.
 
 The second class is any Vaadin Component, which should be displayed as the contents of the Vaadin Portlet.
-You might take an existing component and implement the interface, create an entirely new component, or create a host component to which you add an existing Vaadin Component.
+You might take an existing component, create an entirely new component, or create a host component to which you add an existing Vaadin Component.
 
-Find the `MainView.java` provided with the project and create `MyPortlet.java`
-in the same folder.
+Find the `MainView.java` provided with the project and create `MyPortlet.java` in the same folder.
 Inside the file, add the following code:
 
 [source,java]
@@ -77,56 +74,23 @@ public class MyPortlet extends VaadinPortlet<MainView> {
 ----
 
 Next, open the `MainView.java`.
-Remove both the `@Route` and `@PWA`
-annotations - those do not make sense for our portlet.
-Then, add
-`implements WindowStateHandler` to the `MainView.class`.
-Implement the `public void onWindowStateChange(WindowStateEvent event)`
-method with the following code:
-
-[source,java]
-----
-    @Override
-    public void onWindowStateChange(WindowStateEvent event) {
-        currentState = event.getState();
-    }
-----
-
-This callback allows our component to receive updates from the Vaadin Portlet, which is displaying this component.
-Specifically, we receive updates every time the window state of the portlet changes.
-The standard window states for a portlet are `normal`, `minimized`, and `maximized`.
-
-Define the new member variable `currentState` as:
-
-[source,java]
-----
-    private WindowState currentState = WindowState.NORMAL;
-----
-
-And finally, replace the text `"Clicked!"` inside the `Notification.show(...)`
-call in the constructor with `"Hello from " + currentState + " window!"`
+Remove both the `@Route` and `@PWA` annotations - those do not make sense for our portlet.
 
 The final code should look something like this:
 
 [source,java]
 ----
-public class MainView extends VerticalLayout implements WindowStateHandler {
-    private WindowState currentState = WindowState.NORMAL;
+public class MainView extends VerticalLayout {
 
     public MainView() {
         Button button = new Button("Click me",
-                event -> Notification.show("Hello from " + currentState + " window!"));
+                event -> Notification.show("Clicked!"));
         add(button);
-    }
-
-    @Override
-    public void onWindowStateChange(WindowStateChangeEvent event) {
-        currentState = event.getState();
     }
 }
 ----
 
-When an user clicks on the button, a notification will be displayed informing the user about the current window state of the portlet.
+When an user clicks on the button, a notification with the text "Clicked!" should appear then the lower left corner of the browser window.
 Not the most useful portlet ever created, but a strong first step.
 
 == Deploying your Vaadin Portlet
@@ -197,7 +161,7 @@ Add the following plugin configuration to the pom.xml:
 
 . Run `mvn install` in you project directory.
 . Download https://www.apache.org/dist/portals/pluto/pluto-bundle-3.1.0.zip[TomCat 8.0 + Pluto 3.1 bundle] and extract it to a location you prefer.
-. Copy all the `*.war` files from `{project directory}/target` into `{bundle extract location}/webapps`.
+. Copy both `*.war` files from `{project directory}/target` into `{bundle extract location}/webapps`.
 . Start the web server by
 * Opening a command prompt in the `{bundle extract directory}` folder
 * Running the command `./bin/startup.sh` or `./bin/startup.bat` (unix/windows)
@@ -205,5 +169,5 @@ Add the following plugin configuration to the pom.xml:
 . Sign in to the Portal
 * Username: pluto
 * Password: pluto
-. Add your Vaadin Portlet to one of the Portals pages
+. Create a new page for your portlet, or add it to one of the existing pages
 * ... TODO

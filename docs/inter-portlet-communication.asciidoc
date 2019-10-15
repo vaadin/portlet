@@ -20,33 +20,23 @@ Vaadin Portlets allows the developer to leverage all of these different methods 
 When Vaadin Portlets are ran on a portal which supports Portlet 3.0 specification, Vaadin Portlet automatically adds `PortletHub` support on the client-side.
 The standard IPC for Vaadin Portlets leverages `PortletHub` to provide the developer with seamless integration of the client-side and server-side events.
 
-You can use `VaadinPortlet` to dispatch events from your portlet view class.
-These events are then delivered to the `PortletHub` which handles delivering the events forward.
-There are two types of events that can be dispatched this way: Vaadin Portlet IPC events and normal client-side events.
-For the former, Vaadin Portlet support has automatically registered delivery mechanisms in place and you can register event handlers in the Java code for other portlets.
-The latter fires a normal `PortletHub` client-side event with the given event name and payload.
+You can use `VaadinPortlet` to send events from your portlet's view class.
+These events are then delivered to client-side, where the events are delivered forward forward using `PortletHub::dispatchClientEvent()`.
+To handle the events dispatched by the `PortletHub` you can either register your portlet's view class to handle certain events based on the event names, or register JavaScript event handler onto the client-side.
 
-=== Firing and Receiving Vaadin Portlet IPC Events
+=== Firing and Receiving Events in Java Code
 
-Given two portlet views `FiringPortletView` and `ReceivingPortletView` we
-setup our Vaadin Portlet IPC as follows:
+Given two portlet views `FiringPortletView` and `ReceivingPortletView` we setup our Vaadin Portlet IPC as follows:
 
 .FiringPortletView.java
 [source,java]
 ----
-public class FiringPortletView extends Div implements PortletModeHandler {
+public class FiringPortletView extends Div {
 
     public FiringPortletView() {
-        Button button = new Button("Fire event", event -> {
-            VaadinPortlet.getCurrent().hub()
-                .sendIPCEvent("my-ipc-event", Collections.emptyMap());
-        });
-
-    }
-
-    @Override
-    public void onPortletModeChange(PortletModeChangeEvent event) {
-        // ... react to event
+        Button button = new Button("Fire event", event ->
+            VaadinPortlet.sendEvent("my-ipc-event", Collections.emptyMap())
+        );
     }
 }
 ----
@@ -54,32 +44,50 @@ public class FiringPortletView extends Div implements PortletModeHandler {
 .ReceivingPortletView.java
 [source,java]
 ----
-public class ReceivingPortletView extends Div
-        implements PortletModeHandler, IPCEventHandler {
+public class ReceivingPortletView extends Div implements EventHandler {
 
-    @Override
-    public void handleIPCEvent(String eventName, Map<String, String> params) {
-        if ("my-ipc-event".equals(eventName)) {
-            Notification.show("Received " + eventName + " event!");
-        }
+    public ReceivingPortletView() {
+        // register the event names which you'd like to handle
+        VaadinPortlet.handleEvents("my-ipc-event");
     }
 
     @Override
-    public void onPortletModeChange(PortletModeChangeEvent event) {
-        // ... react to event
+    public void handleEvent(PortletEvent event) {
+        if ("my-ipc-event".equals(event.getName())) {
+            Notification.show("Received '" + eventName + "' event!");
+        }
     }
 }
 ----
 
-In `FiringPortletView.java` we use the method `VaadinPortlet::fireIPCEvent(...)`
-to fire our client-side event.
-This method formats the fired event so that an automatically registered client-side handlers from other Vaadin Portlets will receive the event and dispatch it to their server-side counter parts.
+In `FiringPortletView.java`, we use the method `VaadinPortlet::sendEvent(...)` to fire our event.
+The event is fired using the available delivery method, preferring `PortletHub`.
+If you would like to fire events as specified in the 2.0 specification, see <<ipc-20>>.
 
-The benefit to using the client-side event dispatching is that other portlets may receive these events on the client-side, if they follow the naming convention for such events, firing these events does not require the code to be executed inside a portlet request, and finally these events do not need to be registered into the portlet.xml or defined using the 3.0 annotations.
+In `ReceivingPortletView.java` implements `EventHandler` interface, which allows it to handle `PortletEvents`.
+In the constructor we register the event names for which we'd like to receive updates using `VaadinPortlet.handleEvents(...)`.
+If the view does not register portlet names, it will not receive events.
+The `handleEvent` method is called with `PortletEvent` when an event is received.
+
+Using `PortletHub` for IPC has few benefits:
+
+- Non-Vaadin portlets may receive these events on the client-side just as easily.
+- Firing these events does not require the code to be executed inside a portlet request.
+- These events do not need to be registered into the portlet.xml or defined using the 3.0 specification annotations.
 
 [NOTE]
-If you wish to register your own listeners to `PortletHub` for the automatically handled Vaadin Portlet IPC events, register a handler to receive all events under the regex "vaadin-portlet-ipc/.*".
+If the portlet is deployed to a portal which only supports 2.0 specification instead of 3.0, the event delivery mechanism attempts to fallback onto 2.0 event delivery.
+In order to send and receive 2.0 specification events reliably, the events need to be defined in the portlet.xml.
 
-=== Dispatching Client-Side Events with Vaadin Portlet
+=== Registering JavaScript Event Handler
+This is done, by calling VaadinPortlet.addJavaScriptEventHandler(...), maybe +
+(TODO!)
 
-Something about `VaadinPortlet.getCurrent().hub().fireClientEvent(String,Map<String,String>)`
+[#ipc-20]
+== Vaadin Portlet IPC with 2.0 Specification
+TODO things:
+- is a fallback for `sendEvent`
+- how to register events
+- using specific Vaadin API
+- overriding methods in VaadinPortlet
+

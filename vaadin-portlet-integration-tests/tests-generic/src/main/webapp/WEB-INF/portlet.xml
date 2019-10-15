@@ -27,9 +27,9 @@
     </portlet>
 
     <portlet>
-        <portlet-name>modechange</portlet-name>
-        <display-name>Flow Portlet with Mode Change Handler</display-name>
-        <portlet-class>com.vaadin.flow.portal.modechange.ModeChangePortlet</portlet-class>
+        <portlet-name>eventhandler</portlet-name>
+        <display-name>Flow Portlet with Mode and Window State Change Handler</display-name>
+        <portlet-class>com.vaadin.flow.portal.handler.EventHandlerPortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>

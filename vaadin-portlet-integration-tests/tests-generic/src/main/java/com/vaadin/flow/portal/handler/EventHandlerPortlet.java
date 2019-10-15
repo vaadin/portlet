@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2000-2019 Vaadin Ltd.
  *
@@ -16,17 +15,7 @@
  */
 package com.vaadin.flow.portal.handler;
 
-/**
- * Add this interface to a {@link com.vaadin.flow.portal.VaadinPortlet}
- * implementation to handle changes in {@link javax.portlet.PortletMode}.
- */
-public interface PortletModeHandler {
+import com.vaadin.flow.portal.VaadinPortlet;
 
-    /**
-     * Invoked when the portlet mode changes.
-     *
-     * @param event the wevent object
-     */
-    void portletModeChange(PortletModeEvent event);
-
+public class EventHandlerPortlet extends VaadinPortlet<EventHandlerContent> {
 }

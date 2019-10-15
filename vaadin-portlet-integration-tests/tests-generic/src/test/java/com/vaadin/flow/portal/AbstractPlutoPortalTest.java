@@ -16,8 +16,9 @@
 package com.vaadin.flow.portal;
 
 import javax.portlet.PortletMode;
-import java.util.List;
+import javax.portlet.WindowState;
 import java.util.Map;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import com.vaadin.flow.component.html.testbench.AnchorElement;
 import com.vaadin.flow.component.html.testbench.SelectElement;
 import com.vaadin.testbench.ScreenshotOnFailureRule;
 import com.vaadin.testbench.TestBench;
@@ -54,7 +56,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
 
     private final String route = "pluto/portal";
     private final String warName = "tests-generic";
-    private final String testPage = "IT";
+    private String testPage = "IT";
     private final String adminPage = "Pluto Admin";
     private final String portletName;
 
@@ -84,18 +86,21 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     }
 
     protected void loginToPortal() {
-        final WebElement username = findElement(By.id("j_username"));
-        final WebElement password = findElement(By.id("j_password"));
-        final WebElement login = findElement(By.id("j_login"));
-        username.sendKeys("pluto");
-        password.sendKeys("pluto");
-        login.click();
+        if (!findElements(By.id("j_login")).isEmpty()) {
+            final WebElement username = findElement(By.id("j_username"));
+            final WebElement password = findElement(By.id("j_password"));
+            final WebElement login = findElement(By.id("j_login"));
+            username.sendKeys("pluto");
+            password.sendKeys("pluto");
+            login.click();
+        }
     }
 
     protected void addPortlet() {
         getDriver().get(getURL(route + "/" + adminPage));
 
         // Create a new page
+        testPage = String.format("IT-%d", new Random().nextInt(Integer.MAX_VALUE));
         findElement(By.name("newPage")).sendKeys(testPage);
         findElement(By.id("addPageButton")).click();
 
@@ -124,11 +129,25 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     /**
      * Set the mode of the first portlet on page via Pluto's header dropdown.
      */
-    protected void setPortletMode(PortletMode portletMode) {
+    protected void setPortletModeInPortal(PortletMode portletMode) {
         SelectElement modeSelector =
                 $(TestBenchElement.class).attribute("name","modeSelectionForm").first()
                 .$(SelectElement.class).first();
         modeSelector.selectByText(portletMode.toString().toUpperCase());
+    }
+
+    /**
+     * Set the mode of the first portlet on page via Pluto's header dropdown.
+     */
+    protected void setWindowStateInPortal(WindowState windowState) {
+        String buttonLabel =
+                WindowState.MAXIMIZED.equals(windowState) ? "Maximize" :
+                        WindowState.NORMAL.equals(windowState) ? "Restore" :
+                                WindowState.MINIMIZED.equals(windowState) ? "Minimize" :
+                                        null;
+        AnchorElement anchor =
+                $(AnchorElement.class).attribute("title", buttonLabel).first();
+        anchor.click();
     }
 
     /**

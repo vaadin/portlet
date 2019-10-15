@@ -31,6 +31,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
+import javax.portlet.WindowState;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Locale;
@@ -45,6 +46,8 @@ import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.portal.handler.PortletModeEvent;
 import com.vaadin.flow.portal.handler.PortletModeHandler;
+import com.vaadin.flow.portal.handler.WindowStateEvent;
+import com.vaadin.flow.portal.handler.WindowStateHandler;
 import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.server.Command;
 import com.vaadin.flow.server.Constants;
@@ -73,11 +76,11 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private String webComponentBootstrapHandlerURL;
     private String webComponentUIDLRequestHandlerURL;
 
-    // As a crutch, all events for now target the last instantiated view.
-    // TODO: Create a portlet-instance mapping (#45), to be used when
-    // dispatching the event
+    // TODO: As a temporary crutch target the last instantiated view.
+    // TODO: Create a portlet-instance mapping (#45) for event dispatching.
     private C viewInstance = null;
     private PortletMode mode = PortletMode.UNDEFINED;
+    private WindowState windowState = WindowState.UNDEFINED;
 
     @Override
     public void init(PortletConfig config) throws PortletException {
@@ -117,10 +120,11 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
     @Override
     public void configure(WebComponent<C> webComponent, C component) {
-        // can't use this as it is a temporary object created by
-        // WebComponentEporter handling logic
         if (VaadinPortlet.getCurrent() != null) {
-            VaadinPortlet.getCurrent().viewInstance = component;
+            // Cannot use 'this' as it is only a temporary object created by
+            // WebComponentExporter handling logic
+            VaadinPortlet<C> thisPortlet =  VaadinPortlet.getCurrent();
+            thisPortlet.viewInstance = component;
         }
     }
 
@@ -128,20 +132,29 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     public void render(RenderRequest request, RenderResponse response)
             throws PortletException, IOException {
         super.render(request, response);
-
         PortletMode oldMode = mode;
         mode = request.getPortletMode();
         if (!oldMode.equals(mode) && isViewInstanceOf(
                 PortletModeHandler.class)) {
             fireModeChange(new PortletModeEvent(mode));
-            // How do we get the Component??
-            // This would probably need to fire a push or generate a UIDL request!
+        }
+        WindowState oldWindowState = windowState;
+        windowState = request.getWindowState();
+        if (!oldWindowState.equals(windowState) && isViewInstanceOf(
+                WindowStateHandler.class)) {
+            fireWindowStateChange(new WindowStateEvent(windowState));
         }
     }
 
     protected void fireModeChange(PortletModeEvent event) {
-        if (viewInstance!=null) {
-            ((PortletModeHandler)viewInstance).portletModeChange(event);
+        if (viewInstance != null) {
+            ((PortletModeHandler) viewInstance).portletModeChange(event);
+        }
+    }
+
+    protected void fireWindowStateChange(WindowStateEvent event) {
+        if (viewInstance != null) {
+            ((WindowStateHandler) viewInstance).windowStateChange(event);
         }
     }
 

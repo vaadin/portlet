@@ -17,6 +17,8 @@ package com.vaadin.flow.portal.rendermodes;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.vaadin.flow.component.button.testbench.ButtonElement;
 import com.vaadin.flow.portal.AbstractPlutoPortalTest;
@@ -39,6 +41,8 @@ public class RenderIT extends AbstractPlutoPortalTest {
 
         stateChange.click();
 
+        waitUntil(ExpectedConditions.presenceOfElementLocated(By.id(RenderView.WINDOW_STATE_CHANGE)));
+
         stateChange = $(ButtonElement.class)
                 .id(RenderView.WINDOW_STATE_CHANGE);
         modeChange = $(ButtonElement.class)
@@ -49,6 +53,8 @@ public class RenderIT extends AbstractPlutoPortalTest {
 
         modeChange.click();
 
+        waitUntil(ExpectedConditions.presenceOfElementLocated(By.id(RenderView.WINDOW_STATE_CHANGE)));
+
         stateChange = $(ButtonElement.class)
                 .id(RenderView.WINDOW_STATE_CHANGE);
         modeChange = $(ButtonElement.class)
@@ -58,6 +64,8 @@ public class RenderIT extends AbstractPlutoPortalTest {
         Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());
 
         stateChange.click();
+
+        waitUntil(ExpectedConditions.presenceOfElementLocated(By.id(RenderView.WINDOW_STATE_CHANGE)));
 
         stateChange = $(ButtonElement.class)
                 .id(RenderView.WINDOW_STATE_CHANGE);

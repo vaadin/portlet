@@ -51,7 +51,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     private static final int SERVER_PORT = 8080;
 
     private final String route = "pluto/portal";
-    private final String warName = "tests-generic";
+    private final String warName = "portlet30";
     private String testPage = "IT";
     private final String adminPage = "Pluto Admin";
     private final String portletName;

@@ -28,8 +28,8 @@
     </properties>
 
     <modules>
-        <module>tests-generic</module>
         <module>portlet30</module>
+        <module>tests-generic</module>
     </modules>
 
     <dependencyManagement>

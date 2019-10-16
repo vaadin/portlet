@@ -79,8 +79,8 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     // TODO: As a temporary crutch target the last instantiated view.
     // TODO: Create a portlet-instance mapping (#45) for event dispatching.
     private C viewInstance = null;
-    private PortletMode mode = PortletMode.UNDEFINED;
-    private WindowState windowState = WindowState.UNDEFINED;
+    private transient PortletMode mode = PortletMode.UNDEFINED;
+    private transient WindowState windowState = WindowState.UNDEFINED;
 
     @Override
     public void init(PortletConfig config) throws PortletException {
@@ -132,13 +132,14 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     public void render(RenderRequest request, RenderResponse response)
             throws PortletException, IOException {
         super.render(request, response);
-        PortletMode oldMode = mode;
+        PortletMode oldMode = mode == null ? PortletMode.UNDEFINED : mode;
         mode = request.getPortletMode();
         if (!oldMode.equals(mode) && isViewInstanceOf(
                 PortletModeHandler.class)) {
             fireModeChange(new PortletModeEvent(mode));
         }
-        WindowState oldWindowState = windowState;
+        WindowState oldWindowState =
+                windowState == null ? WindowState.UNDEFINED : windowState;
         windowState = request.getWindowState();
         if (!oldWindowState.equals(windowState) && isViewInstanceOf(
                 WindowStateHandler.class)) {

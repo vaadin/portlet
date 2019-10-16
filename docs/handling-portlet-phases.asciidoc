@@ -111,7 +111,7 @@ public class MyPortlet extends VaadinPortlet<MyView> {
 .MyView.java
 [source,java]
 ----
-import javax.swing.text.ParagraphView;public class MyView extends Div
+public class MyView extends Div
         implements PortletModeHandler, WindowStateHandler{
 
     Paragraph stateInformation;

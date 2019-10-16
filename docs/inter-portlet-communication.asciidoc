@@ -80,14 +80,11 @@ If the portlet is deployed to a portal which only supports 2.0 specification ins
 In order to send and receive 2.0 specification events reliably, the events need to be defined in the portlet.xml.
 
 === Registering JavaScript Event Handler
-This is done, by calling VaadinPortlet.addJavaScriptEventHandler(...), maybe +
-(TODO!)
+(TODO)
 
 [#ipc-20]
 == Vaadin Portlet IPC with 2.0 Specification
-TODO things:
-- is a fallback for `sendEvent`
-- how to register events
-- using specific Vaadin API
-- overriding methods in VaadinPortlet
+(TODO)
 
+== Vaadin Portlet IPC with Public Parameters
+(TODO)

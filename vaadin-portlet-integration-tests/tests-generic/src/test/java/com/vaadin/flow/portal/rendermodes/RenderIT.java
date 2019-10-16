@@ -35,7 +35,7 @@ public class RenderIT extends AbstractPlutoPortalTest {
                 .id(RenderView.PORTLET_MODE_CHANGE);
 
         Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());
-        Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());
+        Assert.assertEquals(RenderView.MODE_EDIT, modeChange.getText());
 
         stateChange.click();
 
@@ -45,7 +45,7 @@ public class RenderIT extends AbstractPlutoPortalTest {
                 .id(RenderView.PORTLET_MODE_CHANGE);
 
         Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
-        Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());
+        Assert.assertEquals(RenderView.MODE_EDIT, modeChange.getText());
 
         modeChange.click();
 
@@ -55,7 +55,7 @@ public class RenderIT extends AbstractPlutoPortalTest {
                 .id(RenderView.PORTLET_MODE_CHANGE);
 
         Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
-        Assert.assertEquals(RenderView.MODE_EDIT, modeChange.getText());
+        Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());
 
         stateChange.click();
 
@@ -65,7 +65,7 @@ public class RenderIT extends AbstractPlutoPortalTest {
                 .id(RenderView.PORTLET_MODE_CHANGE);
 
         Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());
-        Assert.assertEquals(RenderView.MODE_EDIT, modeChange.getText());
+        Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());
     }
 
 }

@@ -24,14 +24,17 @@ import javax.portlet.WindowState;
 public class WindowStateEvent {
 
     private final WindowState windowState;
+    private final WindowState prevWindowState;
 
     /**
      * Creates a new event.
      *
      * @param windowState the updated window state
      */
-    public WindowStateEvent(WindowState windowState) {
+    public WindowStateEvent(WindowState windowState,
+                            WindowState prevWindowState) {
         this.windowState = windowState;
+        this.prevWindowState = prevWindowState;
     }
 
     /**
@@ -68,5 +71,15 @@ public class WindowStateEvent {
      */
     public boolean isMaximized() {
         return WindowState.MAXIMIZED.equals(windowState);
+    }
+
+    /**
+     * The {@link WindowState} of the portlet just before the update that
+     * triggered this event.
+     *
+     * @return the previous window state.
+     */
+    public WindowState getPreviousWindowState() {
+        return prevWindowState;
     }
 }

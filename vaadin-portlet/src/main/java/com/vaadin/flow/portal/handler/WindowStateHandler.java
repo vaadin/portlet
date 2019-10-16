@@ -16,8 +16,9 @@
 package com.vaadin.flow.portal.handler;
 
 /**
- * Add this interface to a {@link com.vaadin.flow.portal.VaadinPortlet}
- * implementation to handle changes in {@link javax.portlet.PortletMode}.
+ * Add this interface to a {@link com.vaadin.flow.portal.VaadinPortlet} view
+ * (the {@link com.vaadin.flow.component.Component} subclass passed for the type
+ * parameter {@code C}) to handle changes in {@link javax.portlet.WindowState}.
  */
 public interface WindowStateHandler {
 

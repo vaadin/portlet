@@ -23,9 +23,9 @@ import org.junit.Test;
 import com.vaadin.flow.portal.AbstractPlutoPortalTest;
 import com.vaadin.testbench.TestBenchElement;
 
-public class ModeChangeIT extends AbstractPlutoPortalTest {
+public class EventHandlerIT extends AbstractPlutoPortalTest {
 
-    public ModeChangeIT() {
+    public EventHandlerIT() {
         super("eventhandler");
     }
 

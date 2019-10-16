@@ -24,14 +24,17 @@ import javax.portlet.PortletMode;
 public class PortletModeEvent {
 
     private final PortletMode portletMode;
+    private final PortletMode prevPortletMode;
 
     /**
      * Creates a new event.
      *
      * @param portletMode the updated portlet mode
      */
-    public PortletModeEvent(PortletMode portletMode) {
+    public PortletModeEvent(PortletMode portletMode,
+                            PortletMode prevPortletMode) {
         this.portletMode = portletMode;
+        this.prevPortletMode = prevPortletMode;
     }
 
     /**
@@ -68,6 +71,16 @@ public class PortletModeEvent {
      */
     public boolean isHelpMode() {
         return PortletMode.HELP.equals(portletMode);
+    }
+
+    /**
+     * The {@link PortletMode} of the portlet just before the update that
+     * triggered this event.
+     *
+     * @return the previous window state.
+     */
+    public PortletMode getPreviousPortletMode() {
+        return prevPortletMode;
     }
 
 }

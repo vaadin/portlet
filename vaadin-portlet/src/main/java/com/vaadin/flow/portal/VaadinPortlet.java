@@ -132,34 +132,55 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     public void render(RenderRequest request, RenderResponse response)
             throws PortletException, IOException {
         super.render(request, response);
+        /*
+         * Note: mode update events must be sent to handlers before
+         * window state update events.
+         */
         PortletMode oldMode = mode == null ? PortletMode.UNDEFINED : mode;
         mode = request.getPortletMode();
-        if (!oldMode.equals(mode) && isViewInstanceOf(
-                PortletModeHandler.class)) {
-            fireModeChange(new PortletModeEvent(mode));
+        if (!oldMode.equals(mode)
+                && isViewInstanceOf(PortletModeHandler.class)
+                && viewInstance != null) {
+            fireModeChange((PortletModeHandler) viewInstance,
+                    new PortletModeEvent(mode, oldMode));
         }
         WindowState oldWindowState =
                 windowState == null ? WindowState.UNDEFINED : windowState;
         windowState = request.getWindowState();
-        if (!oldWindowState.equals(windowState) && isViewInstanceOf(
-                WindowStateHandler.class)) {
-            fireWindowStateChange(new WindowStateEvent(windowState));
+        if (!oldWindowState.equals(windowState)
+                && isViewInstanceOf(WindowStateHandler.class)
+                && viewInstance != null) {
+            fireWindowStateChange(
+                    (WindowStateHandler) viewInstance,
+                    new WindowStateEvent(windowState, oldWindowState));
         }
     }
 
-    protected void fireModeChange(PortletModeEvent event) {
-        if (viewInstance != null) {
-            ((PortletModeHandler) viewInstance).portletModeChange(event);
-        }
+    /**
+     * Sends the given {@link PortletModeEvent} to the given view instance of
+     * this portlet.
+     *
+     * @param view the view instance
+     * @param event the event object
+     */
+    protected void fireModeChange(PortletModeHandler view,
+                                  PortletModeEvent event) {
+        view.portletModeChange(event);
     }
 
-    protected void fireWindowStateChange(WindowStateEvent event) {
-        if (viewInstance != null) {
-            ((WindowStateHandler) viewInstance).windowStateChange(event);
-        }
+    /**
+     * Sends the given {@link WindowStateEvent} to the given view instance of
+     * this portlet.
+     *
+     * @param view the view instance
+     * @param event the event object
+     */
+    protected void fireWindowStateChange(WindowStateHandler view,
+                                         WindowStateEvent event) {
+        view.windowStateChange(event);
     }
 
-    protected boolean isViewInstanceOf(Class<?> instance) {
+    private boolean isViewInstanceOf(Class<?> instance) {
         return instance.isAssignableFrom(getComponentClass());
     }
 
@@ -324,6 +345,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                     .replaceFirst("^-", "");
             if (!candidate.contains("-")) {
                 candidate = candidate + "-portlet";
+
             }
             return candidate;
         }

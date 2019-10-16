@@ -16,6 +16,7 @@
 package com.vaadin.flow.portal;
 
 import java.util.Map;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -51,7 +52,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
 
     private final String route = "pluto/portal";
     private final String warName = "tests-generic";
-    private final String testPage = "IT";
+    private String testPage = "IT";
     private final String adminPage = "Pluto Admin";
     private final String portletName;
 
@@ -81,18 +82,21 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     }
 
     protected void loginToPortal() {
-        final WebElement username = findElement(By.id("j_username"));
-        final WebElement password = findElement(By.id("j_password"));
-        final WebElement login = findElement(By.id("j_login"));
-        username.sendKeys("pluto");
-        password.sendKeys("pluto");
-        login.click();
+        if (!findElements(By.id("j_login")).isEmpty()) {
+            final WebElement username = findElement(By.id("j_username"));
+            final WebElement password = findElement(By.id("j_password"));
+            final WebElement login = findElement(By.id("j_login"));
+            username.sendKeys("pluto");
+            password.sendKeys("pluto");
+            login.click();
+        }
     }
 
     protected void addPortlet() {
         getDriver().get(getURL(route + "/" + adminPage));
 
         // Create a new page
+        testPage = String.format("IT-%d", new Random().nextInt(Integer.MAX_VALUE));
         findElement(By.name("newPage")).sendKeys(testPage);
         findElement(By.id("addPageButton")).click();
 

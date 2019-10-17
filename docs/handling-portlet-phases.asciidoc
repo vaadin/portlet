@@ -1,15 +1,14 @@
 = Handling Portlet Phases
 
 Portlet specification deals with requests and responses; portlets receive render requests, action requests, resource requests, and more.
-This request-centric approach is not immediate compatible with the types of applications you build with Vaadin - modern, dynamic applications.
-So in order to operate seamlessly in the portlet environment, Vaadin Portlet support offers both the means to hook into these state changes as well as shorthands to perform portlet tasks in more idiomatic Vaadin way.
+This request-centric approach is not immediately compatible with the types of applications you build with Vaadin - modern, dynamic applications.
+So in order to operate seamlessly in the portlet environment, Vaadin Portlet support offers both the means to hook into these state changes as well as shorthands to perform portlet tasks in a more idiomatic Vaadin way.
 
 == Portlet Requests and Phases
 
-As the portlet model operates on https://portals.apache.org/pluto/v301/portlet-api.html[phases]
-which do not mesh naturally with Vaadin.
-Normally, these phase request contain data that the user might be interested in but since it makes little sense for a Vaadin Portlet to handle such requests, interface were introduced.
-In this section we take a look at the interface, Vaadin Portlets to hook into the different phases, while operating within the UI thread of their Vaadin application.
+The portlet model operates on https://portals.apache.org/pluto/v301/portlet-api.html[phases] which do not mesh naturally with Vaadin.
+Normally, the phase request contain data that the user might be interested in but since it makes little sense for a Vaadin Portlet to handle such requests, interfaces were introduced.
+In this section we take a look at the interfaces, Vaadin Portlets to hook into the different phases, while operating within the UI thread of their Vaadin application.
 
 As described in <<creating-vaadin-portlets#,Creating Vaadin Portlets>>, the Vaadin Portlet consist of two parts: a class extending `VaadinPortlet` and a class extending Vaadin `Component`.
 Vaadin Portlet support offers various interfaces which allows implementing view component to react to updates from the portal.
@@ -18,13 +17,13 @@ The interfaces available for implementation by the view component are:
 
 - `PortletModeHandler`
 - `WindowStateHandler`
-- `EventHandler` (part of the <<inter-portlet-communication#,Inter-Porlet Communication>>)
+- `EventHandler` (part of the <<inter-portlet-communication#,Inter-Portlet Communication>>)
 
 Next, we will have a look at the interfaces which enable the view component react to changes to the portlet's state.
 
 === `PortletModeHandler` interface
 
-Portlets can have different modes, in which they operate.
+Portlets can operate in different modes.
 The standard modes in the portlet specification are `View`, `Edit`, and `Help`.
 User of the portlet can change these modes using the controls on the portlet window, or through the portlet API.
 
@@ -40,7 +39,7 @@ public class MyPortletView extends Div implements PortletModeHandler {
 }
 ----
 
-The `PortletModeEvent` contains the information portlet mode and helpful shorthands for handling the common situations.
+The `PortletModeEvent` contains information the portlet mode and helpful shorthands for accessing the most commonly needed properties.
 
 === `WindowStateHandler` interface
 
@@ -60,12 +59,12 @@ public class MyPortletView extends Div implements WindowStateHandler {
 }
 ----
 
-The `WindowStateEvent` contains the information about the window state and helpful shorthands for handling the common situations.
+The `WindowStateEvent` contains the information about the window state and helpful shorthands for accessing the most commonly needed properties.
 
 === Handler Invocation Order
 
 In some cases, you may want to have a component class which implements many of the provided interfaces.
-Vaadin Portlet support promises to call each method only once per portlet request and in a predictable order.
+Vaadin Portlet support is guaranteed to call each method only once per portlet request and in a predictable order.
 
 ==== Interface Invocation Orders:
 

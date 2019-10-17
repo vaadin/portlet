@@ -1,7 +1,7 @@
 = Creating Vaadin Portlets
 
-In this chapter we will learn how to create Vaadin Portlets and how to deploy those Portlets to https://portals.apache.org/pluto/index.html[Pluto 3.1 Portal]
-running on a TomCat 8.0 web server.
+In this chapter we will learn how to create Vaadin Portlets and how to deploy those portlets to https://portals.apache.org/pluto/index.html[Pluto 3.1 Portal]
+running on an Apache TomCat 8.0 web server (sometimes simply "TomCat").
 
 Pluto is a reference implementation for Portlet specification and while good for testing, it should not be used in a production environment.
 
@@ -10,7 +10,7 @@ Pluto is a reference implementation for Portlet specification and while good for
 We have two ways to start the creation of our Vaadin Portlet: starting from scratch or from https://github.com/vaadin/base-starter-flow-portlet[base-starter-flow-portlet] project.
 The starter project contains everything needed to quickly create your own Vaadin Portlet, with the code laid out in advance.
 
-Here we will walk through all the steps for setting up a portlet project.
+In order to become familiar with setting up a Vaadin Portlet project manually, we will start with a simple Vaadin project and convert it into a Vaadin Portlet project below.
 
 === Setting up Portlet project
 
@@ -47,6 +47,7 @@ Next, update your pom.xml:
     <groupId>javax.portlet</groupId>
     <artifactId>portlet-api</artifactId>
     <version>3.0.1</version>
+    <scope>provided</scope>
 </dependency>
 ----
 
@@ -54,14 +55,18 @@ Next, update your pom.xml:
 
 In the most basic setup, Vaadin Portlets consist of two classes:
 
-* A class, which `extends VaadinPortlet`
-* A Vaadin Component, which defines the portlet's view contents
+* A **portlet class**, which `extends VaadinPortlet`
+* A portlet **view class**, which `extends Component`
 
-The class extending `VaadinPortlet` serves as the entry point for our Vaadin Portlet application.
+The portlet class acts as the entry point for our Vaadin Portlet application.
 It serves a similar function to a Servlet, but in portlet context.
 
-The second class is any Vaadin Component, which should be displayed as the contents of the Vaadin Portlet.
-You might take an existing component, create an entirely new component, or create a host component to which you add an existing Vaadin Component.
+The view class is any normal Vaadin component, which is displayed as the contents of our Vaadin Portlet.
+You could use an existing component through extension, composition, or as-is.
+Or just create an entirely new component for your Vaadin Portlet.
+`VaadinPortlet` is a generic class and takes the selected view class as a type parameter.
+
+==== Preparing the Classes
 
 Find the `MainView.java` provided with the project and create `MyPortlet.java` in the same folder.
 Inside the file, add the following code:
@@ -92,15 +97,15 @@ public class MainView extends VerticalLayout {
 }
 ----
 
-When an user clicks on the button, a notification with the text "Clicked!" should appear then the lower left corner of the browser window.
-Not the most useful portlet ever created, but a strong first step.
+When a user clicks on the button, a notification with the text "Clicked!" should appear then the lower left corner of the browser window.
+Your Vaadin Portlet is almost ready to go - we only need to make it ready for deployment.
 
 === Setting Portlet Deployment Descriptor
 
 In Portlet 3.0 specification portlet deployment descriptor can be configured in two ways:
 
 - portlet.xml (backwards compatible)
-- Annotations (only 3 .0)
+- Annotations (only 3.0)
 
 We will use the portlet.xml to configure our portlet deployment.
 The portlet.xml serves the same purpose as servlet.xml does for servlets.
@@ -111,45 +116,33 @@ add the following contents:
 .portlet.xml
 [source,xml]
 ----
-<?xml version="1.0" encoding="UTF-8"?>
-<portlet-app xmlns="http://xmlns.jcp.org/xml/ns/portlet" version="3.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/portlet
-            http://xmlns.jcp.org/xml/ns/portlet/portlet-app_3_0.xsd">
+<?xml version="1.0"?>
+<portlet-app xmlns="http://xmlns.jcp.org/xml/ns/portlet"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/portlet http://xmlns.jcp.org/xml/ns/portlet/portlet-app_3_0.xsd"
+             version="3.0">
     <portlet>
-        <portlet-name>MyPortlet</portlet-name>
+        <portlet-name>my-portlet</portlet-name>
         <display-name>My Test Portlet</display-name>
         <portlet-class>com.vaadin.starter.skeleton.MyPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>view</portlet-mode>
-            <portlet-mode>edit</portlet-mode>
-            <portlet-mode>help</portlet-mode>
         </supports>
         <portlet-info>
             <title>My Test Portlet - MyPortlet</title>
             <short-title>My Test Portlet</short-title>
             <keywords></keywords>
         </portlet-info>
-        <security-role-ref>
-            <role-name>administrator</role-name>
-        </security-role-ref>
-        <security-role-ref>
-            <role-name>guest</role-name>
-        </security-role-ref>
-        <security-role-ref>
-            <role-name>power-user</role-name>
-        </security-role-ref>
-        <security-role-ref>
-            <role-name>user</role-name>
-        </security-role-ref>
     </portlet>
 </portlet-app>
 ----
 
 The `<portlet-class>` points to your class extending `VaadinPortlet` with fully qualified name.
-The `<supports>` section contains all the standard `<portlet-mode>` options available.
-If you do not want your portlet to offer `HELP` mode, remove the correct line.
+The `<supports>` section contains the portlet modes (`<portlet-mode>` tag) the portlet supports.
+You can learn more about portlet modes for Vaadin Portlet in
+<<handling-porltet-phases#, the next chapter>>.
 
 == Deploying your Vaadin Portlet
 
@@ -158,8 +151,8 @@ If you do not want your portlet to offer `HELP` mode, remove the correct line.
 In order to build the portlet we just created, we must add some more configuration to the pom.xml.
 Vaadin Portlet deployments are packaged into two war files.
 One war file contains all the static resources shared by the Vaadin Portlets, and the other war file contains the actual portlets.
-This allows for more complex situations where multiple portlets come from separate war files.
-In the future, you will have tooling to create the asset bundle which fits all the deployed portlet war files.
+This allows for more complex scenarios where multiple portlets come from separate war files.
+In the future, we will offer tooling to create the asset bundle which fits all the deployed portlet war files.
 
 Add the following plugin configuration to the pom.xml:
 

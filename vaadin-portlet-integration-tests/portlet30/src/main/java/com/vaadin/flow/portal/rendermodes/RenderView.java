@@ -18,6 +18,7 @@ package com.vaadin.flow.portal.rendermodes;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.portal.VaadinPortlet;
@@ -35,7 +36,6 @@ public class RenderView extends VerticalLayout {
     private Button windowState, portletMode;
 
     public RenderView() {
-        PortletHubUtil.registerHub();
         VaadinPortlet portlet = RenderPortlet.getCurrent();
         windowState = new Button(
                 WindowState.NORMAL.equals(portlet.getWindowState()) ?
@@ -50,6 +50,13 @@ public class RenderView extends VerticalLayout {
         portletMode.setId(PORTLET_MODE_CHANGE);
 
         add(windowState, portletMode);
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+
+        PortletHubUtil.registerHub();
     }
 
     private void switchWindowState() {

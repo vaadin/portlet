@@ -43,9 +43,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.internal.ExportsWebComponent;
-import com.vaadin.flow.function.DeploymentConfiguration;
-import com.vaadin.flow.internal.CurrentInstance;
-import com.vaadin.flow.portal.util.PortletHubUtil;
 import com.vaadin.flow.component.webcomponent.WebComponent;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.CurrentInstance;
@@ -53,12 +50,12 @@ import com.vaadin.flow.portal.handler.PortletModeEvent;
 import com.vaadin.flow.portal.handler.PortletModeHandler;
 import com.vaadin.flow.portal.handler.WindowStateEvent;
 import com.vaadin.flow.portal.handler.WindowStateHandler;
+import com.vaadin.flow.portal.util.PortletHubUtil;
 import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.server.Command;
 import com.vaadin.flow.server.Constants;
 import com.vaadin.flow.server.DefaultDeploymentConfiguration;
 import com.vaadin.flow.server.ServiceException;
-import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.shared.util.SharedUtil;
@@ -136,34 +133,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         }
     }
 
-    @Override
-    public void render(RenderRequest request, RenderResponse response)
-            throws PortletException, IOException {
-        super.render(request, response);
-        /*
-         * Note: mode update events must be sent to handlers before
-         * window state update events.
-         */
-        PortletMode oldMode = mode == null ? PortletMode.UNDEFINED : mode;
-        mode = request.getPortletMode();
-        if (!oldMode.equals(mode)
-                && isViewInstanceOf(PortletModeHandler.class)
-                && viewInstance != null) {
-            fireModeChange((PortletModeHandler) viewInstance,
-                    new PortletModeEvent(mode, oldMode));
-        }
-        WindowState oldWindowState =
-                windowState == null ? WindowState.UNDEFINED : windowState;
-        windowState = request.getWindowState();
-        if (!oldWindowState.equals(windowState)
-                && isViewInstanceOf(WindowStateHandler.class)
-                && viewInstance != null) {
-            fireWindowStateChange(
-                    (WindowStateHandler) viewInstance,
-                    new WindowStateEvent(windowState, oldWindowState));
-        }
-    }
-
     /**
      * Sends the given {@link PortletModeEvent} to the given view instance of
      * this portlet.
@@ -227,10 +196,32 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     public void render(RenderRequest request, RenderResponse response)
             throws PortletException, IOException {
         super.render(request, response);
-        windowState = request.getWindowState().toString();
-        portletMode = request.getPortletMode().toString();
         if(!isPortlet3 && !actionURL.containsKey(response.getNamespace())) {
             actionURL.put(response.getNamespace(), response.createActionURL().toString());
+        }
+        /*
+         * Note: mode update events must be sent to handlers before
+         * window state update events.
+         */
+        String oldMode = portletMode;
+        portletMode = request.getPortletMode().toString();
+        if (!oldMode.equals(portletMode)
+                && isViewInstanceOf(PortletModeHandler.class)
+                && viewInstance != null) {
+            fireModeChange((PortletModeHandler) viewInstance,
+                    new PortletModeEvent(new PortletMode(portletMode),
+                            new PortletMode(oldMode)));
+        }
+        String oldWindowState =
+                windowState;
+        windowState = request.getWindowState().toString();
+        if (!oldWindowState.equals(windowState)
+                && isViewInstanceOf(WindowStateHandler.class)
+                && viewInstance != null) {
+            fireWindowStateChange(
+                    (WindowStateHandler) viewInstance,
+                    new WindowStateEvent(new WindowState(windowState),
+                            new WindowState(oldWindowState)));
         }
     }
 

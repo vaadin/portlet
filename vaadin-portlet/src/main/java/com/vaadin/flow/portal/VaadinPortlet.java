@@ -46,6 +46,14 @@ import com.vaadin.flow.component.internal.ExportsWebComponent;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.portal.util.PortletHubUtil;
+import com.vaadin.flow.component.webcomponent.WebComponent;
+import com.vaadin.flow.function.DeploymentConfiguration;
+import com.vaadin.flow.internal.CurrentInstance;
+import com.vaadin.flow.portal.handler.PortletModeEvent;
+import com.vaadin.flow.portal.handler.PortletModeHandler;
+import com.vaadin.flow.portal.handler.WindowStateEvent;
+import com.vaadin.flow.portal.handler.WindowStateHandler;
+import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.server.Command;
 import com.vaadin.flow.server.Constants;
 import com.vaadin.flow.server.DefaultDeploymentConfiguration;
@@ -60,6 +68,7 @@ import com.vaadin.flow.shared.util.SharedUtil;
  *
  * @since
  */
+@PreserveOnRefresh
 public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
          implements ExportsWebComponent<C> {
 
@@ -77,6 +86,9 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private Map<String,String> actionURL = new HashMap<>();
 
     private boolean isPortlet3 = false;
+    // TODO: As a temporary crutch target the last instantiated view.
+    // TODO: Create a portlet-instance mapping (#45) for event dispatching.
+    private C viewInstance = null;
 
     @Override
     public void init(PortletConfig config) throws PortletException {
@@ -112,6 +124,72 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         portletInitialized();
 
         CurrentInstance.clearAll();
+    }
+
+    @Override
+    public void configure(WebComponent<C> webComponent, C component) {
+        if (VaadinPortlet.getCurrent() != null) {
+            // Cannot use 'this' as it is only a temporary object created by
+            // WebComponentExporter handling logic
+            VaadinPortlet<C> thisPortlet =  VaadinPortlet.getCurrent();
+            thisPortlet.viewInstance = component;
+        }
+    }
+
+    @Override
+    public void render(RenderRequest request, RenderResponse response)
+            throws PortletException, IOException {
+        super.render(request, response);
+        /*
+         * Note: mode update events must be sent to handlers before
+         * window state update events.
+         */
+        PortletMode oldMode = mode == null ? PortletMode.UNDEFINED : mode;
+        mode = request.getPortletMode();
+        if (!oldMode.equals(mode)
+                && isViewInstanceOf(PortletModeHandler.class)
+                && viewInstance != null) {
+            fireModeChange((PortletModeHandler) viewInstance,
+                    new PortletModeEvent(mode, oldMode));
+        }
+        WindowState oldWindowState =
+                windowState == null ? WindowState.UNDEFINED : windowState;
+        windowState = request.getWindowState();
+        if (!oldWindowState.equals(windowState)
+                && isViewInstanceOf(WindowStateHandler.class)
+                && viewInstance != null) {
+            fireWindowStateChange(
+                    (WindowStateHandler) viewInstance,
+                    new WindowStateEvent(windowState, oldWindowState));
+        }
+    }
+
+    /**
+     * Sends the given {@link PortletModeEvent} to the given view instance of
+     * this portlet.
+     *
+     * @param view the view instance
+     * @param event the event object
+     */
+    protected void fireModeChange(PortletModeHandler view,
+                                  PortletModeEvent event) {
+        view.portletModeChange(event);
+    }
+
+    /**
+     * Sends the given {@link WindowStateEvent} to the given view instance of
+     * this portlet.
+     *
+     * @param view the view instance
+     * @param event the event object
+     */
+    protected void fireWindowStateChange(WindowStateHandler view,
+                                         WindowStateEvent event) {
+        view.windowStateChange(event);
+    }
+
+    private boolean isViewInstanceOf(Class<?> instance) {
+        return instance.isAssignableFrom(getComponentClass());
     }
 
     protected DeploymentConfiguration createDeploymentConfiguration(
@@ -283,6 +361,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                     .replaceFirst("^-", "");
             if (!candidate.contains("-")) {
                 candidate = candidate + "-portlet";
+
             }
             return candidate;
         }

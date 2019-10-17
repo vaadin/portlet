@@ -39,4 +39,21 @@
         </supports>
     </portlet>
 
+    <portlet>
+        <portlet-name>render</portlet-name>
+        <display-name>Flow Portlet with RenderStateChange</display-name>
+        <portlet-class>com.vaadin.flow.portal.rendermodes.RenderPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>Mode Changes Portlet</title>
+            <short-title>modechanges</short-title>
+            <keywords></keywords>
+        </portlet-info>
+    </portlet>
+
 </portlet-app>

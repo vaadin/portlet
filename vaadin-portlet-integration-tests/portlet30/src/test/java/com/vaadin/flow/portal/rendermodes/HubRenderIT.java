@@ -23,9 +23,9 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import com.vaadin.flow.component.button.testbench.ButtonElement;
 import com.vaadin.flow.portal.AbstractPlutoPortalTest;
 
-public class RenderIT extends AbstractPlutoPortalTest {
+public class HubRenderIT extends AbstractPlutoPortalTest {
 
-    public RenderIT() {
+    public HubRenderIT() {
         super("render");
     }
 

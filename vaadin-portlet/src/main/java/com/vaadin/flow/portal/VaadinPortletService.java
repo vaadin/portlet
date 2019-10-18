@@ -35,6 +35,7 @@ import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.UsageStatistics;
 import com.vaadin.flow.server.PwaRegistry;
 import com.vaadin.flow.server.RequestHandler;
+import com.vaadin.flow.server.RouteRegistry;
 import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.VaadinContext;
 import com.vaadin.flow.server.VaadinRequest;
@@ -44,6 +45,7 @@ import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.Version;
 import com.vaadin.flow.server.WebBrowser;
 import com.vaadin.flow.server.WrappedSession;
+import com.vaadin.flow.server.startup.ApplicationRouteRegistry;
 import com.vaadin.flow.theme.AbstractTheme;
 import com.vaadin.pro.licensechecker.LicenseChecker;
 
@@ -264,6 +266,11 @@ public class VaadinPortletService extends VaadinService {
         getWrappedPortletSession(wrappedSession)
                 .removeAttribute(getSessionAttributeName(),
                         PortletSession.APPLICATION_SCOPE);
+    }
+
+    @Override
+    protected RouteRegistry getRouteRegistry() {
+        return ApplicationRouteRegistry.getInstance(getContext());
     }
 
     @Override

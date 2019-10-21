@@ -18,6 +18,7 @@ import com.vaadin.flow.portal.handler.PortletModeEvent;
 import com.vaadin.flow.portal.handler.PortletModeHandler;
 import com.vaadin.flow.portal.handler.WindowStateEvent;
 import com.vaadin.flow.portal.handler.WindowStateHandler;
+import com.vaadin.flow.portal.util.PortletHubUtil;
 
 public class FormPortletView extends VerticalLayout
         implements WindowStateHandler, PortletModeHandler, EventHandler {
@@ -38,7 +39,7 @@ public class FormPortletView extends VerticalLayout
 
         Map<String, String> events = new HashMap<>();
         events.put(GridPortletView.SELECTION, getItemSelectFunction());
-        portlet.registerHub();
+        PortletHubUtil.registerHub();
 
         PortletMode portletMode = portlet.getPortletMode();
         portlet.setPortletView(this);

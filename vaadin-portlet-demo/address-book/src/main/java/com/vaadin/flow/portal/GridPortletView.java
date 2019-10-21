@@ -9,6 +9,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.ItemClickEvent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.portal.util.PortletHubUtil;
 
 public class GridPortletView extends VerticalLayout {
 
@@ -20,7 +21,7 @@ public class GridPortletView extends VerticalLayout {
     public GridPortletView() {
         setWidthFull();
         GridPortlet portlet = GridPortlet.getCurrent();
-        portlet.registerHub();
+        PortletHubUtil.registerHub();
 
         dataProvider = new ListDataProvider<>(
                 ContactService.getInstance().getContacts());
@@ -53,7 +54,8 @@ public class GridPortletView extends VerticalLayout {
         GridPortlet portlet = GridPortlet.getCurrent();
         param.put("windowState", portlet.getWindowState().toString());
 
-        portlet.sendEvent(SELECTION, param);
+        // NOT Implemented see TheseInVaaadinPortlet::sendEvent
+//        portlet.sendEvent(SELECTION, param);
     }
 
     private void switchWindowState() {

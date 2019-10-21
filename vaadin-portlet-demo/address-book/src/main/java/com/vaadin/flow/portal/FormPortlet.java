@@ -6,20 +6,11 @@ import javax.portlet.PortletException;
 import javax.portlet.WindowState;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.portal.handler.PortletModeEvent;
-import com.vaadin.flow.portal.handler.PortletModeHandler;
-import com.vaadin.flow.portal.handler.WindowStateEvent;
-import com.vaadin.flow.portal.handler.WindowStateHandler;
 
-public class FormPortlet extends TheseInVaadinPortlet<FormPortletView> {
+public class FormPortlet extends VaadinPortlet<FormPortletView> {
 
     public static final String TAG = "form-portlet";
     private Component portletView;
-
-    @Override
-    protected String getMainComponentTag() {
-        return TAG;
-    }
 
     public static FormPortlet getCurrent() {
         return (FormPortlet) VaadinPortlet.getCurrent();
@@ -41,20 +32,6 @@ public class FormPortlet extends TheseInVaadinPortlet<FormPortletView> {
                 response.setWindowState(new WindowState(
                         request.getRenderParameters().getValue("windowState")));
             }
-        }
-    }
-
-    @Override
-    protected void fireModeChange(PortletModeEvent event) {
-        if (portletView != null && portletView instanceof PortletModeHandler) {
-            ((PortletModeHandler) portletView).portletModeChange(event);
-        }
-    }
-
-    @Override
-    protected void fireStateChange(WindowStateEvent event) {
-        if (portletView != null && portletView instanceof WindowStateHandler) {
-            ((WindowStateHandler) portletView).windowStateChange(event);
         }
     }
 }

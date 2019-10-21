@@ -15,17 +15,7 @@
  */
 package com.vaadin.flow.portal.handler;
 
-/**
- * Add this interface to a {@link com.vaadin.flow.portal.VaadinPortlet} view
- * (the {@link com.vaadin.flow.component.Component} subclass passed for the type
- * parameter {@code C}) to handle changes in {@link javax.portlet.WindowState}.
- */
-public interface WindowStateHandler {
+import com.vaadin.flow.portal.VaadinPortlet;
 
-    /**
-     * Invoked when the window state changes.
-     *
-     * @param event the event object
-     */
-    void windowStateChange(WindowStateEvent event);
+public class EventHandlerPortlet extends VaadinPortlet<EventHandlerContent> {
 }

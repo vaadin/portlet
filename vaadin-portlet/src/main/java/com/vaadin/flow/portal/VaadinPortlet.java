@@ -22,48 +22,70 @@ import javax.portlet.EventResponse;
 import javax.portlet.GenericPortlet;
 import javax.portlet.HeaderRequest;
 import javax.portlet.HeaderResponse;
-import javax.portlet.PortalContext;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
+import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
+import javax.portlet.WindowState;
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.WebComponentExporter;
+import com.vaadin.flow.component.internal.ExportsWebComponent;
+import com.vaadin.flow.component.webcomponent.WebComponent;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.CurrentInstance;
+import com.vaadin.flow.portal.handler.PortletModeEvent;
+import com.vaadin.flow.portal.handler.PortletModeHandler;
+import com.vaadin.flow.portal.handler.WindowStateEvent;
+import com.vaadin.flow.portal.handler.WindowStateHandler;
+import com.vaadin.flow.portal.util.PortletHubUtil;
+import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.server.Command;
 import com.vaadin.flow.server.Constants;
 import com.vaadin.flow.server.DefaultDeploymentConfiguration;
 import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
-import com.vaadin.flow.server.webcomponent.WebComponentConfigurationRegistry;
+import com.vaadin.flow.shared.util.SharedUtil;
 
 /**
  * Vaadin implementation of the {@link GenericPortlet}.
  *
  * @since
  */
-public abstract class VaadinPortlet<VIEW extends Component>
-        extends GenericPortlet {
+@PreserveOnRefresh
+public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
+         implements ExportsWebComponent<C> {
+
+    private static final String ACTION_STATE = "state";
+    private static final String ACTION_MODE = "mode";
 
     private VaadinPortletService vaadinService;
     private String webComponentProviderURL;
     private String webComponentBootstrapHandlerURL;
     private String webComponentUIDLRequestHandlerURL;
+
+
+    private String windowState = WindowState.UNDEFINED.toString();
+    private String portletMode = PortletMode.UNDEFINED.toString();
+    private Map<String,String> actionURL = new HashMap<>();
+
+    private boolean isPortlet3 = false;
+    // TODO: As a temporary crutch target the last instantiated view.
+    // TODO: Create a portlet-instance mapping (#45) for event dispatching.
+    private C viewInstance = null;
 
     @Override
     public void init(PortletConfig config) throws PortletException {
@@ -101,17 +123,42 @@ public abstract class VaadinPortlet<VIEW extends Component>
         CurrentInstance.clearAll();
     }
 
-    public boolean isViewInstanceOf(Class instance) {
-        return instance.isAssignableFrom(getViewClass());
+    @Override
+    public void configure(WebComponent<C> webComponent, C component) {
+        if (VaadinPortlet.getCurrent() != null) {
+            // Cannot use 'this' as it is only a temporary object created by
+            // WebComponentExporter handling logic
+            VaadinPortlet<C> thisPortlet =  VaadinPortlet.getCurrent();
+            thisPortlet.viewInstance = component;
+        }
     }
 
-    protected final Class<VIEW> getViewClass() {
-        Type t = ((ParameterizedType) getClass().getGenericSuperclass())
-                .getActualTypeArguments()[0];
-        if (t instanceof ParameterizedType) {
-            t = ((ParameterizedType) t).getRawType();
-        }
-        return (Class<VIEW>) t;
+    /**
+     * Sends the given {@link PortletModeEvent} to the given view instance of
+     * this portlet.
+     *
+     * @param view the view instance
+     * @param event the event object
+     */
+    protected void fireModeChange(PortletModeHandler view,
+                                  PortletModeEvent event) {
+        view.portletModeChange(event);
+    }
+
+    /**
+     * Sends the given {@link WindowStateEvent} to the given view instance of
+     * this portlet.
+     *
+     * @param view the view instance
+     * @param event the event object
+     */
+    protected void fireWindowStateChange(WindowStateHandler view,
+                                         WindowStateEvent event) {
+        view.windowStateChange(event);
+    }
+
+    private boolean isViewInstanceOf(Class<?> instance) {
+        return instance.isAssignableFrom(getComponentClass());
     }
 
     protected DeploymentConfiguration createDeploymentConfiguration(
@@ -137,12 +184,45 @@ public abstract class VaadinPortlet<VIEW extends Component>
     protected void portletInitialized() throws PortletException {
 
     }
-
     @Override
     public void renderHeaders(HeaderRequest request, HeaderResponse response)
             throws PortletException, IOException {
-        super.renderHeaders(request, response);
+        // This is only called for portlet 3.0 portlets.
+        isPortlet3 = true;
         response.addDependency("PortletHub", "javax.portlet", "3.0.0");
+    }
+
+    @Override
+    public void render(RenderRequest request, RenderResponse response)
+            throws PortletException, IOException {
+        super.render(request, response);
+        if(!isPortlet3 && !actionURL.containsKey(response.getNamespace())) {
+            actionURL.put(response.getNamespace(), response.createActionURL().toString());
+        }
+        /*
+         * Note: mode update events must be sent to handlers before
+         * window state update events.
+         */
+        String oldMode = portletMode;
+        portletMode = request.getPortletMode().toString();
+        if (!oldMode.equals(portletMode)
+                && isViewInstanceOf(PortletModeHandler.class)
+                && viewInstance != null) {
+            fireModeChange((PortletModeHandler) viewInstance,
+                    new PortletModeEvent(new PortletMode(portletMode),
+                            new PortletMode(oldMode)));
+        }
+        String oldWindowState =
+                windowState;
+        windowState = request.getWindowState().toString();
+        if (!oldWindowState.equals(windowState)
+                && isViewInstanceOf(WindowStateHandler.class)
+                && viewInstance != null) {
+            fireWindowStateChange(
+                    (WindowStateHandler) viewInstance,
+                    new WindowStateEvent(new WindowState(windowState),
+                            new WindowState(oldWindowState)));
+        }
     }
 
     @Override
@@ -175,9 +255,7 @@ public abstract class VaadinPortlet<VIEW extends Component>
      * @return A wrapped version of the PortletRequest
      */
     protected VaadinPortletRequest createVaadinRequest(PortletRequest request) {
-        PortalContext portalContext = request.getPortalContext();
         VaadinPortletService service = getService();
-
         return new VaadinPortletRequest(request, service);
     }
 
@@ -195,7 +273,16 @@ public abstract class VaadinPortlet<VIEW extends Component>
     @Override
     public void processAction(ActionRequest request, ActionResponse response)
             throws PortletException {
-        handleRequest(request, response);
+        if (!isPortlet3 && request.getActionParameters().getNames()
+                .contains(ACTION_STATE)) {
+            WindowState windowState = new WindowState(
+                    request.getActionParameters().getValue(ACTION_STATE));
+            PortletMode portletMode = new PortletMode(
+                    request.getActionParameters().getValue(ACTION_MODE));
+
+            response.setWindowState(windowState);
+            response.setPortletMode(portletMode);
+        }
     }
 
     @Override
@@ -250,29 +337,25 @@ public abstract class VaadinPortlet<VIEW extends Component>
     /**
      * Gets the tag for the main component in the portlet.
      * <p>
-     * By default uses the one and only exported web component.
+     * By default derives the tag name from the class name.
      *
      * @return the tag of the main component to use
-     * @throws PortletException
-     *         if the main component could not be detected
      */
-    protected String getMainComponentTag() throws PortletException {
-        WebComponentConfigurationRegistry registry = WebComponentConfigurationRegistry
-                .getInstance(getService().getContext());
-        int exportedComponents = registry.getConfigurations().size();
-        if (exportedComponents == 0) {
-            throw new PortletException("No web components exported. Add a "
-                    + WebComponentExporter.class.getSimpleName()
-                    + " which exports your main component");
-        } else if (exportedComponents > 1) {
-            String definedComponents = registry.getConfigurations().stream()
-                    .map(conf -> conf.getTag())
-                    .collect(Collectors.joining(", "));
-            throw new PortletException(
-                    "Multiple web components are exported: " + definedComponents
-                            + ". Export only one web component or override getMainComponentTag in the portlet class");
+    @Override
+    public String getTag() {
+        if (getClass().isAnnotationPresent(Tag.class)) {
+            Tag tag = getClass().getAnnotation(Tag.class);
+            return tag.value();
+        } else {
+            String candidate = SharedUtil
+                    .camelCaseToDashSeparated(getClass().getSimpleName())
+                    .replaceFirst("^-", "");
+            if (!candidate.contains("-")) {
+                candidate = candidate + "-portlet";
+
+            }
+            return candidate;
         }
-        return registry.getConfigurations().iterator().next().getTag();
     }
 
     public void setWebComponentProviderURL(String url) {
@@ -299,4 +382,67 @@ public abstract class VaadinPortlet<VIEW extends Component>
         return webComponentUIDLRequestHandlerURL;
     }
 
+    /**
+     * Get the window state for this portlet.
+     *
+     * @return window state
+     */
+    public WindowState getWindowState() {
+        return new WindowState(windowState);
+    }
+
+    /**
+     * Get the portlet mode for this portlet.
+     *
+     * @return portlet mode
+     */
+    public PortletMode getPortletMode() {
+        return new PortletMode(portletMode);
+    }
+
+    /**
+     * Set a new window state for this portlet
+     *
+     * @param newWindowState
+     *         window state to set
+     */
+    public void setWindowState(WindowState newWindowState) {
+        if (isPortlet3) {
+            PortletHubUtil
+                    .updatePortletState(newWindowState.toString(), portletMode);
+        } else if (actionURL.containsKey(getNamespace())) {
+            stateChangeAction(newWindowState.toString(), portletMode);
+        }
+    }
+
+    /**
+     * Set a new portlet mode for this portlet.
+     *
+     * @param newPortletMode
+     *         portlet mode to set
+     */
+    public void setPortletMode(PortletMode newPortletMode) {
+        if (isPortlet3) {
+            PortletHubUtil
+                    .updatePortletState(windowState, newPortletMode.toString());
+        } else if (actionURL.containsKey(getNamespace())) {
+            stateChangeAction(windowState, newPortletMode.toString());
+        }
+    }
+
+    private void stateChangeAction(String state, String mode) {
+        String namespace = getNamespace();
+        if (actionURL.containsKey(namespace)) {
+            String stateChangeScript = String
+                    .format("location.href = '%s?%s=%s&%s=%s'", actionURL.get(namespace),
+                            ACTION_STATE, state, ACTION_MODE, mode);
+
+            UI.getCurrent().getPage().executeJs(stateChangeScript);
+        }
+    }
+
+    private String getNamespace() {
+        return VaadinPortletService.getCurrentResponse()
+                .getPortletResponse().getNamespace();
+    }
 }

@@ -13,11 +13,6 @@
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
         </supports>
-        <portlet-info>
-            <title>Basic Portlet - basicportlet</title>
-            <short-title>basicportlet</short-title>
-            <keywords></keywords>
-        </portlet-info>
     </portlet>
 
     <portlet>
@@ -29,9 +24,34 @@
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
         </supports>
+    </portlet>
+
+    <portlet>
+        <portlet-name>eventhandler</portlet-name>
+        <display-name>Flow Portlet with Mode and Window State Change Handler</display-name>
+        <portlet-class>com.vaadin.flow.portal.handler.EventHandlerPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+    </portlet>
+
+    <portlet>
+        <portlet-name>render</portlet-name>
+        <display-name>Flow Portlet with RenderStateChange</display-name>
+        <portlet-class>com.vaadin.flow.portal.rendermodes.RenderPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode>
+        </supports>
         <portlet-info>
-            <title>Upload Portlet - uploadportlet</title>
-            <short-title>uploadportlet</short-title>
+            <title>Mode Changes Portlet</title>
+            <short-title>modechanges</short-title>
             <keywords></keywords>
         </portlet-info>
     </portlet>

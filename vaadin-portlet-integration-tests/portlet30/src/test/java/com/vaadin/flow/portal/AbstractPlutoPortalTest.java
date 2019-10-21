@@ -15,8 +15,6 @@
  */
 package com.vaadin.flow.portal;
 
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
@@ -30,11 +28,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-import com.vaadin.flow.component.html.testbench.AnchorElement;
 import com.vaadin.flow.component.html.testbench.SelectElement;
 import com.vaadin.testbench.ScreenshotOnFailureRule;
 import com.vaadin.testbench.TestBench;
-import com.vaadin.testbench.TestBenchElement;
 import com.vaadin.testbench.parallel.ParallelTest;
 
 /**
@@ -55,7 +51,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     private static final int SERVER_PORT = 8080;
 
     private final String route = "pluto/portal";
-    private final String warName = "tests-generic";
+    private final String warName = "portlet30";
     private String testPage = "IT";
     private final String adminPage = "Pluto Admin";
     private final String portletName;
@@ -124,30 +120,6 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
                         Function.identity(), (oldValue, newValue) -> oldValue));
         nameMap.get("page").selectByText(testPage);
         findElement(By.id("removePageButton")).click();
-    }
-
-    /**
-     * Set the mode of the first portlet on page via Pluto's header dropdown.
-     */
-    protected void setPortletModeInPortal(PortletMode portletMode) {
-        SelectElement modeSelector =
-                $(TestBenchElement.class).attribute("name","modeSelectionForm").first()
-                .$(SelectElement.class).first();
-        modeSelector.selectByText(portletMode.toString().toUpperCase());
-    }
-
-    /**
-     * Set the mode of the first portlet on page via Pluto's header dropdown.
-     */
-    protected void setWindowStateInPortal(WindowState windowState) {
-        String buttonLabel =
-                WindowState.MAXIMIZED.equals(windowState) ? "Maximize" :
-                        WindowState.NORMAL.equals(windowState) ? "Restore" :
-                                WindowState.MINIMIZED.equals(windowState) ? "Minimize" :
-                                        null;
-        AnchorElement anchor =
-                $(AnchorElement.class).attribute("title", buttonLabel).first();
-        anchor.click();
     }
 
     /**

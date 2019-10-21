@@ -16,11 +16,11 @@
 package com.vaadin.flow.portal;
 
 import javax.portlet.PortletContext;
-import javax.portlet.PortletException;
 import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceURL;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -47,12 +47,7 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
     public boolean synchronizedHandleRequest(VaadinSession session,
             VaadinRequest request, VaadinResponse response) throws IOException {
         VaadinPortlet portlet = VaadinPortlet.getCurrent();
-        String tag;
-        try {
-            tag = portlet.getMainComponentTag();
-        } catch (PortletException e) {
-            throw new IOException(e);
-        }
+        String tag = portlet.getTag();
         PrintWriter writer = response.getWriter();
 
         PortletResponse resp = ((VaadinPortletResponse) response)
@@ -77,7 +72,17 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
             portlet.setWebComponentUIDLRequestHandlerURL(url.toString());
         }
         writer.write("<script src='" + scriptUrl + "'></script>");
-        writer.write("<" + tag + "></" + tag + ">");
+        writer.write("<script>customElements.whenDefined('" + tag
+                + "').then(function(){ var elem = document.querySelector('"
+                + tag + "');  elem.constructor._getClientStrategy = "
+                + "function(portletComponent){ "
+                + "   var clients = elem.constructor._getClients();"
+                + "   if (!clients){ return undefined;  }"
+                + "   var appId = window.Vaadin.Flow.portlets[portletComponent.getAttribute('data-portlet-id')];"
+                + "   return clients[appId]; };});</script>");
+        writer.write("<" + tag + " data-portlet-id='" + resp.getNamespace()
+                + "'></" + tag + ">");
+
         return true;
     }
 

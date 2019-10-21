@@ -80,24 +80,12 @@ public class VaadinPortletContext implements VaadinContext {
     }
 
     @Override
-    public Object getAttribute(String name) {
-        ensurePortletContext();
-        return context.getAttribute(name);
-    }
-
-    @Override
     public <T> void setAttribute(T value) {
         assert value != null;
         ensurePortletContext();
         context.setAttribute(value.getClass().getName(), value);
     }
 
-    @Override
-    public <T> void setAttribute(String name, T value) {
-        assert value != null;
-        ensurePortletContext();
-        context.setAttribute(name, value);
-    }
 
     @Override
     public void removeAttribute(Class<?> clazz) {

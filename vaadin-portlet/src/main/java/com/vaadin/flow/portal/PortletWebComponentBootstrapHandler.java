@@ -15,13 +15,18 @@
  */
 package com.vaadin.flow.portal;
 
+import javax.portlet.PortletResponse;
+
 import java.io.IOException;
 
+import org.jsoup.nodes.Element;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.server.DevModeHandler;
 import com.vaadin.flow.server.VaadinRequest;
+import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.server.communication.WebComponentBootstrapHandler;
 
 public class PortletWebComponentBootstrapHandler
@@ -42,7 +47,8 @@ public class PortletWebComponentBootstrapHandler
                     .getCurrent().getDeploymentConfiguration();
             if (deploymentConfiguration.isProductionMode()
                     || !deploymentConfiguration.enableDevServer()) {
-                // Without dev server we serve static files from the vaadin-portlet-static.war
+                // Without dev server we serve static files from the
+                // vaadin-portlet-static.war
                 return "/vaadin-portlet-static/" + path;
             } else if (DevModeHandler.getDevModeHandler() != null
                     && checkWebpackConnection()) {
@@ -53,6 +59,25 @@ public class PortletWebComponentBootstrapHandler
             return "/" + path;
         }
         return super.modifyPath(basePath, path);
+    }
+
+    @Override
+    protected void writeBootstrapPage(String contentType,
+            VaadinResponse response, Element head, String serviceUrl)
+            throws IOException {
+        String appId = UI.getCurrent().getInternals().getAppId();
+        PortletResponse resp = ((VaadinPortletResponse) response)
+                .getPortletResponse();
+        String portletNs = resp.getNamespace();
+
+        Element script = head.appendElement("script");
+        script.attr("type", "text/javascript");
+        script.appendText(
+                "if  (!window.Vaadin.Flow.portlets) {window.Vaadin.Flow.portlets = {}; } "
+                        + "window.Vaadin.Flow.portlets['" + portletNs + "']='"
+                        + appId + "';");
+
+        super.writeBootstrapPage(contentType, response, head, serviceUrl);
     }
 
     private boolean checkWebpackConnection() {

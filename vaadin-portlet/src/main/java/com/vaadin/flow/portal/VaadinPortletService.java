@@ -58,6 +58,8 @@ public class VaadinPortletService extends VaadinService {
 
     private static final Properties PROPERTIES_FILE = loadPropertiesFile();
 
+    private static final String SERVLET_RESOURCES_SERVER_MESSAGE = "Servlet resources are loaded and served by the server.";
+
     private final VaadinPortlet portlet;
 
     public VaadinPortletService(VaadinPortlet portlet,
@@ -326,23 +328,20 @@ public class VaadinPortletService extends VaadinService {
     @Override
     public URL getResource(String url, WebBrowser browser,
             AbstractTheme theme) {
-        getLogger()
-                .debug("Servlet resources are loaded and served by the server."); // NOSONAR
+        getLogger().debug(SERVLET_RESOURCES_SERVER_MESSAGE);
         return null;
     }
 
     @Override
     public InputStream getResourceAsStream(String url, WebBrowser browser,
             AbstractTheme theme) {
-        getLogger()
-                .debug("Servlet resources are loaded and served by the server."); // NOSONAR
+        getLogger().debug(SERVLET_RESOURCES_SERVER_MESSAGE);
         return null;
     }
 
     @Override
     public String resolveResource(String url, WebBrowser browser) {
-        getLogger()
-                .debug("Servlet resources are loaded and served by the server."); // NOSONAR
+        getLogger().debug(SERVLET_RESOURCES_SERVER_MESSAGE);
         return null;
     }
 

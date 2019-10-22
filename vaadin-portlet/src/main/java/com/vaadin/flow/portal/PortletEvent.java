@@ -15,6 +15,7 @@
  */
 package com.vaadin.flow.portal;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +26,7 @@ import java.util.Map;
  * @author Vaadin Ltd
  *
  */
-public class PortletEvent {
+public class PortletEvent implements Serializable {
 
     private final String eventName;
     private final Map<String, String[]> parameters;

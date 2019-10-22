@@ -15,6 +15,8 @@
  */
 package com.vaadin.flow.portal;
 
+import java.io.Serializable;
+
 /**
  * A component which implements this interface will receive events which are
  * sent via IPC.
@@ -22,7 +24,7 @@ package com.vaadin.flow.portal;
  * @author Vaadin Ltd
  *
  */
-public interface EventHandler {
+public interface EventHandler extends Serializable {
 
     /**
      * This method gets called when an IPC event is received.

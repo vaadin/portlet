@@ -122,11 +122,18 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
         selectAction.append("  setTimeout(poller, 10);");
         selectAction.append(" } else {");
         selectAction.append(" var params = hub.newParameters();");
-        selectAction.append(" params['vaadin.event']=type;");
+        selectAction.append(
+                " params['vaadin.event']=[];params['vaadin.event'][0]=type;");
         selectAction.append(" Object.getOwnPropertyNames(payload).forEach(");
         selectAction
                 .append(" function(prop){ params[prop] = payload[prop]; });");
-        selectAction.append("  hub.action(params);");
+        selectAction.append("  hub.action(params).then(function(){ ");
+        // call {@code action} method on the hub is not enough: it won't be an
+        // UIDL request. We need to make a fake UIDL request so that the client
+        // state is updated according to the server side state.
+        selectAction.append("var clients = elem.constructor._getClients();");
+        selectAction.append(
+                "clients[window.Vaadin.Flow.Portlets[ns].appId].poll(); });");
         selectAction.append(" }");
         selectAction.append("};");
         selectAction.append("poller();");

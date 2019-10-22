@@ -23,6 +23,12 @@ import com.vaadin.flow.portal.PortletEvent;
 
 public class EventTargetView extends Div implements EventHandler {
 
+    public EventTargetView() {
+        Div div = new Div();
+        div.setText("target");
+        add(div);
+    }
+
     @Override
     public void handleEvent(PortletEvent event) {
         Div div = new Div();
@@ -30,6 +36,8 @@ public class EventTargetView extends Div implements EventHandler {
         String[] param = event.getParameters().get("param");
         div.setText(event.getEventName()
                 + (param == null ? "" : Arrays.asList(param)));
+
+        add(div);
     }
 
 }

@@ -298,9 +298,11 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             if (event.startsWith(VAADIN_PREFIX)) {
                 event = event.substring(VAADIN_PREFIX.length());
             }
+            String ev = event;
             map.remove(VAADIN_EVENT);
+
             ((EventHandler) viewInstance)
-                    .handleEvent(new PortletEvent(event, map));
+                    .handleEvent(new PortletEvent(ev, map));
         }
     }
 

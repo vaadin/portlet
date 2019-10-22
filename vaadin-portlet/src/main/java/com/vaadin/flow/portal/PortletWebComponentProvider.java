@@ -31,19 +31,13 @@ public class PortletWebComponentProvider extends WebComponentProvider {
     }
 
     @Override
-    public boolean synchronizedHandleRequest(VaadinSession session,
-                                             VaadinRequest request, VaadinResponse response) throws IOException {
-        return super.synchronizedHandleRequest(session, request, response);
-    }
-
-    @Override
     protected String generateNPMResponse(
             String tagName, VaadinRequest request) {
         VaadinPortletResponse response = VaadinPortletResponse.getCurrent();
 
-        String nameSpace = response.getPortletResponse().getNamespace();
+        String namespace = response.getPortletResponse().getNamespace();
         String webcomponentBootstrapUrl = VaadinPortlet.getCurrent()
-                .getWebComponentBootstrapHandlerURL(nameSpace);
+                .getWebComponentBootstrapHandlerURL(namespace);
         return "var bootstrapAddress='" + webcomponentBootstrapUrl + "';\n"
                 + bootstrapNpm();
     }

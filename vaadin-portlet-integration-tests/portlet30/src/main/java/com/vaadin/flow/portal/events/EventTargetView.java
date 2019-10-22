@@ -33,7 +33,7 @@ public class EventTargetView extends Div implements EventHandler {
     public void handleEvent(PortletEvent event) {
         Div div = new Div();
         div.setId("event");
-        String[] param = event.getParameters().get("param");
+        String[] param = event.getParameters().get("button");
         div.setText(event.getEventName()
                 + (param == null ? "" : Arrays.asList(param)));
 

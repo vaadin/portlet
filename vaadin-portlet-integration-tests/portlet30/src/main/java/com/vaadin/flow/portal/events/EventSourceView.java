@@ -27,6 +27,7 @@ public class EventSourceView extends Div {
                 event -> EventSourcePortlet.getCurrent().sendEvent(this,
                         "vaadin.click",
                         Collections.singletonMap("button", "left")));
+        button.setId("send-event");
         add(button);
     }
 

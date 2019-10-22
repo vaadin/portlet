@@ -20,5 +20,37 @@
             <keywords></keywords>
         </portlet-info>
     </portlet>
+    
+    <portlet>
+        <portlet-name>event-source</portlet-name>
+        <display-name>Flow Event Source Portlet</display-name>
+        <portlet-class>com.vaadin.flow.portal.events.EventSourcePortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>Event Source Portlet</title>
+            <short-title>event-source</short-title>
+            <keywords></keywords>
+        </portlet-info>
+    </portlet>
+    
+    <portlet>
+        <portlet-name>event-target</portlet-name>
+        <display-name>Flow Event Target Portlet</display-name>
+        <portlet-class>com.vaadin.flow.portal.events.EventTargetPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>Event Target Portlet</title>
+            <short-title>event-target</short-title>
+            <keywords></keywords>
+        </portlet-info>
+    </portlet>
 
 </portlet-app>

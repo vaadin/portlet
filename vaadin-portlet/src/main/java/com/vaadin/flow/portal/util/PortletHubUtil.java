@@ -55,7 +55,7 @@ public final class PortletHubUtil {
     public static String getHubString() {
         String portletRegistryName = VaadinPortletService.getCurrentResponse()
                 .getPortletResponse().getNamespace();
-        return String.format("var hub = window.Vaadin.Flow.Portlets['%s'];",
+        return String.format("var hub = window.Vaadin.Flow.Portlets['%s'].hub;",
                 portletRegistryName);
     }
 

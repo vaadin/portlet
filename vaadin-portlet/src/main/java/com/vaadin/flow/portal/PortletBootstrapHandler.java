@@ -79,8 +79,8 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
                 + "   var clients = elem.constructor._getClients();"
                 + "   if (!clients){ return undefined;  }"
                 + "   var portlet = window.Vaadin.Flow.Portlets[portletComponent.getAttribute('data-portlet-id')];"
-                + "   return clients[portlet.appId]; };});</script>");
-        writer.write(getRegisterHubScript(resp));
+                + "   return clients[portlet.appId]; };"
+                + getRegisterHubScript(resp) + "});</script>");
         writer.write("<" + tag + " data-portlet-id='" + resp.getNamespace()
                 + "'></" + tag + ">");
 
@@ -91,27 +91,27 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
      * Register this portlet to the PortletHub.
      */
     private String getRegisterHubScript(PortletResponse response) {
-        StringBuilder register = new StringBuilder("<script>");
+        StringBuilder register = new StringBuilder();
 
+        register.append("elem.afterServerUpdate=function(){");
+        register.append("var ns = '%s';");
         register.append(
                 "window.Vaadin.Flow.Portlets = window.Vaadin.Flow.Portlets||{};");
         register.append(
-                "window.Vaadin.Flow.Portlets['%s'] = window.Vaadin.Flow.Portlets['%s']||{};");
-        register.append("if (portlet) {");
-        register.append("portlet.register('%s').then(function (hub) {");
-        register.append("window.Vaadin.Flow.Portlets['%s'].hub = hub;");
-        // add a fake state change listener to be able to use "addEventListener"
+                "window.Vaadin.Flow.Portlets[ns]=window.Vaadin.Flow.Portlets[ns]||{};");
         register.append(
-                "hub.addEventListener('portlet.onStateChange', function (type, state) {});");
+                "if (!window.Vaadin.Flow.Portlets[ns].hub && portlet) {");
+        register.append("portlet.register(ns).then(function (hub) {");
+        register.append("window.Vaadin.Flow.Portlets[ns].hub = hub;");
+        register.append(
+                "hub.addEventListener('portlet.onStateChange', function(type,state){});");
         register.append("hub.addEventListener('^vaadin\\..*',");
         register.append("function(type, payload){");
         register.append(getActionScript());
         register.append("});});}");
-        register.append("</script>");
+        register.append(" elem.afterServerUpdate=null;};");
 
-        return String.format(register.toString(), response.getNamespace(),
-                response.getNamespace(), response.getNamespace(),
-                response.getNamespace());
+        return String.format(register.toString(), response.getNamespace());
     }
 
     private String getActionScript() {

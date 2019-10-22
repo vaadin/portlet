@@ -439,14 +439,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      * @return window state
      */
     public WindowState getWindowState() {
-        String namespace = getNamespace();
-        VaadinPortletSession session = VaadinPortletSession.getCurrent();
-        Map<String,String> windowState = (Map<String, String>) session.getAttribute(getViewMapSessionKey(WINDOWSTATE_SESSION_SUBKEY));
-        if (windowState.containsKey(namespace)) {
-            return new WindowState(windowState.get(namespace));
-        } else {
-            return WindowState.UNDEFINED;
-        }
+        return VaadinPortletRequest.getCurrent().getWindowState();
     }
 
     /**
@@ -455,16 +448,9 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      * @return portlet mode
      */
     public PortletMode getPortletMode() {
-        String namespace = getNamespace();
-        VaadinPortletSession session = VaadinPortletSession.getCurrent();
-        Map<String,String> portletMode = (Map<String, String>) session.getAttribute(getViewMapSessionKey(MODE_SESSION_SUBKEY));
-        if (portletMode.containsKey(namespace)) {
-            return new PortletMode(portletMode.get(namespace));
-        } else {
-            return PortletMode.UNDEFINED;
-        }
+        return VaadinPortletRequest.getCurrent().getPortletMode();
     }
-
+    
     /**
      * Set a new window state for this portlet
      *

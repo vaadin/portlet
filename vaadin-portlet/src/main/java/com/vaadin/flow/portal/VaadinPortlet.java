@@ -301,8 +301,10 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             String ev = event;
             map.remove(VAADIN_EVENT);
 
-            ((EventHandler) viewInstance)
-                    .handleEvent(new PortletEvent(ev, map));
+            assert viewInstance.getElement().getNode().isAttached();
+            VaadinSession session = viewInstance.getUI().get().getSession();
+            session.access(() -> ((EventHandler) viewInstance)
+                    .handleEvent(new PortletEvent(ev, map)));
         }
     }
 

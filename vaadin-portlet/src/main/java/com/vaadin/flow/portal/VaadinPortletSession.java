@@ -403,6 +403,6 @@ public class VaadinPortletSession extends VaadinSession {
      *         <code>null</code>
      */
     public static VaadinPortletSession getCurrent() {
-        return CurrentInstance.get(VaadinPortletSession.class);
+        return (VaadinPortletSession) VaadinSession.getCurrent();
     }
 }

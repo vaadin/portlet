@@ -327,7 +327,7 @@ public class VaadinPortletService extends VaadinService {
     public URL getResource(String url, WebBrowser browser,
             AbstractTheme theme) {
         getLogger()
-                .debug("Servlet resources are loaded and served by the server.");
+                .debug("Servlet resources are loaded and served by the server."); // NOSONAR
         return null;
     }
 
@@ -335,14 +335,14 @@ public class VaadinPortletService extends VaadinService {
     public InputStream getResourceAsStream(String url, WebBrowser browser,
             AbstractTheme theme) {
         getLogger()
-                .debug("Servlet resources are loaded and served by the server.");
+                .debug("Servlet resources are loaded and served by the server."); // NOSONAR
         return null;
     }
 
     @Override
     public String resolveResource(String url, WebBrowser browser) {
         getLogger()
-                .debug("Servlet resources are loaded and served by the server.");
+                .debug("Servlet resources are loaded and served by the server."); // NOSONAR
         return null;
     }
 

@@ -15,11 +15,7 @@
  */
 package com.vaadin.flow.portal;
 
-import java.io.IOException;
-
 import com.vaadin.flow.server.VaadinRequest;
-import com.vaadin.flow.server.VaadinResponse;
-import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.communication.WebComponentProvider;
 
 public class PortletWebComponentProvider extends WebComponentProvider {

@@ -139,9 +139,9 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      * instances (one for MyPortlet(L) and one for MyPortlet(R), and four
      * view instances. Each view instance has its own mode and window state.
      */
-    private final static String VIEW_SESSION_SUBKEY = "view";
-    private final static String MODE_SESSION_SUBKEY = "mode";
-    private final static String WINDOWSTATE_SESSION_SUBKEY = "windowState";
+    private static final String VIEW_SESSION_SUBKEY = "view";
+    private static final String MODE_SESSION_SUBKEY = "mode";
+    private static final String WINDOWSTATE_SESSION_SUBKEY = "windowState";
 
     @Override
     public void init(PortletConfig config) throws PortletException {

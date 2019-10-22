@@ -46,7 +46,7 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
     @Override
     public boolean synchronizedHandleRequest(VaadinSession session,
             VaadinRequest request, VaadinResponse response) throws IOException {
-        VaadinPortlet portlet = VaadinPortlet.getCurrent();
+        VaadinPortlet<?> portlet = VaadinPortlet.getCurrent();
         String tag = portlet.getTag();
         PrintWriter writer = response.getWriter();
 
@@ -78,12 +78,60 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
                 + "function(portletComponent){ "
                 + "   var clients = elem.constructor._getClients();"
                 + "   if (!clients){ return undefined;  }"
-                + "   var appId = window.Vaadin.Flow.portlets[portletComponent.getAttribute('data-portlet-id')];"
-                + "   return clients[appId]; };});</script>");
+                + "   var portlet = window.Vaadin.Flow.Portlets[portletComponent.getAttribute('data-portlet-id')];"
+                + "   return clients[portlet.appId]; };});</script>");
+        writer.write(getRegisterHubScript(resp));
         writer.write("<" + tag + " data-portlet-id='" + resp.getNamespace()
                 + "'></" + tag + ">");
 
         return true;
+    }
+
+    /**
+     * Register this portlet to the PortletHub.
+     */
+    private String getRegisterHubScript(PortletResponse response) {
+        StringBuilder register = new StringBuilder("<script>");
+
+        register.append(
+                "window.Vaadin.Flow.Portlets = window.Vaadin.Flow.Portlets||{};");
+        register.append(
+                "window.Vaadin.Flow.Portlets['%s'] = window.Vaadin.Flow.Portlets['%s']||{};");
+        register.append("if (portlet) {");
+        register.append("portlet.register('%s').then(function (hub) {");
+        register.append("window.Vaadin.Flow.Portlets['%s'].hub = hub;");
+        // add a fake state change listener to be able to use "addEventListener"
+        register.append(
+                "hub.addEventListener('portlet.onStateChange', function (type, state) {});");
+        register.append("hub.addEventListener('^vaadin\\..*',");
+        register.append("function(type, payload){");
+        register.append(getActionScript());
+        register.append("});});}");
+        register.append("</script>");
+
+        return String.format(register.toString(), response.getNamespace(),
+                response.getNamespace(), response.getNamespace(),
+                response.getNamespace());
+    }
+
+    private String getActionScript() {
+        StringBuilder selectAction = new StringBuilder();
+
+        selectAction.append("var poller = function() {");
+        selectAction.append(" if(hub.isInProgress()) {");
+        selectAction.append("  setTimeout(poller, 10);");
+        selectAction.append(" } else {");
+        selectAction.append(" var params = hub.newParameters();");
+        selectAction.append(" params['vaadin.event']=type;");
+        selectAction.append(" Object.getOwnPropertyNames(payload).forEach(");
+        selectAction
+                .append(" function(prop){ params[prop] = payload[prop]; });");
+        selectAction.append("  hub.action(params);");
+        selectAction.append(" }");
+        selectAction.append("};");
+        selectAction.append("poller();");
+
+        return selectAction.toString();
     }
 
 }

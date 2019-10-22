@@ -71,7 +71,7 @@ import com.vaadin.flow.shared.util.SharedUtil;
  */
 @PreserveOnRefresh
 public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
-         implements ExportsWebComponent<C> {
+        implements ExportsWebComponent<C> {
 
     private static final String ACTION_STATE = "state";
     private static final String ACTION_MODE = "mode";
@@ -80,12 +80,65 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
     private boolean isPortlet3 = false;
 
-    private Map<String,String> actionURL = new HashMap<>();
+    private Map<String, String> actionURL = new HashMap<>();
 
-    private Map<String,String> webComponentProviderURL = new HashMap<>();
-    private Map<String,String> webComponentBootstrapHandlerURL = new HashMap<>();
-    private Map<String,String> webComponentUIDLRequestHandlerURL =  new HashMap<>();
+    private Map<String, String> webComponentProviderURL = new HashMap<>();
+    private Map<String, String> webComponentBootstrapHandlerURL = new HashMap<>();
+    private Map<String, String> webComponentUIDLRequestHandlerURL = new HashMap<>();
 
+    /*
+     * The session currently stores a number of maps with the following keys:
+     *
+     * "<portlet class name>-view": namespace to view mapping
+     * "<portlet class name>-mode": namespace to portlet mode mapping
+     * "<portlet class name>-windowState": namespace to window state mapping
+     *
+     * Note that this is not enough to work correctly, for the following reason.
+     *
+     * Given a single session and namespace, there will be two different view
+     * instances (each with their own state) for every opened browser window
+     * that contains the portlet. This mean the window name also needs to be
+     * incorporated in this map (and it needs to be sent from the client
+     * with each portlet request so that we can resolve to the correct view
+     * instance when dispatching events).
+     *
+     * TODO: This should be fixed as part of https://github.com/vaadin/flow/issues/6373
+     *
+     *   VaadinPortletSession(1)   VaadinPortletSession(2)
+     *              V                       V
+     *              │                       │
+     * ╔════════════╪═══════════════════════╪════════════╗
+     * ║ Window(1)  │                       │            ║
+     * ╟────────────┼───────────────────────┼───────────-╢
+     * ║ ┌──────────┼──────────┐ ┌──────────┼──────────┐ ║
+     * ║ │ MyPortlet│(L)       │ │ MyPortlet│(R)       │ ║
+     * ║ ├──────────┼──── ─────┤ ├──────────┼──────────┤ ║
+     * ║ │ ┌────────┼────────┐ │ │ ┌────────┼────────┐ │ ║
+     * ║ │ │ View(1)│        │ │ │ │ View(2)│        │ │ ║
+     * ║ │ └────────┼────────┘ │ │ └────────┼────────┘ │ ║
+     * ║ └──────────┼──────────┘ └──────────┼──────────┘ ║
+     * ╚════════════╪═══════════════════════╪════════════╝
+     *              │                       │
+     * ╔════════════╪═══════════════════════╪════════════╗
+     * ║ Window(2)  │                       │            ║
+     * ╟────────────┼───────────────────────┼───────────-╢
+     * ║ ┌──────────┼──────────┐ ┌──────────┼──────────┐ ║
+     * ║ │ MyPortlet│(L)       │ │ MyPortlet│(R)       │ ║
+     * ║ ├──────────┼──── ─────┤ ├──────────┼──────────┤ ║
+     * ║ │ ┌────────┼────────┐ │ │ ┌────────┼────────┐ │ ║
+     * ║ │ │ View(3)│        │ │ │ │ View(4)│        │ │ ║
+     * ║ │ └────────┼────────┘ │ │ └────────┼────────┘ │ ║
+     * ║ └──────────┼──────────┘ └──────────┼──────────┘ ║
+     * ╚════════════╪═══════════════════════╪════════════╝
+     *              │                       │
+     *              V                       V
+     *
+     * In the above scenario, the same portal page contains two instances of
+     * the same portlet in namespaces L and R. The page itself is open in two
+     * different browser windows. There are then two VaadinPortletSession
+     * instances (one for MyPortlet(L) and one for MyPortlet(R), and four
+     * view instances. Each view instance has its own mode and window state.
+     */
     private final static String VIEW_SESSION_SUBKEY = "view";
     private final static String MODE_SESSION_SUBKEY = "mode";
     private final static String WINDOWSTATE_SESSION_SUBKEY = "windowState";
@@ -173,7 +226,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      * Sends the given {@link PortletModeEvent} to the given view instance of
      * this portlet.
      *
-     * @param view the view instance
+     * @param view  the view instance
      * @param event the event object
      */
     protected void fireModeChange(PortletModeHandler view,
@@ -185,7 +238,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      * Sends the given {@link WindowStateEvent} to the given view instance of
      * this portlet.
      *
-     * @param view the view instance
+     * @param view  the view instance
      * @param event the event object
      */
     protected void fireWindowStateChange(WindowStateHandler view,
@@ -252,9 +305,9 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             getLogger().error("Session expired", e);
             return;
         }
-        Map<String,C> views = (Map<String, C>) session.getAttribute(getViewMapSessionKey(VIEW_SESSION_SUBKEY));
+        Map<String, C> views = (Map<String, C>) session.getAttribute(getViewMapSessionKey(VIEW_SESSION_SUBKEY));
 
-        if (views !=null) {
+        if (views != null) {
             if (!views.containsKey(namespace)) {
                 throw new PortletException("view not initialized for namespace " + namespace);
             }
@@ -264,19 +317,19 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
              * Note: mode update events must be sent to handlers before
              * window state update events.
              */
-            Map<String,String> portletMode = (Map<String, String>) session.getAttribute(getViewMapSessionKey(MODE_SESSION_SUBKEY));
+            Map<String, String> portletMode = (Map<String, String>) session.getAttribute(getViewMapSessionKey(MODE_SESSION_SUBKEY));
             String oldMode = portletMode.getOrDefault(namespace,
                     PortletMode.UNDEFINED.toString());
             String newMode = request.getPortletMode().toString();
             if (!oldMode.equals(newMode)
                     && isViewInstanceOf(PortletModeHandler.class)) {
-                portletMode.put(namespace,newMode);
+                portletMode.put(namespace, newMode);
                 fireModeChange((PortletModeHandler) viewInstance,
                         new PortletModeEvent(new PortletMode(newMode),
                                 new PortletMode(oldMode)));
             }
 
-            Map<String,String> windowState = (Map<String, String>) session.getAttribute(getViewMapSessionKey(WINDOWSTATE_SESSION_SUBKEY));
+            Map<String, String> windowState = (Map<String, String>) session.getAttribute(getViewMapSessionKey(WINDOWSTATE_SESSION_SUBKEY));
             String oldWindowState = windowState.getOrDefault(namespace,
                     WindowState.UNDEFINED.toString());
             String newWindowState = request.getWindowState().toString();

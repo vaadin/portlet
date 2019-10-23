@@ -81,7 +81,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         }
         getDriver().get(getURL(route));
         loginToPortal();
-        addPortlet();
+        addPortlet(portletName, null);
     }
 
     @After
@@ -100,14 +100,25 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         }
     }
 
-    protected void addPortlet(String portlet) {
+    /**
+     * Adds a new {@code portlet} to the {@code page}.
+     * <p>
+     * A new page is created if {@code page} is {@code null}.
+     *
+     * @param portlet
+     *            the portlet name
+     * @return
+     */
+    protected void addPortlet(String portlet, String page) {
         getDriver().get(getURL(route + "/" + adminPage));
 
         // Create a new page
-        testPage = String.format("IT-%d",
-                new Random().nextInt(Integer.MAX_VALUE));
-        findElement(By.name("newPage")).sendKeys(testPage);
-        findElement(By.id("addPageButton")).click();
+        if (page == null) {
+            testPage = String.format("IT-%d",
+                    new Random().nextInt(Integer.MAX_VALUE));
+            findElement(By.name("newPage")).sendKeys(testPage);
+            findElement(By.id("addPageButton")).click();
+        }
 
         // Add the portlet
         Map<String, SelectElement> nameMap = $(SelectElement.class).all()
@@ -119,6 +130,8 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         nameMap.get("applications").selectByText("/" + warName);
         nameMap.get("availablePortlets").selectByText(portlet);
         findElement(By.id("addButton")).click();
+
+        getDriver().get(getURL(getPortalRoute() + "/" + getPage()));
     }
 
     protected void removePortletPage() {
@@ -150,8 +163,22 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
                         "Could not find required element in the shadowRoot"));
     }
 
+    /**
+     * Gets the portal route.
+     *
+     * @return the portal route
+     */
     protected String getPortalRoute() {
         return route;
+    }
+
+    /**
+     * Gets the portal page.
+     *
+     * @return the portal page
+     */
+    protected String getPage() {
+        return testPage;
     }
 
     private WebElement getShadowRoot(WebElement webComponent) {
@@ -162,12 +189,6 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         Assert.assertNotNull("Could not locate shadowRoot in the element",
                 shadowRoot);
         return shadowRoot;
-    }
-
-    private void addPortlet() {
-        addPortlet(portletName);
-        // go to portlet page
-        getDriver().get(getURL(route + "/" + testPage));
     }
 
     /**

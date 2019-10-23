@@ -48,6 +48,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.internal.ExportsWebComponent;
 import com.vaadin.flow.component.webcomponent.WebComponent;
 import com.vaadin.flow.function.DeploymentConfiguration;
+import com.vaadin.flow.function.SerializableRunnable;
 import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.portal.handler.EventHandler;
 import com.vaadin.flow.portal.handler.PortletEvent;
@@ -92,6 +93,24 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     // TODO: Create a portlet-instance mapping (#45) for event dispatching.
     private C viewInstance = null;
 
+    private static class VaadinPortletEventContextImpl<C extends Component>
+            implements VaadinPortletEventContext {
+
+        private final C view;
+
+        private VaadinPortletEventContextImpl(C view) {
+            this.view = view;
+        }
+
+        @Override
+        public void fireEvent(String eventName,
+                Map<String, String> parameters) {
+            // TODO Auto-generated method stub
+
+        }
+
+    }
+
     @Override
     public void init(PortletConfig config) throws PortletException {
         CurrentInstance.clearAll();
@@ -130,6 +149,17 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
     @Override
     public void configure(WebComponent<C> webComponent, C component) {
+        SerializableRunnable runnable = () -> {
+            if (component instanceof VaadinPortletEventView) {
+                VaadinPortletEventView view = (VaadinPortletEventView) component;
+                view.onPortletEventContextInit(
+                        new VaadinPortletEventContextImpl<>(component));
+            }
+        };
+        if (component.getElement().getNode().isAttached()) {
+            runnable.run();
+        }
+        component.getElement().addAttachListener(event -> runnable.run());
         if (VaadinPortlet.getCurrent() != null) {
             // Cannot use 'this' as it is only a temporary object created by
             // WebComponentExporter handling logic

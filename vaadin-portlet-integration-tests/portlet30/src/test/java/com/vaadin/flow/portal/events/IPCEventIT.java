@@ -35,17 +35,30 @@ public class IPCEventIT extends AbstractPlutoPortalTest {
 
         getDriver().get(getURL(getPortalRoute() + "/About"));
 
-        waitUntil(driver -> !findElements(By.id("send-event")).isEmpty());
+        waitPortletsPage();
 
         NativeButtonElement sendEvent = $(NativeButtonElement.class)
                 .id("send-event");
 
         sendEvent.click();
 
+        // make sure we are still on the portlets page
+        waitPortletsPage();
+
         waitUntil(driver -> !findElements(By.id("event")).isEmpty());
 
         WebElement event = findElement(By.id("event"));
         Assert.assertEquals("click[left]", event.getText());
+    }
+
+    private void waitPortletsPage() {
+        waitUntil(driver -> {
+            boolean pageIsShown = !findElements(By.id("send-event")).isEmpty();
+            if (!pageIsShown) {
+                getDriver().get(getURL(getPortalRoute() + "/About"));
+            }
+            return pageIsShown;
+        });
     }
 
 }

@@ -72,8 +72,7 @@ import com.vaadin.flow.shared.util.SharedUtil;
 public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         implements ExportsWebComponent<C> {
 
-    private static final String VAADIN_PREFIX = "vaadin.";
-    private static final String VAADIN_EVENT = VAADIN_PREFIX + "event";
+    private static final String VAADIN_EVENT = "vaadin.event";
     private static final String ACTION_STATE = "state";
     private static final String ACTION_MODE = "mode";
 
@@ -295,16 +294,12 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             String event = request.getActionParameters().getValue(VAADIN_EVENT);
             Map<String, String[]> map = new HashMap<>(
                     request.getParameterMap());
-            if (event.startsWith(VAADIN_PREFIX)) {
-                event = event.substring(VAADIN_PREFIX.length());
-            }
-            String ev = event;
             map.remove(VAADIN_EVENT);
 
             assert viewInstance.getElement().getNode().isAttached();
             VaadinSession session = viewInstance.getUI().get().getSession();
             session.access(() -> ((EventHandler) viewInstance)
-                    .handleEvent(new PortletEvent(ev, map)));
+                    .handleEvent(new PortletEvent(event, map)));
         }
     }
 

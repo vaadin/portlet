@@ -74,7 +74,7 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
         writer.write("<script src='" + scriptUrl + "'></script>");
         writer.write("<script>customElements.whenDefined('" + tag
                 + "').then(function(){ var elem = document.querySelector('"
-                + tag + "');  elem.constructor._getClientStrategy = "
+                + tag + "'); elem.constructor._getClientStrategy = "
                 + "function(portletComponent){ "
                 + "   var clients = elem.constructor._getClients();"
                 + "   if (!clients){ return undefined;  }"
@@ -105,7 +105,7 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
         register.append("window.Vaadin.Flow.Portlets[ns].hub = hub;");
         register.append(
                 "hub.addEventListener('portlet.onStateChange', function(type,state){});");
-        register.append("hub.addEventListener('^vaadin\\..*',");
+        register.append("hub.addEventListener('.*',");
         register.append("function(type, payload){");
         register.append(getActionScript());
         register.append("});});}");

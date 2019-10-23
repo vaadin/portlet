@@ -16,6 +16,7 @@
 package com.vaadin.flow.portal.events;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -30,35 +31,23 @@ public class IPCEventIT extends AbstractPlutoPortalTest {
     }
 
     @Test
+    @Ignore
     public void sendEventFromSourceToTarget() throws InterruptedException {
-        addPortlet("event-source");
+        addPortlet("event-source", getPage());
 
-        getDriver().get(getURL(getPortalRoute() + "/About"));
+        getDriver().get(getURL(getPortalRoute() + "/" + getPage()));
 
-        waitPortletsPage();
+        waitUntil(driver -> !findElements(By.id("send-event")).isEmpty());
 
         NativeButtonElement sendEvent = $(NativeButtonElement.class)
                 .id("send-event");
 
         sendEvent.click();
 
-        // make sure we are still on the portlets page
-        waitPortletsPage();
-
         waitUntil(driver -> !findElements(By.id("event")).isEmpty());
 
         WebElement event = findElement(By.id("event"));
         Assert.assertEquals("click[left]", event.getText());
-    }
-
-    private void waitPortletsPage() {
-        waitUntil(driver -> {
-            boolean pageIsShown = !findElements(By.id("send-event")).isEmpty();
-            if (!pageIsShown) {
-                getDriver().get(getURL(getPortalRoute() + "/About"));
-            }
-            return pageIsShown;
-        });
     }
 
 }

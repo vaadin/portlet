@@ -38,16 +38,23 @@ import com.vaadin.testbench.parallel.ParallelTest;
  * <p>
  * The tests use Chrome driver (see pom.xml for integration-tests profile) to
  * run integration tests on a headless Chrome. If a property {@code test.use
- * .hub} is set to true, {@code AbstractViewTest} will assume that the
- * TestBench test is running in a CI environment. In order to keep the this
- * class light, it makes certain assumptions about the CI environment (such
- * as available environment variables). It is not advisable to use this class
- * as a base class for you own TestBench tests.
+ * .hub} is set to true, {@code AbstractViewTest} will assume that the TestBench
+ * test is running in a CI environment. In order to keep the this class light,
+ * it makes certain assumptions about the CI environment (such as available
+ * environment variables). It is not advisable to use this class as a base class
+ * for you own TestBench tests.
  * <p>
- * To learn more about TestBench, visit
- * <a href="https://vaadin.com/docs/v10/testbench/testbench-overview.html">Vaadin TestBench</a>.
+ * To learn more about TestBench, visit <a href=
+ * "https://vaadin.com/docs/v10/testbench/testbench-overview.html">Vaadin
+ * TestBench</a>.
  */
 public abstract class AbstractPlutoPortalTest extends ParallelTest {
+
+    /**
+     * Property set to true when running on a test hub.
+     */
+    private static final String USE_HUB_PROPERTY = "test.use.hub";
+
     private static final int SERVER_PORT = 8080;
 
     private final String route = "pluto/portal";
@@ -64,6 +71,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     public ScreenshotOnFailureRule rule = new ScreenshotOnFailureRule(this,
             false);
 
+    @Override
     @Before
     public void setup() throws Exception {
         if (isUsingHub()) {
@@ -73,7 +81,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         }
         getDriver().get(getURL(route));
         loginToPortal();
-        addPortlet();
+        addPortlet(portletName, null);
     }
 
     @After
@@ -92,31 +100,46 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         }
     }
 
-    protected void addPortlet() {
+    /**
+     * Adds a new {@code portlet} to the {@code page}.
+     * <p>
+     * A new page is created if {@code page} is {@code null}.
+     *
+     * @param portlet
+     *            the portlet name
+     * @return
+     */
+    protected void addPortlet(String portlet, String page) {
         getDriver().get(getURL(route + "/" + adminPage));
 
         // Create a new page
-        testPage = String.format("IT-%d", new Random().nextInt(Integer.MAX_VALUE));
-        findElement(By.name("newPage")).sendKeys(testPage);
-        findElement(By.id("addPageButton")).click();
+        if (page == null) {
+            testPage = String.format("IT-%d",
+                    new Random().nextInt(Integer.MAX_VALUE));
+            findElement(By.name("newPage")).sendKeys(testPage);
+            findElement(By.id("addPageButton")).click();
+        }
 
         // Add the portlet
-        Map<String, SelectElement> nameMap = $(SelectElement.class).all().stream().collect(Collectors
-                .toMap(selectElement -> selectElement.getAttribute("name"),
+        Map<String, SelectElement> nameMap = $(SelectElement.class).all()
+                .stream()
+                .collect(Collectors.toMap(
+                        selectElement -> selectElement.getAttribute("name"),
                         Function.identity(), (oldValue, newValue) -> oldValue));
         nameMap.get("page").selectByText(testPage);
         nameMap.get("applications").selectByText("/" + warName);
-        nameMap.get("availablePortlets").selectByText(portletName);
+        nameMap.get("availablePortlets").selectByText(portlet);
         findElement(By.id("addButton")).click();
 
-        // go to portlet page
-        getDriver().get(getURL(route + "/" + testPage));
+        getDriver().get(getURL(getPortalRoute() + "/" + getPage()));
     }
 
     protected void removePortletPage() {
         getDriver().get(getURL(route + "/" + adminPage));
-        Map<String, SelectElement> nameMap = $(SelectElement.class).all().stream().collect(Collectors
-                .toMap(selectElement -> selectElement.getAttribute("name"),
+        Map<String, SelectElement> nameMap = $(SelectElement.class).all()
+                .stream()
+                .collect(Collectors.toMap(
+                        selectElement -> selectElement.getAttribute("name"),
                         Function.identity(), (oldValue, newValue) -> oldValue));
         nameMap.get("page").selectByText(testPage);
         findElement(By.id("removePageButton")).click();
@@ -140,6 +163,24 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
                         "Could not find required element in the shadowRoot"));
     }
 
+    /**
+     * Gets the portal route.
+     *
+     * @return the portal route
+     */
+    protected String getPortalRoute() {
+        return route;
+    }
+
+    /**
+     * Gets the portal page.
+     *
+     * @return the portal page
+     */
+    protected String getPage() {
+        return testPage;
+    }
+
     private WebElement getShadowRoot(WebElement webComponent) {
         waitUntil(driver -> getCommandExecutor().executeScript(
                 "return arguments[0].shadowRoot", webComponent) != null);
@@ -151,30 +192,25 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     }
 
     /**
-     * Property set to true when running on a test hub.
-     */
-    private static final String USE_HUB_PROPERTY = "test.use.hub";
-
-    /**
      * Returns deployment host name concatenated with route.
      *
      * @return URL to route
      */
-    private static String getURL(String route) {
+    protected static String getURL(String route) {
         return String.format("http://%s:%d/%s", getDeploymentHostname(),
                 SERVER_PORT, route);
     }
 
     /**
-     * Returns whether we are using a test hub. This means that the starter
-     * is running tests in Vaadin's CI environment, and uses TestBench to
-     * connect to the testing hub.
+     * Returns whether we are using a test hub. This means that the starter is
+     * running tests in Vaadin's CI environment, and uses TestBench to connect
+     * to the testing hub.
      *
      * @return whether we are using a test hub
      */
     private static boolean isUsingHub() {
-        return Boolean.TRUE.toString().equals(
-                System.getProperty(USE_HUB_PROPERTY));
+        return Boolean.TRUE.toString()
+                .equals(System.getProperty(USE_HUB_PROPERTY));
     }
 
     /**
@@ -185,6 +221,5 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     private static String getDeploymentHostname() {
         return isUsingHub() ? System.getenv("HOSTNAME") : "localhost";
     }
-
 
 }

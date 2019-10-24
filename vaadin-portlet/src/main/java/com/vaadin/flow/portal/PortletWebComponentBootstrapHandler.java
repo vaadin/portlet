@@ -72,10 +72,11 @@ public class PortletWebComponentBootstrapHandler
 
         Element script = head.appendElement("script");
         script.attr("type", "text/javascript");
-        script.appendText(
-                "if  (!window.Vaadin.Flow.portlets) {window.Vaadin.Flow.portlets = {}; } "
-                        + "window.Vaadin.Flow.portlets['" + portletNs + "']='"
-                        + appId + "';");
+        script.appendText(String.format(
+                "window.Vaadin.Flow.Portlets =window.Vaadin.Flow.Portlets||{};"
+                        + "window.Vaadin.Flow.Portlets['%s']=window.Vaadin.Flow.Portlets['%s']||{};"
+                        + "window.Vaadin.Flow.Portlets['%s'].appId='%s';",
+                portletNs, portletNs, portletNs, appId));
 
         super.writeBootstrapPage(contentType, response, head, serviceUrl);
     }

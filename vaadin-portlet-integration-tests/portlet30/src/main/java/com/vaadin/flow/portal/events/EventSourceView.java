@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2019 Vaadin Ltd.
+ * Copyright 2000-2018 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,15 +13,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal;
+package com.vaadin.flow.portal.events;
 
-import com.vaadin.flow.server.VaadinRequest;
-import com.vaadin.flow.server.communication.UidlRequestHandler;
+import java.util.Collections;
 
-public class PortletUidlRequestHandler extends UidlRequestHandler {
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.NativeButton;
 
-    @Override
-    protected boolean canHandleRequest(VaadinRequest request) {
-        return "/uidl".equals(request.getPathInfo());
+public class EventSourceView extends Div {
+
+    public EventSourceView() {
+        NativeButton button = new NativeButton("Send event",
+                event -> EventSourcePortlet.getCurrent().sendEvent(this,
+                        "click", Collections.singletonMap("button", "left")));
+        button.setId("send-event");
+        add(button);
     }
+
 }

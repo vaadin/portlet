@@ -13,15 +13,23 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal;
+package com.vaadin.flow.portal.handler;
 
-import com.vaadin.flow.server.VaadinRequest;
-import com.vaadin.flow.server.communication.UidlRequestHandler;
+import java.io.Serializable;
 
-public class PortletUidlRequestHandler extends UidlRequestHandler {
+/**
+ * A component which implements this interface will receive events which are
+ * sent via IPC.
+ *
+ * @author Vaadin Ltd
+ *
+ */
+public interface EventHandler extends Serializable {
 
-    @Override
-    protected boolean canHandleRequest(VaadinRequest request) {
-        return "/uidl".equals(request.getPathInfo());
-    }
+    /**
+     * This method gets called when an IPC event is received.
+     *
+     * @param event
+     */
+    void handleEvent(PortletEvent event);
 }

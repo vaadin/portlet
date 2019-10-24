@@ -15,17 +15,23 @@
  */
 package com.vaadin.flow.portal.handler;
 
+import java.io.Serializable;
+
 /**
  * Add this interface to a {@link com.vaadin.flow.portal.VaadinPortlet} view
  * (the {@link com.vaadin.flow.component.Component} subclass passed for the type
  * parameter {@code C}) to handle changes in {@link javax.portlet.WindowState}.
+ *
+ * @see WindowStateListener
  */
-public interface WindowStateHandler {
+@FunctionalInterface
+public interface WindowStateHandler extends Serializable {
 
     /**
      * Invoked when the window state changes.
      *
-     * @param event the event object
+     * @param event
+     *            the event object
      */
     void windowStateChange(WindowStateEvent event);
 }

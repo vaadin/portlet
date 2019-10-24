@@ -20,19 +20,22 @@ import java.util.Arrays;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.portal.handler.EventHandler;
 import com.vaadin.flow.portal.handler.PortletEvent;
+import com.vaadin.flow.portal.handler.VaadinPortletEventContext;
 
 public class EventTargetView extends Div implements EventHandler {
 
+    private VaadinPortletEventContext context;
+
     public EventTargetView() {
         Div div = new Div();
-        div.setText("target");
+        div.setText("Target");
         add(div);
     }
 
     @Override
     public void handleEvent(PortletEvent event) {
         Div div = new Div();
-        div.setId("event");
+        div.setClassName("event");
         String[] param = event.getParameters().get("button");
         div.setText(event.getEventName()
                 + (param == null ? "" : Arrays.asList(param)));

@@ -74,16 +74,23 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
             portlet.setWebComponentUIDLRequestHandlerURL(session,
                     resp.getNamespace(), url.toString());
         }
+        String ns = resp.getNamespace();
         writer.write("<script src='" + scriptUrl + "'></script>");
-        writer.write("<script>customElements.whenDefined('" + tag
-                + "').then(function(){ var elem = document.querySelector('"
-                + tag + "'); elem.constructor._getClientStrategy = "
-                + "function(portletComponent){ "
-                + "   var clients = elem.constructor._getClients();"
-                + "   if (!clients){ return undefined;  }"
-                + "   var portlet = window.Vaadin.Flow.Portlets[portletComponent.getAttribute('data-portlet-id')];"
-                + "   return clients[portlet.appId]; };"
-                + getRegisterHubScript(resp) + "});</script>");
+        StringBuilder initScript = new StringBuilder();
+        initScript.append("<script>customElements.whenDefined('").append(tag)
+                .append("').then(function(){ var elem = document.querySelector('")
+                .append(tag)
+                .append("'); elem.constructor._getClientStrategy = ")
+                .append("function(portletComponent){ ")
+                .append("   var clients = elem.constructor._getClients();")
+                .append("   if (!clients){ return undefined;  }")
+                .append("   var portlet = window.Vaadin.Flow.Portlets[portletComponent.getAttribute('data-portlet-id')];")
+                .append("   return clients[portlet.appId]; };")
+                .append(getRegisterHubScript(tag, ns))
+                .append(initListenerRegistrationScript(ns))
+                .append("});</script>");
+
+        writer.write(initScript.toString());
         writer.write("<" + tag + " data-portlet-id='" + resp.getNamespace()
                 + "'></" + tag + ">");
 
@@ -93,60 +100,102 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
     /**
      * Register this portlet to the PortletHub.
      */
-    private String getRegisterHubScript(PortletResponse response) {
+    private String getRegisterHubScript(String tag, String namespace) {
         StringBuilder register = new StringBuilder();
 
-        register.append("elem.afterServerUpdate=function(){");
-        register.append("var ns = '%s';");
+        register.append("var targetElem;");
+        register.append(" var ns = '%s';");
+        register.append("var allPortletElems = document.querySelectorAll('");
+        register.append(tag);
+        register.append("');");
+        register.append("for( i =0; i<allPortletElems.length; i++){ ");
         register.append(
-                "window.Vaadin.Flow.Portlets = window.Vaadin.Flow.Portlets||{};");
+                " if ( allPortletElems[i].getAttribute('data-portlet-id') == ns){targetElem=allPortletElems[i];break; }}");
         register.append(
-                "window.Vaadin.Flow.Portlets[ns]=window.Vaadin.Flow.Portlets[ns]||{};");
+                "var afterServerUpdate = targetElem.afterServerUpdate;");
+        register.append("targetElem.afterServerUpdate=function(){");
+        register.append(" if (afterServerUpdate){ afterServerUpdate(); }");
+        initClientPortlet(register);
+        register.append(" var portletObj = window.Vaadin.Flow.Portlets[ns];");
+        register.append(" if (!portletObj.hub && portlet) {");
+        register.append("  portlet.register(ns).then(function (hub) {");
+        register.append("  portletObj.hub = hub;");
         register.append(
-                "if (!window.Vaadin.Flow.Portlets[ns].hub && portlet) {");
-        register.append("portlet.register(ns).then(function (hub) {");
-        register.append("window.Vaadin.Flow.Portlets[ns].hub = hub;");
+                "  hub.addEventListener('portlet.onStateChange', function(type,state){});");
+        register.append("  portletObj.eventPoller = %s;");
+        register.append(" if (portletObj.listeners){ ");
         register.append(
-                "hub.addEventListener('portlet.onStateChange', function(type,state){});");
-        register.append("hub.addEventListener('.*',");
-        register.append("function(type, payload){");
-        register.append("%s");
-        register.append("}");
-        register.append(");");
+                "  Object.getOwnPropertyNames(portletObj.listeners).forEach(");
+        register.append(
+                " function(uid){ portletObj.registerListener(portletObj.listeners[uid], uid); }");
+        register.append("); delete portletObj.listeners;}");
         register.append("});");
-        register.append("}");
-        register.append(" elem.afterServerUpdate=null;};");
+        register.append(" targetElem.afterServerUpdate=afterServerUpdate;}};");
 
-        return String.format(register.toString(), response.getNamespace(),
-
-                getActionScript());
+        return String.format(register.toString(), namespace,
+                getEventPollerFunction());
     }
 
-    private String getActionScript() {
+    private String initListenerRegistrationScript(String namespace) {
+        StringBuilder addRemoveListener = new StringBuilder();
+
+        addRemoveListener.append("var ns = '%s';");
+        initClientPortlet(addRemoveListener);
+        addRemoveListener
+                .append("var portletObj = window.Vaadin.Flow.Portlets[ns];")
+                .append("var regListener = function(eventType, uid){")
+                .append(" var poller = portletObj.eventPoller;")
+                .append(" var handle = portletObj.hub.addEventListener(eventType, function(type, payload){")
+                .append("   poller(type, payload, uid); });")
+                .append("portletObj.eventHandles = portletObj.eventHandles||{};")
+                .append("portletObj.eventHandles[uid]=handle;};")
+                .append("portletObj.registerListener = function(eventType, uid){")
+                .append(" if ( portletObj.hub) {regListener(eventType, uid);} ")
+                .append(" else { portletObj.listeners = portletObj.listeners||{}; ")
+                .append(" portletObj.listeners[uid] = eventType;} };")
+                .append("removeListener = function(uid){")
+                .append(" if ( portletObj.eventHandles && portletObj.eventHandles[uid]){")
+                .append(" portletObj.hub.removeEventListener(portletObj.eventHandles[uid]);}")
+                .append("};")
+                .append("portletObj.unregisterListener = function(uid){")
+                .append(" if ( portletObj.hub) {removeListener(uid);} else { delete portletObj.listeners[uid]; }};");
+        return String.format(addRemoveListener.toString(), namespace);
+    }
+
+    private String getEventPollerFunction() {
         StringBuilder selectAction = new StringBuilder();
 
-        selectAction.append("var poller = function() {");
+        selectAction.append("function(type, payload, uid) {");
         selectAction.append(" if(hub.isInProgress()) {");
-        selectAction.append("  setTimeout(poller, 10);");
+        selectAction.append(
+                "  setTimeout(function(){ portletObj.eventPoller(type, payload, uid); }, 10);");
         selectAction.append(" } else {");
         selectAction.append(" var params = hub.newParameters();");
+        selectAction
+                .append(" params['vaadin.ev']=[];params['vaadin.ev'][0]=type;");
         selectAction.append(
-                " params['vaadin.event']=[];params['vaadin.event'][0]=type;");
+                " params['vaadin.uid']=[];params['vaadin.uid'][0]=uid;");
+        selectAction.append("if (payload){ ");
         selectAction.append(" Object.getOwnPropertyNames(payload).forEach(");
         selectAction
-                .append(" function(prop){ params[prop] = payload[prop]; });");
+                .append(" function(prop){ params[prop] = payload[prop]; });}");
         selectAction.append("  hub.action(params).then(function(){ ");
         // call {@code action} method on the hub is not enough: it won't be an
         // UIDL request. We need to make a fake UIDL request so that the client
         // state is updated according to the server side state.
         selectAction.append("var clients = elem.constructor._getClients();");
-        selectAction.append(
-                "clients[window.Vaadin.Flow.Portlets[ns].appId].poll(); });");
+        selectAction.append("clients[portletObj.appId].poll(); });");
         selectAction.append(" }");
         selectAction.append("};");
-        selectAction.append("poller();");
 
         return selectAction.toString();
+    }
+
+    private void initClientPortlet(StringBuilder builder) {
+        builder.append(
+                " window.Vaadin.Flow.Portlets = window.Vaadin.Flow.Portlets||{};");
+        builder.append(
+                " window.Vaadin.Flow.Portlets[ns]=window.Vaadin.Flow.Portlets[ns]||{};");
     }
 
 }

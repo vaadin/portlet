@@ -48,11 +48,14 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.internal.ExportsWebComponent;
 import com.vaadin.flow.component.webcomponent.WebComponent;
 import com.vaadin.flow.function.DeploymentConfiguration;
+import com.vaadin.flow.function.SerializableRunnable;
 import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.portal.handler.EventHandler;
 import com.vaadin.flow.portal.handler.PortletEvent;
 import com.vaadin.flow.portal.handler.PortletModeEvent;
 import com.vaadin.flow.portal.handler.PortletModeHandler;
+import com.vaadin.flow.portal.handler.VaadinPortletEventContext;
+import com.vaadin.flow.portal.handler.VaadinPortletEventView;
 import com.vaadin.flow.portal.handler.WindowStateEvent;
 import com.vaadin.flow.portal.handler.WindowStateHandler;
 import com.vaadin.flow.portal.util.PortletHubUtil;
@@ -92,6 +95,38 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     // TODO: Create a portlet-instance mapping (#45) for event dispatching.
     private C viewInstance = null;
 
+    private static class VaadinPortletEventContextImpl<C extends Component>
+            implements VaadinPortletEventContext {
+
+        private final C view;
+
+        private VaadinPortletEventContextImpl(C view) {
+            this.view = view;
+        }
+
+        @Override
+        public void fireEvent(String eventName,
+                Map<String, String> parameters) {
+            StringBuilder eventBuilder = new StringBuilder();
+            eventBuilder.append(PortletHubUtil.getHubString());
+            eventBuilder.append("var params = hub.newParameters();");
+            eventBuilder.append("params['action'] = ['send'];");
+            parameters.forEach((key, value) -> eventBuilder
+                    .append(String.format("params['%s'] = ['%s'];", escape(key),
+                            escape(value))));
+            eventBuilder.append(
+                    String.format("hub.dispatchClientEvent('%s', params);",
+                            escape(eventName)));
+
+            view.getElement().executeJs(eventBuilder.toString());
+        }
+
+        private String escape(String str) {
+            return str.replaceAll("([\\\\'])", "\\\\$1");
+        }
+
+    }
+
     @Override
     public void init(PortletConfig config) throws PortletException {
         CurrentInstance.clearAll();
@@ -130,6 +165,17 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
     @Override
     public void configure(WebComponent<C> webComponent, C component) {
+        SerializableRunnable runnable = () -> {
+            if (component instanceof VaadinPortletEventView) {
+                VaadinPortletEventView view = (VaadinPortletEventView) component;
+                view.onPortletEventContextInit(
+                        new VaadinPortletEventContextImpl<>(component));
+            }
+        };
+        if (component.getElement().getNode().isAttached()) {
+            runnable.run();
+        }
+        component.getElement().addAttachListener(event -> runnable.run());
         if (VaadinPortlet.getCurrent() != null) {
             // Cannot use 'this' as it is only a temporary object created by
             // WebComponentExporter handling logic
@@ -451,37 +497,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     }
 
     /**
-     * Send an event with the given parameters with the {@code portletComponent}
-     * as a source.
-     * <p>
-     * If {@code eventName} has {@code "vaadin."} prefix then Vaadin Portlet
-     * will send this event to the server as an action event out of the box.
-     * Such event will be handled by the
-     * {@link VaadinPortlet#processAction(ActionRequest, ActionResponse)}
-     * method.
-     *
-     * @param portletComponent
-     *            a source component
-     * @param eventName
-     *            an event name
-     * @param parameters
-     *            parameters to add to event action
-     */
-    public void sendEvent(Component portletComponent, String eventName,
-            Map<String, String> parameters) {
-        StringBuilder eventBuilder = new StringBuilder();
-        eventBuilder.append(PortletHubUtil.getHubString());
-        eventBuilder.append("var params = hub.newParameters();");
-        eventBuilder.append("params['action'] = ['send'];");
-        parameters.forEach((key, value) -> eventBuilder.append(String
-                .format("params['%s'] = ['%s'];", escape(key), escape(value))));
-        eventBuilder.append(String.format(
-                "hub.dispatchClientEvent('%s', params);", escape(eventName)));
-
-        portletComponent.getElement().executeJs(eventBuilder.toString());
-    }
-
-    /**
      * Adds a client side (JavaScript) event listener for the {@code eventName}.
      *
      * @param portletComponent
@@ -520,10 +535,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private String getNamespace() {
         return VaadinPortletService.getCurrentResponse().getPortletResponse()
                 .getNamespace();
-    }
-
-    private String escape(String str) {
-        return str.replaceAll("([\\\\'])", "\\\\$1");
     }
 
 }

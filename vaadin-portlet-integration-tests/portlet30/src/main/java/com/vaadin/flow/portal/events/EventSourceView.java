@@ -19,15 +19,24 @@ import java.util.Collections;
 
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.NativeButton;
+import com.vaadin.flow.portal.handler.VaadinPortletEventContext;
+import com.vaadin.flow.portal.handler.VaadinPortletEventView;
 
-public class EventSourceView extends Div {
+public class EventSourceView extends Div implements VaadinPortletEventView {
+
+    private VaadinPortletEventContext eventContext;
 
     public EventSourceView() {
         NativeButton button = new NativeButton("Send event",
-                event -> EventSourcePortlet.getCurrent().sendEvent(this,
-                        "click", Collections.singletonMap("button", "left")));
+                event -> eventContext.fireEvent("click",
+                        Collections.singletonMap("button", "left")));
         button.setId("send-event");
         add(button);
+    }
+
+    @Override
+    public void onPortletEventContextInit(VaadinPortletEventContext context) {
+        this.eventContext = context;
     }
 
 }

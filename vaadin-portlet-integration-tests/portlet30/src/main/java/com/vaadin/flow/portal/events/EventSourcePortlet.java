@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2019 Vaadin Ltd.
+ * Copyright 2000-2018 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,15 +13,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal;
+package com.vaadin.flow.portal.events;
 
-import com.vaadin.flow.server.VaadinRequest;
-import com.vaadin.flow.server.communication.UidlRequestHandler;
+import com.vaadin.flow.portal.VaadinPortlet;
 
-public class PortletUidlRequestHandler extends UidlRequestHandler {
+public class EventSourcePortlet extends VaadinPortlet<EventSourceView> {
 
-    @Override
-    protected boolean canHandleRequest(VaadinRequest request) {
-        return "/uidl".equals(request.getPathInfo());
-    }
 }

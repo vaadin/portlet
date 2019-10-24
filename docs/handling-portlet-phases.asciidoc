@@ -97,7 +97,13 @@ VaadinPortlet.getCurrent().setWindowState(WindowState.MAXIMIZED);
 
 === Example of a Vaadin Portlet Reacting to and Changing States
 
-This is a full example with two class, one extending `VaadinPortlet` and other implementing both state interfaces.
+This is a full example with two class, `MyPortlet` (a portlet class) extending `VaadinPortlet` and `MyView` extending `Div` (a view class).
+The view class implements both status related handler interfaces: `PortletModeHandler` and `WindowStateHandler`.
+
+`MyView` reacts to the status changes by updating the text of a `Paragraph`, informing the user whether the portlet mode or the window state changed.
+The example also show how the developer can change portlet mode and window state from the Java code.
+The view contains two buttons.
+One with "Maximize" text changes the window state of the portlet to `MAXIMIZED`, and the other with "Show help" text sets the portlet mode to `HELP`.
 
 .MyPortlet.java
 [source,java]

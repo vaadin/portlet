@@ -46,7 +46,7 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
     @Override
     public boolean synchronizedHandleRequest(VaadinSession session,
             VaadinRequest request, VaadinResponse response) throws IOException {
-        VaadinPortlet portlet = VaadinPortlet.getCurrent();
+        VaadinPortlet<?> portlet = VaadinPortlet.getCurrent();
         String tag = portlet.getTag();
         PrintWriter writer = response.getWriter();
 
@@ -74,16 +74,76 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
         writer.write("<script src='" + scriptUrl + "'></script>");
         writer.write("<script>customElements.whenDefined('" + tag
                 + "').then(function(){ var elem = document.querySelector('"
-                + tag + "');  elem.constructor._getClientStrategy = "
+                + tag + "'); elem.constructor._getClientStrategy = "
                 + "function(portletComponent){ "
                 + "   var clients = elem.constructor._getClients();"
                 + "   if (!clients){ return undefined;  }"
-                + "   var appId = window.Vaadin.Flow.portlets[portletComponent.getAttribute('data-portlet-id')];"
-                + "   return clients[appId]; };});</script>");
+                + "   var portlet = window.Vaadin.Flow.Portlets[portletComponent.getAttribute('data-portlet-id')];"
+                + "   return clients[portlet.appId]; };"
+                + getRegisterHubScript(resp) + "});</script>");
         writer.write("<" + tag + " data-portlet-id='" + resp.getNamespace()
                 + "'></" + tag + ">");
 
         return true;
+    }
+
+    /**
+     * Register this portlet to the PortletHub.
+     */
+    private String getRegisterHubScript(PortletResponse response) {
+        StringBuilder register = new StringBuilder();
+
+        register.append("elem.afterServerUpdate=function(){");
+        register.append("var ns = '%s';");
+        register.append(
+                "window.Vaadin.Flow.Portlets = window.Vaadin.Flow.Portlets||{};");
+        register.append(
+                "window.Vaadin.Flow.Portlets[ns]=window.Vaadin.Flow.Portlets[ns]||{};");
+        register.append(
+                "if (!window.Vaadin.Flow.Portlets[ns].hub && portlet) {");
+        register.append("portlet.register(ns).then(function (hub) {");
+        register.append("window.Vaadin.Flow.Portlets[ns].hub = hub;");
+        register.append(
+                "hub.addEventListener('portlet.onStateChange', function(type,state){});");
+        register.append("hub.addEventListener('.*',");
+        register.append("function(type, payload){");
+        register.append("%s");
+        register.append("}");
+        register.append(");");
+        register.append("});");
+        register.append("}");
+        register.append(" elem.afterServerUpdate=null;};");
+
+        return String.format(register.toString(), response.getNamespace(),
+
+                getActionScript());
+    }
+
+    private String getActionScript() {
+        StringBuilder selectAction = new StringBuilder();
+
+        selectAction.append("var poller = function() {");
+        selectAction.append(" if(hub.isInProgress()) {");
+        selectAction.append("  setTimeout(poller, 10);");
+        selectAction.append(" } else {");
+        selectAction.append(" var params = hub.newParameters();");
+        selectAction.append(
+                " params['vaadin.event']=[];params['vaadin.event'][0]=type;");
+        selectAction.append(" Object.getOwnPropertyNames(payload).forEach(");
+        selectAction
+                .append(" function(prop){ params[prop] = payload[prop]; });");
+        selectAction.append("  hub.action(params).then(function(){ ");
+        // call {@code action} method on the hub is not enough: it won't be an
+        // UIDL request. We need to make a fake UIDL request so that the client
+        // state is updated according to the server side state.
+        selectAction.append("var clients = elem.constructor._getClients();");
+        selectAction.append(
+                "clients[window.Vaadin.Flow.Portlets[ns].appId].poll(); });");
+        selectAction.append(" }");
+        selectAction.append("};");
+        selectAction.append("poller();");
+
+        return selectAction.toString();
     }
 
 }

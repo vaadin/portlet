@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal;
+package com.vaadin.flow.portal.handler;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -42,7 +42,7 @@ public class PortletEvent implements Serializable {
      */
     public PortletEvent(String eventName, Map<String, String[]> parameters) {
         this.eventName = eventName;
-        this.parameters = new HashMap<String, String[]>(parameters);
+        this.parameters = new HashMap<>(parameters);
     }
 
     public String getEventName() {

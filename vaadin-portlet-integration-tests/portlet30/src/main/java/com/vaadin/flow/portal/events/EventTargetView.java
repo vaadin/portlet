@@ -18,8 +18,8 @@ package com.vaadin.flow.portal.events;
 import java.util.Arrays;
 
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.portal.EventHandler;
-import com.vaadin.flow.portal.PortletEvent;
+import com.vaadin.flow.portal.handler.EventHandler;
+import com.vaadin.flow.portal.handler.PortletEvent;
 
 public class EventTargetView extends Div implements EventHandler {
 

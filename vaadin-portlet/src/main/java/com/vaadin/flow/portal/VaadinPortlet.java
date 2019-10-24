@@ -49,6 +49,8 @@ import com.vaadin.flow.component.internal.ExportsWebComponent;
 import com.vaadin.flow.component.webcomponent.WebComponent;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.CurrentInstance;
+import com.vaadin.flow.portal.handler.EventHandler;
+import com.vaadin.flow.portal.handler.PortletEvent;
 import com.vaadin.flow.portal.handler.PortletModeEvent;
 import com.vaadin.flow.portal.handler.PortletModeHandler;
 import com.vaadin.flow.portal.handler.WindowStateEvent;
@@ -471,10 +473,10 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         eventBuilder.append(PortletHubUtil.getHubString());
         eventBuilder.append("var params = hub.newParameters();");
         eventBuilder.append("params['action'] = ['send'];");
-        parameters.forEach((key, value) -> eventBuilder
-                .append(String.format("params['%s'] = ['%s'];", key, value)));
-        eventBuilder.append(String
-                .format("hub.dispatchClientEvent('%s', params);", eventName));
+        parameters.forEach((key, value) -> eventBuilder.append(String
+                .format("params['%s'] = ['%s'];", escape(key), escape(value))));
+        eventBuilder.append(String.format(
+                "hub.dispatchClientEvent('%s', params);", escape(eventName)));
 
         portletComponent.getElement().executeJs(eventBuilder.toString());
     }
@@ -518,6 +520,10 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private String getNamespace() {
         return VaadinPortletService.getCurrentResponse().getPortletResponse()
                 .getNamespace();
+    }
+
+    private String escape(String str) {
+        return str.replaceAll("([\\\\'])", "\\\\$1");
     }
 
 }

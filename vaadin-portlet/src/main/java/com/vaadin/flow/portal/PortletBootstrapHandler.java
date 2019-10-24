@@ -107,11 +107,16 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
                 "hub.addEventListener('portlet.onStateChange', function(type,state){});");
         register.append("hub.addEventListener('.*',");
         register.append("function(type, payload){");
-        register.append(getActionScript());
-        register.append("});});}");
+        register.append("%s");
+        register.append("}");
+        register.append(");");
+        register.append("});");
+        register.append("}");
         register.append(" elem.afterServerUpdate=null;};");
 
-        return String.format(register.toString(), response.getNamespace());
+        return String.format(register.toString(), response.getNamespace(),
+
+                getActionScript());
     }
 
     private String getActionScript() {

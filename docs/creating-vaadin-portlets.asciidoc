@@ -1,7 +1,7 @@
 = Creating Vaadin Portlets
 
 In this chapter we will learn how to create Vaadin Portlets and how to deploy those portlets to https://portals.apache.org/pluto/index.html[Pluto 3.1 Portal]
-running on an Apache TomCat 8.0 web server (sometimes simply "TomCat").
+running on an Apache Tomcat 8.0 web server (sometimes simply "Tomcat").
 
 Pluto is a reference implementation for Portlet specification and while good for testing, it should not be used in a production environment.
 
@@ -211,7 +211,7 @@ Add the following plugin configuration to the pom.xml:
 === Deploying Vaadin Portlet
 
 . Run `mvn install` in you project directory.
-. Download https://www.apache.org/dist/portals/pluto/pluto-bundle-3.1.0.zip[TomCat 8.0 + Pluto 3.1 bundle] and extract it to a location you prefer.
+. Download https://www.apache.org/dist/portals/pluto/pluto-bundle-3.1.0.zip[Tomcat 8.0 + Pluto 3.1 bundle] and extract it to a location you prefer.
 . Copy both `*.war` files from `{project directory}/target` into `{bundle extract location}/webapps`.
 . Start the web server by
 * Opening a command prompt in the `{bundle extract directory}` folder

@@ -13,17 +13,27 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal;
-
-import java.util.Map;
+package com.vaadin.flow.portal.handler;
 
 /**
+ * Provides an event context to fire events and subscribe a listener to receive
+ * events.
+ *
  * @author Vaadin Ltd
  * @since
  *
  */
-public interface VaadinPortletEventContext {
+public interface VaadinPortletEventView {
 
-    void fireEvent(String eventName, Map<String, String> parameters);
-
+    /**
+     * This method gets called once for a portlet component if it implements
+     * this interface.
+     * <p>
+     * Implement the interface and the method to be able to store the
+     * {@code context} object and use it to fire events and subscribe to them.
+     *
+     * @param context
+     *            a portlet event context
+     */
+    void onPortletEventContextInit(VaadinPortletEventContext context);
 }

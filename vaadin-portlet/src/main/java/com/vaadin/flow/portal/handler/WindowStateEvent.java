@@ -18,8 +18,8 @@ package com.vaadin.flow.portal.handler;
 import javax.portlet.WindowState;
 
 /**
- * An event of this class is fired when the {@link WindowState} of the
- * portlet is updated to a state different from its current state.
+ * An event of this class is fired when the {@link WindowState} of the portlet
+ * is updated to a state different from its current state.
  */
 public class WindowStateEvent {
 
@@ -29,10 +29,11 @@ public class WindowStateEvent {
     /**
      * Creates a new event.
      *
-     * @param windowState the updated window state
+     * @param windowState
+     *            the updated window state
      */
     public WindowStateEvent(WindowState windowState,
-                            WindowState prevWindowState) {
+            WindowState prevWindowState) {
         this.windowState = windowState;
         this.prevWindowState = prevWindowState;
     }

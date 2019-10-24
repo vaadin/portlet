@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import com.vaadin.flow.portal.VaadinPortlet;
+import com.vaadin.flow.shared.Registration;
 
 /**
  * A portlet event context object allows to fire and send portlet events.
@@ -52,5 +53,58 @@ public interface VaadinPortletEventContext extends Serializable {
      *            parameters to add to event action
      */
     void fireEvent(String eventName, Map<String, String> parameters);
+
+    /**
+     * Adds a listener which will receive any {@link PortletEvent}.
+     *
+     * @see #addEventListener(String, PortletEventListener)
+     * @see EventHandler
+     *
+     * @param listener
+     *            a portlet event listener, not {@code null}
+     * @return an event registration handle for removing the listener
+     */
+    Registration addGenericEventListener(PortletEventListener listener);
+
+    /**
+     * Adds a listener which will receive only events with the given
+     * {@code eventType}.
+     * <p>
+     * {@code eventType} can be a regular expression, e.g.
+     * {@code "^myCompany\..*"}. registers a listener for all event types
+     * beginning with {@code "myCompany."}.
+     *
+     * @see #addGenericEventListener(PortletEventListener)
+     *
+     * @param eventType
+     *            an event type to listen
+     * @param listener
+     *            a portlet event listener, not {@code null}
+     * @return an event registration handle for removing the listener
+     */
+    Registration addEventListener(String eventType,
+            PortletEventListener listener);
+
+    /**
+     * Adds a window state listener.
+     *
+     * @see WindowStateHandler
+     *
+     * @param listener
+     *            a window state listener, not {@code null}
+     * @return a registration handle for removing the listener
+     */
+    Registration addWindowStateListener(WindowStateListener listener);
+
+    /**
+     * Adds a portlet mode listener.
+     *
+     * @see PortletModeHandler
+     *
+     * @param listener
+     *            a portlet mode listener, not {@code null}
+     * @return a registration handle for removing the listener
+     */
+    Registration addPortletModeListener(PortletModeListener listener);
 
 }

@@ -53,4 +53,20 @@
         </portlet-info>
     </portlet>
 
+    <portlet>
+        <portlet-name>other-event-target</portlet-name>
+        <display-name>Flow Another Event Target Portlet</display-name>
+        <portlet-class>com.vaadin.flow.portal.events.OtherEventTargetPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>Other Event Target Portlet</title>
+            <short-title>other-event-target</short-title>
+            <keywords></keywords>
+        </portlet-info>
+    </portlet>
+
 </portlet-app>

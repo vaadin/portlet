@@ -18,6 +18,7 @@ package com.vaadin.flow.portal.handler;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import com.vaadin.flow.portal.VaadinPortlet;
@@ -31,7 +32,7 @@ import com.vaadin.flow.portal.VaadinPortlet;
  * @see VaadinPortletEventView#onPortletEventContextInit(VaadinPortletEventContext)
  *
  */
-public interface VaadinPortletEventContext {
+public interface VaadinPortletEventContext extends Serializable {
 
     /**
      * Fires an event with the given {@code parameters} and {@code eventName}.

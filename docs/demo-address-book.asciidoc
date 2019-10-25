@@ -64,7 +64,7 @@ These requirements can be fulfilled by implementing the `PortletView` interface.
 
 [NOTE]
 We use `PortletView` in both view classes as it provides a single entry point to the portlet state.
-We can both register event listeners and mutate the state through `PortletContext` object.
+We can both register event listeners and mutate the state through `PortletViewContext` object.
 However, if we were interested in only very particular types of updates and
 did not need to change the state, we could simply implement `PortletModeHandler`, `WindowStateHandler`, or `EventHandler` interfaces
 
@@ -76,7 +76,7 @@ The classes contain code that is not directly related to the portlet implementat
 [source,java]
 ----
 public class ListPortletView extends VerticalLayout implements PortletView {
-    private PortletContext portletContext;
+    private PortletViewContext portletViewContext;
 
     public ListPortletView() {
         // ... other initialization ...
@@ -87,10 +87,10 @@ public class ListPortletView extends VerticalLayout implements PortletView {
     }
 
     @Override
-    public void init(PortletContext context) {
+    public void init(PortletViewContext context) {
         context.addEventListener("contact-updated", this::handleEvent);
         // save context for sending events
-        portletContext = context;
+        portletViewContext = context;
     }
 
     private void fireSelectionEvent(ItemClickEvent<Contact> contactItemClickEvent) {
@@ -102,7 +102,7 @@ public class ListPortletView extends VerticalLayout implements PortletView {
                 "contactId", contact.getId().toString());
 
         // send the event with name "contact-selected"
-        portletContext.sendEvent("contact-selected", param);
+        portletViewContext.sendEvent("contact-selected", param);
     }
 
     // receives all correctly formatted portlet hub events
@@ -122,14 +122,14 @@ public class ListPortletView extends VerticalLayout implements PortletView {
 ----
 
 The `ListPortletView` view implements `PortletView` interface.
-`PortletView`'s method `init(PortletContext)` provides the implementing class a reference to a `PortletContext` object, which allows us to register listeners and change the portlet's state.
+`PortletView`'s method `init(PortletViewContext)` provides the implementing class a reference to a `PortletViewContext` object, which allows us to register listeners and change the portlet's state.
 Besides `init`, the `ListPortletView` has three important methods from the portlet perspective: `fireSelectionEvent` and `handleEvent`.
 Firing the selection event is triggered when user selects a contact in the list.
 The method creates a parameter map which contains the id of the selected contact.
 We then use the our portlet instance to send the event under the name `contact-selected`.
 Other Vaadin portlet views that implement `EventHandler` will be notified about the event.
 
-The other method, `handleEvent`, is is registered as an event listener for `contact-updated` event via `PortletContext` instance.
+The other method, `handleEvent`, is is registered as an event listener for `contact-updated` event via `PortletViewContext` instance.
 The `contact-updated` event has the same parameters as the `contact-selected` event.
 We use the contact id to updated the correct contact information field on the list.
 
@@ -140,7 +140,7 @@ import java.util.Collections;public class FormPortletView extends VerticalLayout
     private static final String ACTION_EDIT = "Edit";
     private static final String ACTION_SAVE = "Save";
 
-    private PortletContext portletContext;
+    private PortletViewContext portletViewContext;
     private PortletMode portletMode;
 
     private Button action;
@@ -157,7 +157,7 @@ import java.util.Collections;public class FormPortletView extends VerticalLayout
                         save();
                     } else {
                         // switch portlet to EDIT mode
-                        portletContext.setPortletMode(PortletMode.EDIT);
+                        portletViewContext.setPortletMode(PortletMode.EDIT);
                     }});
 
         add(action);
@@ -166,11 +166,11 @@ import java.util.Collections;public class FormPortletView extends VerticalLayout
     }
 
     @Override
-    public void init(PortletContext context) {
+    public void init(PortletViewContext context) {
         context.addEventListener("contact-selected", this::handleEvent);
         context.addPortletModeListener(this::handlePortletMode);
         // save context for sending events
-        portletContext = context;
+        portletViewContext = context;
     }
 
     // called when the portlet mode changes
@@ -212,14 +212,14 @@ import java.util.Collections;public class FormPortletView extends VerticalLayout
             ContactService.getInstance().save(contact);
         }
 
-        portletContext.setPortletMode(PortletMode.VIEW);
-        portletContext.sendEvent("contact-updated", Collections.singletonMap(
+        portletViewContext.setPortletMode(PortletMode.VIEW);
+        portletViewContext.sendEvent("contact-updated", Collections.singletonMap(
                 "contactId", contact.getId().toString()));
     }
 }
 ----
 
-`FormPortletView` uses `PortletContext` received via the `init(PortletContext)` method to register an event listener and portlet mode listener.
+`FormPortletView` uses `PortletViewContext` received via the `init(PortletViewContext)` method to register an event listener and portlet mode listener.
 The important methods for the portlet operation are `handlePortletMode` and `handleEvent`.
 The `FormPortletView` supports two portlet modes: `view` and `edit`.
 In the `handlePortletMode`, depending on the portlet mode, we either enable or disable editing on the form fields.

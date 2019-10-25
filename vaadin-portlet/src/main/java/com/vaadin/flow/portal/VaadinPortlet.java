@@ -17,15 +17,18 @@ package com.vaadin.flow.portal;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.ActionURL;
 import javax.portlet.EventRequest;
 import javax.portlet.EventResponse;
 import javax.portlet.GenericPortlet;
 import javax.portlet.HeaderRequest;
 import javax.portlet.HeaderResponse;
+import javax.portlet.MimeResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
+import javax.portlet.PortletModeException;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
@@ -33,6 +36,7 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.portlet.WindowState;
+import javax.portlet.WindowStateException;
 
 import java.io.IOException;
 import java.util.Enumeration;
@@ -89,7 +93,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
     private boolean isPortlet3 = false;
 
-    private Map<String, String> actionURL = new HashMap<>();
     private Map<String, String> webComponentProviderURL = new HashMap<>();
     private Map<String, String> webComponentBootstrapHandlerURL = new HashMap<>();
     private Map<String, String> webComponentUIDLRequestHandlerURL = new HashMap<>();
@@ -328,10 +331,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         super.render(request, response);
 
         String namespace = response.getNamespace();
-
-        if (!isPortlet3 && !actionURL.containsKey(response.getNamespace())) {
-            actionURL.put(namespace, response.createActionURL().toString());
-        }
 
         VaadinPortletSession session = null;
         try {
@@ -578,15 +577,13 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      *            window state to set
      */
     public void setWindowState(WindowState newWindowState) {
-        String namespace = getNamespace();
         if (isPortlet3) {
             PortletHubUtil.updatePortletState(newWindowState.toString(),
                     getPortletMode().toString());
-        } else if (actionURL.containsKey(namespace)) {
-            stateChangeAction(newWindowState.toString(),
-                    getPortletMode().toString());
+        } else {
+            stateChangeAction(newWindowState, getPortletMode());
         }
-        setSessionWindowState(VaadinPortletSession.getCurrent(), namespace,
+        setSessionWindowState(VaadinPortletSession.getCurrent(), getNamespace(),
                 newWindowState);
     }
 
@@ -597,15 +594,13 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      *            portlet mode to set
      */
     public void setPortletMode(PortletMode newPortletMode) {
-        String namespace = getNamespace();
         if (isPortlet3) {
             PortletHubUtil.updatePortletState(getWindowState().toString(),
                     newPortletMode.toString());
-        } else if (actionURL.containsKey(namespace)) {
-            stateChangeAction(getWindowState().toString(),
-                    newPortletMode.toString());
+        } else {
+            stateChangeAction(getWindowState(), newPortletMode);
         }
-        setSessionPortletMode(VaadinPortletSession.getCurrent(), namespace,
+        setSessionPortletMode(VaadinPortletSession.getCurrent(), getNamespace(),
                 newPortletMode);
     }
 
@@ -633,14 +628,25 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         portletComponent.getElement().executeJs(listenerBuilder.toString());
     }
 
-    private void stateChangeAction(String state, String mode) {
-        String namespace = getNamespace();
-        if (actionURL.containsKey(namespace)) {
-            String stateChangeScript = String.format(
-                    "location.href = '%s?%s=%s&%s=%s'",
-                    actionURL.get(namespace), ACTION_STATE, state, ACTION_MODE,
-                    mode);
-
+    private void stateChangeAction(WindowState state, PortletMode mode) {
+        PortletResponse response = VaadinPortletResponse
+                .getCurrentPortletResponse();
+        if (response instanceof MimeResponse) {
+            ActionURL actionURL = ((MimeResponse) response).createActionURL();
+            try {
+                actionURL.setPortletMode(mode);
+            } catch (PortletModeException e) {
+                getLogger().error("unable to create portlet mode action URL",
+                        e);
+            }
+            try {
+                actionURL.setWindowState(state);
+            } catch (WindowStateException e) {
+                getLogger().error("unable to create window state action URL",
+                        e);
+            }
+            String stateChangeScript = String.format("location.href = '%s'",
+                    actionURL);
             UI.getCurrent().getPage().executeJs(stateChangeScript);
         }
     }

@@ -26,6 +26,9 @@ public class PortletWebComponentProvider extends WebComponentProvider {
         setCacheEnabled(false);
     }
 
+    // TODO: Update WebComponentProvider API to pass also the
+    // current VaadinReponse instance, to avoid having to rely on
+    // VaadinPortletResponse.getCurrent() here.
     @Override
     protected String generateNPMResponse(
             String tagName, VaadinRequest request) {

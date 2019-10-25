@@ -30,7 +30,7 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
     }
 
     @Test
-    public void testModeChange() {
+    public void modeUpdatedInPortal_eventHandlerCalled() {
         // This test is neutral on whether an event for the initial mode is sent
 
         setPortletModeInPortal(PortletMode.EDIT);
@@ -47,7 +47,7 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
     }
 
     @Test
-    public void testWindowStateChange() {
+    public void windowStateChangedInPortal_eventHandlerCalled() {
         // This test is neutral on whether an event for the initial state is
         // sent
         setWindowStateInPortal(WindowState.MAXIMIZED);

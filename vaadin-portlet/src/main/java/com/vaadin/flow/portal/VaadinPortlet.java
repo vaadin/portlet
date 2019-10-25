@@ -187,38 +187,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
     }
 
-    private static class VaadinPortletEventContextImpl<C extends Component>
-            implements VaadinPortletEventContext {
-
-        private final C view;
-
-        private VaadinPortletEventContextImpl(C view) {
-            this.view = view;
-        }
-
-        @Override
-        public void fireEvent(String eventName,
-                Map<String, String> parameters) {
-            StringBuilder eventBuilder = new StringBuilder();
-            eventBuilder.append(PortletHubUtil.getHubString());
-            eventBuilder.append("var params = hub.newParameters();");
-            eventBuilder.append("params['action'] = ['send'];");
-            parameters.forEach((key, value) -> eventBuilder
-                    .append(String.format("params['%s'] = ['%s'];", escape(key),
-                            escape(value))));
-            eventBuilder.append(
-                    String.format("hub.dispatchClientEvent('%s', params);",
-                            escape(eventName)));
-
-            view.getElement().executeJs(eventBuilder.toString());
-        }
-
-        private String escape(String str) {
-            return str.replaceAll("([\\\\'])", "\\\\$1");
-        }
-
-    }
-
     @Override
     public void init(PortletConfig config) throws PortletException {
         CurrentInstance.clearAll();
@@ -747,14 +715,10 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         session.setAttribute(getViewMapSessionKey(subKey), views);
     }
 
-    private String escape(String str) {
-        return str.replaceAll("([\\\\'])", "\\\\$1");
-    }
-
     private String getViewMapSessionKey(String subKey) {
         return getClass().getName() + "-" + subKey;
     }
-    
+
     private Logger getLogger() {
         return LoggerFactory.getLogger(VaadinPortlet.class);
     }

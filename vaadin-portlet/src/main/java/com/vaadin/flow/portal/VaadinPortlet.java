@@ -339,13 +339,11 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                             PORTLET_MODE_SESSION_SUBKEY, namespace,
                             request.getPortletMode().toString(),
                             PortletMode.UNDEFINED.toString(),
-                            (oldMode, newMode) -> {
-                                fireModeChange(
-                                        (PortletModeHandler) viewInstance,
-                                        new PortletModeEvent(
-                                                new PortletMode(newMode),
-                                                new PortletMode(oldMode)));
-                            });
+                            (oldMode, newMode) -> fireModeChange(
+                                    (PortletModeHandler) viewInstance,
+                                    new PortletModeEvent(
+                                            new PortletMode(newMode),
+                                            new PortletMode(oldMode))));
                 }
 
                 if (isViewInstanceOf(WindowStateHandler.class)) {
@@ -353,13 +351,11 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                             WINDOW_STATE_SESSION_SUBKEY, namespace,
                             request.getWindowState().toString(),
                             WindowState.UNDEFINED.toString(),
-                            (oldState, newState) -> {
-                                fireWindowStateChange(
-                                        (WindowStateHandler) viewInstance,
-                                        new WindowStateEvent(
-                                                new WindowState(newState),
-                                                new WindowState(oldState)));
-                            });
+                            (oldState, newState) -> fireWindowStateChange(
+                                    (WindowStateHandler) viewInstance,
+                                    new WindowStateEvent(
+                                            new WindowState(newState),
+                                            new WindowState(oldState))));
                 }
             }
         } finally {

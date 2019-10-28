@@ -36,9 +36,10 @@ public class PortletWebComponentBootstrapHandler
     // current VaadinReponse instance, to avoid having to rely on
     // VaadinPortletResponse.getCurrentPortletResponse() here.
     @Override
-    protected String getServiceUrl(VaadinRequest request) {
-        final String namespace = VaadinPortletResponse
-                .getCurrentPortletResponse().getNamespace();
+    protected String getServiceUrl(VaadinRequest request,
+            VaadinResponse response) {
+        final String namespace = ((VaadinPortletResponse)response)
+                .getPortletResponse().getNamespace();
         return VaadinPortlet.getCurrent()
                 .getWebComponentUIDLRequestHandlerURL(namespace);
     }

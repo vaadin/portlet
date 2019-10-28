@@ -16,6 +16,7 @@
 package com.vaadin.flow.portal;
 
 import com.vaadin.flow.server.VaadinRequest;
+import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.server.communication.WebComponentProvider;
 
 public class PortletWebComponentProvider extends WebComponentProvider {
@@ -31,10 +32,9 @@ public class PortletWebComponentProvider extends WebComponentProvider {
     // VaadinPortletResponse.getCurrent() here.
     @Override
     protected String generateNPMResponse(
-            String tagName, VaadinRequest request) {
-        VaadinPortletResponse response = VaadinPortletResponse.getCurrent();
-
-        String namespace = response.getPortletResponse().getNamespace();
+            String tagName, VaadinRequest request, VaadinResponse response) {
+        String namespace = ((VaadinPortletResponse)response)
+                .getPortletResponse().getNamespace();
         String webcomponentBootstrapUrl = VaadinPortlet.getCurrent()
                 .getWebComponentBootstrapHandlerURL(namespace);
         return "var bootstrapAddress='" + webcomponentBootstrapUrl + "';\n"

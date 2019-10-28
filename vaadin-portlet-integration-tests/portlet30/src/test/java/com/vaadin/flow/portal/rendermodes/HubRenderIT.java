@@ -15,6 +15,9 @@
  */
 package com.vaadin.flow.portal.rendermodes;
 
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -49,8 +52,7 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
         modeChange = $(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
 
         WebElement info = findElement(By.id("mode-info"));
-        Assert.assertEquals(RenderView.STATE_MAXIMIZE.toString(),
-                info.getText());
+        Assert.assertEquals(WindowState.MAXIMIZED.toString(), info.getText());
 
         Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_EDIT, modeChange.getText());
@@ -64,7 +66,7 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
         modeChange = $(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
 
         info = findElement(By.id("mode-info"));
-        Assert.assertEquals(RenderView.MODE_EDIT.toString(), info.getText());
+        Assert.assertEquals(PortletMode.EDIT.toString(), info.getText());
 
         Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());
@@ -78,8 +80,7 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
         modeChange = $(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
 
         info = findElement(By.id("mode-info"));
-        Assert.assertEquals(RenderView.STATE_NORMALIZE.toString(),
-                info.getText());
+        Assert.assertEquals(WindowState.NORMAL.toString(), info.getText());
 
         Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());

@@ -35,8 +35,9 @@ public class PortletWebComponentProvider extends WebComponentProvider {
             String tagName, VaadinRequest request, VaadinResponse response) {
         String namespace = ((VaadinPortletResponse)response)
                 .getPortletResponse().getNamespace();
+        VaadinPortletSession session = VaadinPortletSession.getCurrent();
         String webcomponentBootstrapUrl = VaadinPortlet.getCurrent()
-                .getWebComponentBootstrapHandlerURL(namespace);
+                .getWebComponentBootstrapHandlerURL(session, namespace);
         return "var bootstrapAddress='" + webcomponentBootstrapUrl + "';\n"
                 + bootstrapNpm();
     }

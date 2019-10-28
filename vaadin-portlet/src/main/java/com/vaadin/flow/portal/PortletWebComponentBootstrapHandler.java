@@ -38,10 +38,11 @@ public class PortletWebComponentBootstrapHandler
     @Override
     protected String getServiceUrl(VaadinRequest request,
             VaadinResponse response) {
-        final String namespace = ((VaadinPortletResponse)response)
+        final String namespace = ((VaadinPortletResponse) response)
                 .getPortletResponse().getNamespace();
+        VaadinPortletSession session = VaadinPortletSession.getCurrent();
         return VaadinPortlet.getCurrent()
-                .getWebComponentUIDLRequestHandlerURL(namespace);
+                .getWebComponentUIDLRequestHandlerURL(session, namespace);
     }
 
     @Override

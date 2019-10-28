@@ -94,10 +94,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
     private boolean isPortlet3 = false;
 
-    private Map<String, String> webComponentProviderURL = new HashMap<>();
-    private Map<String, String> webComponentBootstrapHandlerURL = new HashMap<>();
-    private Map<String, String> webComponentUIDLRequestHandlerURL = new HashMap<>();
-
     /*
      * The session currently stores a number of maps with the following keys:
      *
@@ -154,6 +150,10 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private static final String VIEW_SESSION_SUBKEY = "view";
     private static final String PORTLET_MODE_SESSION_SUBKEY = "mode";
     private static final String WINDOW_STATE_SESSION_SUBKEY = "windowState";
+
+    private static final String WEB_COMPONENT_PROVIDER_URL_SUBKEY = "webComponentProviderURL";
+    private static final String WEB_COMPONENT_BOOTSTRAP_HANDLER_URL_SUBKEY = "webComponentBootstrapHandlerURL";
+    private static final String WEB_COMPONENT_UIDL_REQUEST_HANDLER_URL_SUBKEY = "v";
 
     private static class VaadinPortletEventContextImpl<C extends Component>
             implements VaadinPortletEventContext {
@@ -368,7 +368,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                                                   String defaultNewValue,
                                                   BiConsumer<String, String> valueChangeHandler) {
         Map<String, String> map = (Map<String, String>) session
-                .getAttribute(getViewMapSessionKey(sessionSubkey));
+                .getAttribute(getSessionAttributeKey(sessionSubkey));
         if (map == null) {
             map = new HashMap<>();
         }
@@ -377,7 +377,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             valueChangeHandler.accept(oldValue, newValue);
         }
         map.put(namespace, newValue);
-        session.setAttribute(getViewMapSessionKey(sessionSubkey), map);
+        session.setAttribute(getSessionAttributeKey(sessionSubkey), map);
     }
 
 
@@ -532,28 +532,46 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         }
     }
 
-    public void setWebComponentProviderURL(String namespace, String url) {
-        webComponentProviderURL.put(namespace, url);
+    public void setWebComponentProviderURL(VaadinSession session,
+            String namespace, String url) {
+        session.checkHasLock();
+        setSessionAttribute(session, namespace,
+                WEB_COMPONENT_PROVIDER_URL_SUBKEY, url);
     }
 
-    public String getWebComponentProviderURL(String namespace) {
-        return webComponentProviderURL.get(namespace);
+    public String getWebComponentProviderURL(VaadinSession session,
+            String namespace) {
+        session.checkHasLock();
+        return getSessionAttribute(session, namespace,
+                WEB_COMPONENT_PROVIDER_URL_SUBKEY);
     }
 
-    public void setWebComponentBootstrapHandlerURL(String namespace, String url) {
-        webComponentBootstrapHandlerURL.put(namespace, url);
+    public void setWebComponentBootstrapHandlerURL(VaadinSession session,
+            String namespace, String url) {
+        session.checkHasLock();
+        setSessionAttribute(session, namespace,
+                WEB_COMPONENT_BOOTSTRAP_HANDLER_URL_SUBKEY, url);
     }
 
-    public String getWebComponentBootstrapHandlerURL(String namespace) {
-        return webComponentBootstrapHandlerURL.get(namespace);
+    public String getWebComponentBootstrapHandlerURL(VaadinSession session,
+            String namespace) {
+        session.checkHasLock();
+        return getSessionAttribute(session, namespace,
+                WEB_COMPONENT_BOOTSTRAP_HANDLER_URL_SUBKEY);
     }
 
-    public void setWebComponentUIDLRequestHandlerURL(String namespace, String url) {
-        webComponentUIDLRequestHandlerURL.put(namespace, url);
+    public void setWebComponentUIDLRequestHandlerURL(VaadinSession session,
+            String namespace, String url) {
+        session.checkHasLock();
+        setSessionAttribute(session, namespace,
+                WEB_COMPONENT_UIDL_REQUEST_HANDLER_URL_SUBKEY, url);
     }
 
-    public String getWebComponentUIDLRequestHandlerURL(String namespace) {
-        return webComponentUIDLRequestHandlerURL.get(namespace);
+    public String getWebComponentUIDLRequestHandlerURL(VaadinSession session,
+            String namespace) {
+        session.checkHasLock();
+        return getSessionAttribute(session, namespace,
+                WEB_COMPONENT_UIDL_REQUEST_HANDLER_URL_SUBKEY);
     }
 
     /**
@@ -677,7 +695,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private C getViewInstance(VaadinPortletSession session, String namespace)
             throws PortletException {
         Map<String, C> views = (Map<String, C>) session.getAttribute(
-                getViewMapSessionKey(VIEW_SESSION_SUBKEY));
+                getSessionAttributeKey(VIEW_SESSION_SUBKEY));
         if (views != null) {
             if (!views.containsKey(namespace)) {
                 throw new PortletException("view not initialized for namespace " + namespace);
@@ -702,16 +720,27 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
     private <T> void setSessionAttribute(VaadinSession session,
                                          String namespace, String subKey, T value) {
-        Map<String, T> views = (Map<String, T>) session
-                .getAttribute(getViewMapSessionKey(subKey));
-        if (views == null) {
-            views = new HashMap<>();
+        Map<String, T> map = (Map<String, T>) session
+                .getAttribute(getSessionAttributeKey(subKey));
+        if (map == null) {
+            map = new HashMap<>();
         }
-        views.put(namespace, value);
-        session.setAttribute(getViewMapSessionKey(subKey), views);
+        map.put(namespace, value);
+        session.setAttribute(getSessionAttributeKey(subKey), map);
     }
 
-    private String getViewMapSessionKey(String subKey) {
+    private <T> T getSessionAttribute(VaadinSession session,
+                                      String namespace, String subKey) {
+        Map<String, T> map = (Map<String, T>) session
+                .getAttribute(getSessionAttributeKey(subKey));
+        if (map != null) {
+            return map.get(namespace);
+        } else {
+            return null;
+        }
+    }
+
+    private String getSessionAttributeKey(String subKey) {
         return getClass().getName() + "-" + subKey;
     }
 

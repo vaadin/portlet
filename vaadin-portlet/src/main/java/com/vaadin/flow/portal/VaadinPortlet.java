@@ -189,6 +189,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
     @Override
     public void init(PortletConfig config) throws PortletException {
+        // testing
         CurrentInstance.clearAll();
         super.init(config);
         Properties initParameters = new Properties();

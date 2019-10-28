@@ -39,7 +39,7 @@ public class UploadIT extends AbstractPlutoPortalTest {
     }
 
     @Test
-    public void testUpload() throws Exception {
+    public void fileUploaded_fileSizeIsRendered() throws Exception {
         // upload a file
         File file = createTempFile();
         UploadElement upload = $(UploadElement.class).first();

@@ -32,10 +32,17 @@ import com.vaadin.flow.server.communication.WebComponentBootstrapHandler;
 public class PortletWebComponentBootstrapHandler
         extends WebComponentBootstrapHandler {
 
+    // TODO: Update WebComponentBootstrapHandler API to pass also
+    // current VaadinReponse instance, to avoid having to rely on
+    // VaadinPortletResponse.getCurrentPortletResponse() here.
     @Override
-    protected String getServiceUrl(VaadinRequest request) {
+    protected String getServiceUrl(VaadinRequest request,
+            VaadinResponse response) {
+        final String namespace = ((VaadinPortletResponse) response)
+                .getPortletResponse().getNamespace();
+        VaadinPortletSession session = VaadinPortletSession.getCurrent();
         return VaadinPortlet.getCurrent()
-                .getWebComponentUIDLRequestHandlerURL();
+                .getWebComponentUIDLRequestHandlerURL(session, namespace);
     }
 
     @Override

@@ -16,16 +16,29 @@
 package com.vaadin.flow.portal;
 
 import com.vaadin.flow.server.VaadinRequest;
+import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.server.communication.WebComponentProvider;
 
 public class PortletWebComponentProvider extends WebComponentProvider {
+
+    public PortletWebComponentProvider() {
+        // Disable tag-based cache because the same tag should yield different
+        // bootstrap responses in separate portlet namespaces.
+        setCacheEnabled(false);
+    }
+
+    // TODO: Update WebComponentProvider API to pass also the
+    // current VaadinReponse instance, to avoid having to rely on
+    // VaadinPortletResponse.getCurrent() here.
     @Override
     protected String generateNPMResponse(
-            String tagName, VaadinRequest request) {
+            String tagName, VaadinRequest request, VaadinResponse response) {
+        String namespace = ((VaadinPortletResponse)response)
+                .getPortletResponse().getNamespace();
+        VaadinPortletSession session = VaadinPortletSession.getCurrent();
         String webcomponentBootstrapUrl = VaadinPortlet.getCurrent()
-                .getWebComponentBootstrapHandlerURL();
+                .getWebComponentBootstrapHandlerURL(session, namespace);
         return "var bootstrapAddress='" + webcomponentBootstrapUrl + "';\n"
                 + bootstrapNpm();
-
     }
 }

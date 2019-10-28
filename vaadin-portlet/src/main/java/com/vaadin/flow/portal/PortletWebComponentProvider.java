@@ -16,12 +16,13 @@
 package com.vaadin.flow.portal;
 
 import com.vaadin.flow.server.VaadinRequest;
+import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.server.communication.WebComponentProvider;
 
 public class PortletWebComponentProvider extends WebComponentProvider {
     @Override
-    protected String generateNPMResponse(
-            String tagName, VaadinRequest request) {
+    protected String generateNPMResponse(String tagName, VaadinRequest request,
+            VaadinResponse response) {
         String webcomponentBootstrapUrl = VaadinPortlet.getCurrent()
                 .getWebComponentBootstrapHandlerURL();
         return "var bootstrapAddress='" + webcomponentBootstrapUrl + "';\n"

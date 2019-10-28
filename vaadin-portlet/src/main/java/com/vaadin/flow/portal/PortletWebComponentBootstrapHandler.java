@@ -33,7 +33,8 @@ public class PortletWebComponentBootstrapHandler
         extends WebComponentBootstrapHandler {
 
     @Override
-    protected String getServiceUrl(VaadinRequest request) {
+    protected String getServiceUrl(VaadinRequest request,
+            VaadinResponse response) {
         return VaadinPortlet.getCurrent()
                 .getWebComponentUIDLRequestHandlerURL();
     }

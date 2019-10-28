@@ -18,7 +18,7 @@ package com.vaadin.flow.portal.handler;
 import java.io.Serializable;
 
 /**
- * A listener for window state chanhge events.
+ * A listener for window state change events.
  *
  * @see VaadinPortletEventContext
  * @see WindowStateHandler

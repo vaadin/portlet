@@ -224,19 +224,19 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                 PortletEventListener listener) {
             Objects.requireNonNull(listener);
 
-            String ns = VaadinPortletService.getCurrentResponse()
+            String namespace = VaadinPortletService.getCurrentResponse()
                     .getPortletResponse().getNamespace();
 
             String uid = Long.toString(nextUid.getAndIncrement());
             view.getElement().executeJs(
                     "window.Vaadin.Flow.Portlets[$0].registerListener($1, $2);",
-                    ns, eventType, uid);
+                    namespace, eventType, uid);
             listeners.put(uid, listener);
             return () -> {
                 listeners.remove(uid);
                 view.getElement().executeJs(
                         "window.Vaadin.Flow.Portlets[$0].unregisterListener($1);",
-                        ns, uid);
+                        namespace, uid);
 
             };
         }

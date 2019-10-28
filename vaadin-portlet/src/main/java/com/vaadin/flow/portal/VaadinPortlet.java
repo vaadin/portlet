@@ -242,17 +242,17 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             VaadinPortlet<C> thisPortlet = VaadinPortlet.getCurrent();
             PortletRequest request = VaadinPortletRequest.getCurrentPortletRequest();
             PortletResponse response = VaadinPortletResponse.getCurrentPortletResponse();
-            VaadinSession session = thisPortlet.getSession(request, response);
-            if (session != null) {
-                session.checkHasLock();
 
-                // Initialize maps for view component, mode and window state
-                String namespace = response.getNamespace();
-                setSessionAttribute(session, namespace, VIEW_SESSION_SUBKEY,
-                        component);
-                setSessionPortletMode(session, namespace, PortletMode.UNDEFINED);
-                setSessionWindowState(session, namespace, WindowState.UNDEFINED);
-            }
+            VaadinSession session = thisPortlet.getSession(request, response);
+            assert (session != null);
+            session.checkHasLock();
+
+            // Initialize maps for view component, mode and window state
+            String namespace = response.getNamespace();
+            setSessionAttribute(session, namespace, VIEW_SESSION_SUBKEY,
+                    component);
+            setSessionPortletMode(session, namespace, PortletMode.UNDEFINED);
+            setSessionWindowState(session, namespace, WindowState.UNDEFINED);
         }
     }
 
@@ -319,13 +319,12 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     public void render(RenderRequest request, RenderResponse response)
             throws PortletException, IOException {
         super.render(request, response);
-
-        String namespace = response.getNamespace();
-
         VaadinPortletSession session = getSession(request, response);
         if (session == null) {
             return;
         }
+        // Only if a session exists, check for mode and window state change
+        String namespace = response.getNamespace();
         session.lock();
         try {
             C viewInstance = getViewInstance(session, namespace);

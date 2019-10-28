@@ -49,7 +49,7 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
         modeChange = $(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
 
         WebElement info = findElement(By.id("mode-info"));
-        Assert.assertEquals(RenderView.STATE_NORMALIZE.toString(),
+        Assert.assertEquals(RenderView.STATE_MAXIMIZE.toString(),
                 info.getText());
 
         Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
@@ -64,7 +64,7 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
         modeChange = $(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
 
         info = findElement(By.id("mode-info"));
-        Assert.assertEquals(RenderView.MODE_VIEW.toString(), info.getText());
+        Assert.assertEquals(RenderView.MODE_EDIT.toString(), info.getText());
 
         Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());
@@ -78,7 +78,7 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
         modeChange = $(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
 
         info = findElement(By.id("mode-info"));
-        Assert.assertEquals(RenderView.STATE_MAXIMIZE.toString(),
+        Assert.assertEquals(RenderView.STATE_NORMALIZE.toString(),
                 info.getText());
 
         Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());

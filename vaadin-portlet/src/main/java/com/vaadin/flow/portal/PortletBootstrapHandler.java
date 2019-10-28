@@ -71,7 +71,7 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
             url.setResourceID("/uidl");
             portlet.setWebComponentUIDLRequestHandlerURL(url.toString());
         }
-        String ns = resp.getNamespace();
+        String namespace = resp.getNamespace();
         writer.write("<script src='" + scriptUrl + "'></script>");
         StringBuilder initScript = new StringBuilder();
         initScript.append("<script>customElements.whenDefined('").append(tag)
@@ -83,13 +83,13 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
                 .append("   if (!clients){ return undefined;  }")
                 .append("   var portlet = window.Vaadin.Flow.Portlets[portletComponent.getAttribute('data-portlet-id')];")
                 .append("   return clients[portlet.appId]; };")
-                .append(getRegisterHubScript(tag, ns))
-                .append(initListenerRegistrationScript(ns))
+                .append(getRegisterHubScript(tag, namespace))
+                .append(initListenerRegistrationScript(namespace))
                 .append("});</script>");
 
         writer.write(initScript.toString());
-        writer.write("<" + tag + " data-portlet-id='" + resp.getNamespace()
-                + "'></" + tag + ">");
+        writer.write("<" + tag + " data-portlet-id='" + namespace + "'></" + tag
+                + ">");
 
         return true;
     }

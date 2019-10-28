@@ -31,7 +31,7 @@ public interface PortletModeListener extends Serializable {
      * Invoked when the portlet mode changes.
      *
      * @param event
-     *            the wevent object
+     *            the event object
      */
     void portletModeChange(PortletModeEvent event);
 }

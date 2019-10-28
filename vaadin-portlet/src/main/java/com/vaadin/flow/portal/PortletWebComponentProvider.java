@@ -31,9 +31,9 @@ public class PortletWebComponentProvider extends WebComponentProvider {
     // current VaadinReponse instance, to avoid having to rely on
     // VaadinPortletResponse.getCurrent() here.
     @Override
-    protected String generateNPMResponse(
-            String tagName, VaadinRequest request, VaadinResponse response) {
-        String namespace = ((VaadinPortletResponse)response)
+    protected String generateNPMResponse(String tagName, VaadinRequest request,
+            VaadinResponse response) {
+        String namespace = ((VaadinPortletResponse) response)
                 .getPortletResponse().getNamespace();
         VaadinPortletSession session = VaadinPortletSession.getCurrent();
         String webcomponentBootstrapUrl = VaadinPortlet.getCurrent()

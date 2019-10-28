@@ -46,8 +46,6 @@ public interface VaadinPortletEventContext extends Serializable {
      * {@link EventHandler#handleEvent(PortletEvent)} method on portlet
      * component if it implements {@link EventHandler} interface.
      *
-     * @param portletComponent
-     *            a source component
      * @param eventName
      *            an event name
      * @param parameters

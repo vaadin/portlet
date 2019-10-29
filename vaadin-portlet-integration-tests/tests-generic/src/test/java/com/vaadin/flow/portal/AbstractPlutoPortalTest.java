@@ -17,6 +17,7 @@ package com.vaadin.flow.portal;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+
 import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
@@ -42,14 +43,15 @@ import com.vaadin.testbench.parallel.ParallelTest;
  * <p>
  * The tests use Chrome driver (see pom.xml for integration-tests profile) to
  * run integration tests on a headless Chrome. If a property {@code test.use
- * .hub} is set to true, {@code AbstractViewTest} will assume that the
- * TestBench test is running in a CI environment. In order to keep the this
- * class light, it makes certain assumptions about the CI environment (such
- * as available environment variables). It is not advisable to use this class
- * as a base class for you own TestBench tests.
+ * .hub} is set to true, {@code AbstractViewTest} will assume that the TestBench
+ * test is running in a CI environment. In order to keep the this class light,
+ * it makes certain assumptions about the CI environment (such as available
+ * environment variables). It is not advisable to use this class as a base class
+ * for you own TestBench tests.
  * <p>
- * To learn more about TestBench, visit
- * <a href="https://vaadin.com/docs/v10/testbench/testbench-overview.html">Vaadin TestBench</a>.
+ * To learn more about TestBench, visit <a href=
+ * "https://vaadin.com/docs/v10/testbench/testbench-overview.html">Vaadin
+ * TestBench</a>.
  */
 public abstract class AbstractPlutoPortalTest extends ParallelTest {
     private static final int SERVER_PORT = 8080;
@@ -68,6 +70,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     public ScreenshotOnFailureRule rule = new ScreenshotOnFailureRule(this,
             false);
 
+    @Override
     @Before
     public void setup() throws Exception {
         if (isUsingHub()) {
@@ -82,7 +85,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
 
     @After
     public void tearDown() {
-        removePortletPage();
+        // removePortletPage();
     }
 
     protected void loginToPortal() {
@@ -100,13 +103,16 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         getDriver().get(getURL(route + "/" + adminPage));
 
         // Create a new page
-        testPage = String.format("IT-%d", new Random().nextInt(Integer.MAX_VALUE));
+        testPage = String.format("IT-%d",
+                new Random().nextInt(Integer.MAX_VALUE));
         findElement(By.name("newPage")).sendKeys(testPage);
         findElement(By.id("addPageButton")).click();
 
         // Add the portlet
-        Map<String, SelectElement> nameMap = $(SelectElement.class).all().stream().collect(Collectors
-                .toMap(selectElement -> selectElement.getAttribute("name"),
+        Map<String, SelectElement> nameMap = $(SelectElement.class).all()
+                .stream()
+                .collect(Collectors.toMap(
+                        selectElement -> selectElement.getAttribute("name"),
                         Function.identity(), (oldValue, newValue) -> oldValue));
         nameMap.get("page").selectByText(testPage);
         nameMap.get("applications").selectByText("/" + warName);
@@ -119,8 +125,10 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
 
     protected void removePortletPage() {
         getDriver().get(getURL(route + "/" + adminPage));
-        Map<String, SelectElement> nameMap = $(SelectElement.class).all().stream().collect(Collectors
-                .toMap(selectElement -> selectElement.getAttribute("name"),
+        Map<String, SelectElement> nameMap = $(SelectElement.class).all()
+                .stream()
+                .collect(Collectors.toMap(
+                        selectElement -> selectElement.getAttribute("name"),
                         Function.identity(), (oldValue, newValue) -> oldValue));
         nameMap.get("page").selectByText(testPage);
         findElement(By.id("removePageButton")).click();
@@ -130,8 +138,8 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
      * Set the mode of the first portlet on page via Pluto's header dropdown.
      */
     protected void setPortletModeInPortal(PortletMode portletMode) {
-        SelectElement modeSelector =
-                $(TestBenchElement.class).attribute("name","modeSelectionForm").first()
+        SelectElement modeSelector = $(TestBenchElement.class)
+                .attribute("name", "modeSelectionForm").first()
                 .$(SelectElement.class).first();
         modeSelector.selectByText(portletMode.toString().toUpperCase());
     }
@@ -140,13 +148,13 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
      * Set the mode of the first portlet on page via Pluto's header dropdown.
      */
     protected void setWindowStateInPortal(WindowState windowState) {
-        String buttonLabel =
-                WindowState.MAXIMIZED.equals(windowState) ? "Maximize" :
-                        WindowState.NORMAL.equals(windowState) ? "Restore" :
-                                WindowState.MINIMIZED.equals(windowState) ? "Minimize" :
-                                        null;
-        AnchorElement anchor =
-                $(AnchorElement.class).attribute("title", buttonLabel).first();
+        String buttonLabel = WindowState.MAXIMIZED.equals(windowState)
+                ? "Maximize"
+                : WindowState.NORMAL.equals(windowState) ? "Restore"
+                        : WindowState.MINIMIZED.equals(windowState) ? "Minimize"
+                                : null;
+        AnchorElement anchor = $(AnchorElement.class)
+                .attribute("title", buttonLabel).first();
         anchor.click();
     }
 
@@ -194,15 +202,15 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     }
 
     /**
-     * Returns whether we are using a test hub. This means that the starter
-     * is running tests in Vaadin's CI environment, and uses TestBench to
-     * connect to the testing hub.
+     * Returns whether we are using a test hub. This means that the starter is
+     * running tests in Vaadin's CI environment, and uses TestBench to connect
+     * to the testing hub.
      *
      * @return whether we are using a test hub
      */
     private static boolean isUsingHub() {
-        return Boolean.TRUE.toString().equals(
-                System.getProperty(USE_HUB_PROPERTY));
+        return Boolean.TRUE.toString()
+                .equals(System.getProperty(USE_HUB_PROPERTY));
     }
 
     /**
@@ -213,6 +221,5 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     private static String getDeploymentHostname() {
         return isUsingHub() ? System.getenv("HOSTNAME") : "localhost";
     }
-
 
 }

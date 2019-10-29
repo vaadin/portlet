@@ -16,7 +16,6 @@
 package com.vaadin.flow.portal.events;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -31,7 +30,6 @@ public class IPCEventIT extends AbstractPlutoPortalTest {
     }
 
     @Test
-    @Ignore
     public void sendEventFromSourceToTarget() throws InterruptedException {
         addPortlet("event-source", getPage());
         addPortlet("other-event-target", getPage());

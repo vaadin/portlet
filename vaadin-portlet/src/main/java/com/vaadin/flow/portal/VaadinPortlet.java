@@ -192,7 +192,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             }
             if (view instanceof PortletModeHandler) {
                 addPortletModeChangeListener(
-                        ((PortletModeListener) view)::portletModeChange);
+                        ((PortletModeHandler) view)::portletModeChange);
             }
         }
 

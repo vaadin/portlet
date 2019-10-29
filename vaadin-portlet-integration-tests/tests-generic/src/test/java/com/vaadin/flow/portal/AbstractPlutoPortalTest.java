@@ -85,7 +85,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
 
     @After
     public void tearDown() {
-        // removePortletPage();
+        removePortletPage();
     }
 
     protected void loginToPortal() {

@@ -37,7 +37,8 @@ public class RenderView extends VerticalLayout
 
     private Button windowState, portletMode;
 
-    private Div info;
+    private Div stateInfo;
+    private Div modeInfo;
 
     public RenderView() {
         VaadinPortlet portlet = RenderPortlet.getCurrent();
@@ -54,20 +55,23 @@ public class RenderView extends VerticalLayout
                 event -> switchPortletMode());
         portletMode.setId(PORTLET_MODE_CHANGE);
 
-        info = new Div();
-        info.setId("mode-info");
+        stateInfo = new Div();
+        stateInfo.setId("state-info");
+        modeInfo = new Div();
+        modeInfo.setId("mode-info");
 
         add(windowState, portletMode);
-        add(info);
+        add(stateInfo);
+        add(modeInfo);
     }
 
     @Override
     public void onPortletEventContextInit(VaadinPortletEventContext context) {
         context.addPortletModeListener(event -> {
-            info.setText(event.getPortletMode().toString());
+            modeInfo.setText(event.getPortletMode().toString());
         });
         context.addWindowStateListener(event -> {
-            info.setText(event.getWindowState().toString());
+            stateInfo.setText(event.getWindowState().toString());
         });
     }
 

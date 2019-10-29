@@ -432,13 +432,13 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                 .getAttribute(getSessionAttributeKey(sessionSubkey));
         if (map == null) {
             map = new HashMap<>();
+            session.setAttribute(getSessionAttributeKey(sessionSubkey), map);
         }
         String oldValue = map.getOrDefault(namespace, defaultNewValue);
         if (!newValue.equals(oldValue)) {
             valueChangeHandler.accept(oldValue, newValue);
         }
         map.put(namespace, newValue);
-        session.setAttribute(getSessionAttributeKey(sessionSubkey), map);
     }
 
     @Override
@@ -674,10 +674,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         } else {
             stateChangeAction(newWindowState, getPortletMode());
         }
-        setSessionWindowState(
-                VaadinPortletSession.getCurrent(), VaadinPortletResponse
-                        .getCurrentPortletResponse().getNamespace(),
-                newWindowState);
     }
 
     /**
@@ -693,10 +689,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         } else {
             stateChangeAction(getWindowState(), newPortletMode);
         }
-        setSessionPortletMode(
-                VaadinPortletSession.getCurrent(), VaadinPortletResponse
-                        .getCurrentPortletResponse().getNamespace(),
-                newPortletMode);
     }
 
     /**
@@ -797,9 +789,9 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                 .getAttribute(getSessionAttributeKey(subKey));
         if (map == null) {
             map = new HashMap<>();
+            session.setAttribute(getSessionAttributeKey(subKey), map);
         }
         map.put(namespace, value);
-        session.setAttribute(getSessionAttributeKey(subKey), map);
     }
 
     private <T> T getSessionAttribute(VaadinSession session, String namespace,

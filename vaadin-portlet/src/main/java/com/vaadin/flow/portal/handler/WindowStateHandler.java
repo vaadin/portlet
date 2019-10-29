@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2018 Vaadin Ltd.
+ * Copyright 2000-2019 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,21 +15,23 @@
  */
 package com.vaadin.flow.portal.handler;
 
+import java.io.Serializable;
+
 /**
- * A listener for portlet events.
+ * Add this interface to a {@link com.vaadin.flow.portal.VaadinPortlet} view
+ * (the {@link com.vaadin.flow.component.Component} subclass passed for the type
+ * parameter {@code C}) to handle changes in {@link javax.portlet.WindowState}.
  *
- * @see VaadinPortletEventContext
- *
- * @author Vaadin Ltd
- *
+ * @see WindowStateListener
  */
 @FunctionalInterface
-public interface PortletEventChangeListener {
+public interface WindowStateHandler extends Serializable {
 
     /**
-     * This method gets called when an IPC event is received.
+     * Invoked when the window state changes.
      *
      * @param event
+     *            the event object
      */
-    void onPortletEvent(PortletEvent event);
+    void windowStateChange(WindowStateEvent event);
 }

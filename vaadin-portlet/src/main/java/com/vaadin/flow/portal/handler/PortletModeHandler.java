@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2000-2019 Vaadin Ltd.
  *
@@ -20,18 +21,19 @@ import java.io.Serializable;
 /**
  * Add this interface to a {@link com.vaadin.flow.portal.VaadinPortlet} view
  * (the {@link com.vaadin.flow.component.Component} subclass passed for the type
- * parameter {@code C}) to handle changes in {@link javax.portlet.WindowState}.
+ * parameter {@code C}) to handle changes in {@link javax.portlet.PortletMode}.
  *
- * @see WindowStateChangeListener
+ * @see PortletModeListener
  */
 @FunctionalInterface
-public interface WindowStateChangeHandler extends Serializable {
+public interface PortletModeHandler extends Serializable {
 
     /**
-     * Invoked when the window state changes.
+     * Invoked when the portlet mode changes.
      *
      * @param event
-     *            the event object
+     *            the wevent object
      */
-    void windowStateChange(WindowStateEvent event);
+    void portletModeChange(PortletModeEvent event);
+
 }

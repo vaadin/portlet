@@ -143,22 +143,22 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
         initClientPortlet(addRemoveListener);
         addRemoveListener
                 .append("var portletObj = window.Vaadin.Flow.Portlets[ns];")
-                .append("var regListener = function(eventType, uid){")
+                .append("portletObj._regListener = function(eventType, uid){")
                 .append(" var poller = portletObj.eventPoller;")
                 .append(" var handle = portletObj.hub.addEventListener(eventType, function(type, payload){")
                 .append("   poller(type, payload, uid); });")
                 .append("portletObj.eventHandles = portletObj.eventHandles||{};")
                 .append("portletObj.eventHandles[uid]=handle;};")
                 .append("portletObj.registerListener = function(eventType, uid){")
-                .append(" if ( portletObj.hub) {regListener(eventType, uid);} ")
+                .append(" if ( portletObj.hub) {portletObj._regListener(eventType, uid);} ")
                 .append(" else { portletObj.listeners = portletObj.listeners||{}; ")
                 .append(" portletObj.listeners[uid] = eventType;} };")
-                .append("removeListener = function(uid){")
-                .append(" if ( portletObj.eventHandles && portletObj.eventHandles[uid]){")
-                .append(" portletObj.hub.removeEventListener(portletObj.eventHandles[uid]);}")
-                .append("};")
-                .append("portletObj.unregisterListener = function(uid){")
-                .append(" if ( portletObj.hub) {removeListener(uid);} else { delete portletObj.listeners[uid]; }};");
+                .append("portletObj._removeListener = function(uid){")
+                .append(" if ( portletObj.eventHandles && portletObj.eventHandles[uid]){ ")
+                .append(" portletObj.hub.removeEventListener(portletObj.eventHandles[uid]);")
+                .append(" delete portletObj.eventHandles[uid];}").append("};")
+                .append("portletObj.unregisterListener = function(uid){ ")
+                .append(" if ( portletObj.hub) {portletObj._removeListener(uid);} else { delete portletObj.listeners[uid]; }};");
         return String.format(addRemoveListener.toString(), namespace);
     }
 

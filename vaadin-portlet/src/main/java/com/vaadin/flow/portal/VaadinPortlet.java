@@ -173,7 +173,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
         private final AtomicLong nextUid = new AtomicLong();
 
-        private final Map<String, PortletEventListener> listeners = new HashMap<String, PortletEventListener>();
+        private final Map<String, PortletEventListener> eventListeners = new HashMap<String, PortletEventListener>();
 
         private final Collection<WindowStateListener> windowStateListeners = new CopyOnWriteArrayList<>();
 
@@ -231,9 +231,9 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             view.getElement().executeJs(
                     "window.Vaadin.Flow.Portlets[$0].registerListener($1, $2);",
                     namespace, eventType, uid);
-            listeners.put(uid, listener);
+            eventListeners.put(uid, listener);
             return () -> {
-                listeners.remove(uid);
+                eventListeners.remove(uid);
                 view.getElement().executeJs(
                         "window.Vaadin.Flow.Portlets[$0].unregisterListener($1);",
                         namespace, uid);
@@ -490,8 +490,11 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     public void processAction(ActionRequest request, ActionResponse response)
             throws PortletException {
         Set<String> names = request.getActionParameters().getNames();
-        VaadinPortletEventContextImpl<C> viewContext = getViewContext(
-                VaadinPortletSession.getCurrent(), response.getNamespace());
+
+        VaadinPortletSession session = getSession(request, response);
+
+        VaadinPortletEventContextImpl<C> viewContext = getViewContext(session,
+                response.getNamespace());
 
         if (!isPortlet3 && names.contains(ACTION_STATE)) {
             WindowState windowState = new WindowState(
@@ -509,10 +512,10 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             map.remove(VAADIN_EVENT);
             map.remove(VAADIN_UID);
 
-            assert viewContext.view.getElement().getNode().isAttached();
-            VaadinSession session = viewContext.view.getUI().get().getSession();
             session.access(() -> {
-                PortletEventListener listener = viewContext.listeners.get(uid);
+                assert viewContext.view.getElement().getNode().isAttached();
+                PortletEventListener listener = viewContext.eventListeners
+                        .get(uid);
                 if (listener == null) {
                     LoggerFactory.getLogger(VaadinPortlet.class).error(
                             "{} is not found for the uid='{}', event '{}' is not delivered",

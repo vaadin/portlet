@@ -101,7 +101,7 @@ public class VaadinPortletTest {
         Assert.assertNotNull(component.context);
 
         AtomicReference<WindowStateEvent> listener = new AtomicReference<>();
-        component.context.addWindowStateListener(
+        component.context.addWindowStateChangeListener(
                 event -> Assert.assertNull(listener.getAndSet(event)));
 
         requestModeAndState("foo", "bar");
@@ -114,7 +114,7 @@ public class VaadinPortletTest {
     public void addWindowStateListener_unregister_listenerIsNotCalled()
             throws PortletException, IOException {
         AtomicReference<WindowStateEvent> listener = new AtomicReference<>();
-        Registration registration = component.context.addWindowStateListener(
+        Registration registration = component.context.addWindowStateChangeListener(
                 event -> Assert.assertNull(listener.getAndSet(event)));
 
         requestModeAndState("foo", "bar");
@@ -134,7 +134,7 @@ public class VaadinPortletTest {
         Assert.assertNotNull(component.context);
 
         AtomicReference<PortletModeEvent> listener = new AtomicReference<>();
-        component.context.addPortletModeListener(
+        component.context.addPortletModeChangeListener(
                 event -> Assert.assertNull(listener.getAndSet(event)));
 
         requestModeAndState("foo", "bar");
@@ -149,7 +149,7 @@ public class VaadinPortletTest {
         Assert.assertNotNull(component.context);
 
         AtomicReference<PortletModeEvent> listener = new AtomicReference<>();
-        Registration registration = component.context.addPortletModeListener(
+        Registration registration = component.context.addPortletModeChangeListener(
                 event -> Assert.assertNull(listener.getAndSet(event)));
 
         requestModeAndState("foo", "bar");

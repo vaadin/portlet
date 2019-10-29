@@ -64,15 +64,15 @@ import com.vaadin.flow.function.SerializableRunnable;
 import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.portal.handler.EventHandler;
 import com.vaadin.flow.portal.handler.PortletEvent;
-import com.vaadin.flow.portal.handler.PortletEventListener;
+import com.vaadin.flow.portal.handler.PortletEventChangeListener;
 import com.vaadin.flow.portal.handler.PortletModeEvent;
-import com.vaadin.flow.portal.handler.PortletModeHandler;
-import com.vaadin.flow.portal.handler.PortletModeListener;
+import com.vaadin.flow.portal.handler.PortletModeChangeHandler;
+import com.vaadin.flow.portal.handler.PortletModeChangeListener;
 import com.vaadin.flow.portal.handler.VaadinPortletEventContext;
 import com.vaadin.flow.portal.handler.VaadinPortletEventView;
 import com.vaadin.flow.portal.handler.WindowStateEvent;
-import com.vaadin.flow.portal.handler.WindowStateHandler;
-import com.vaadin.flow.portal.handler.WindowStateListener;
+import com.vaadin.flow.portal.handler.WindowStateChangeHandler;
+import com.vaadin.flow.portal.handler.WindowStateChangeListener;
 import com.vaadin.flow.portal.util.PortletHubUtil;
 import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.server.Command;
@@ -173,26 +173,26 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
         private final AtomicLong nextUid = new AtomicLong();
 
-        private final Map<String, PortletEventListener> eventListeners = new HashMap<String, PortletEventListener>();
+        private final Map<String, PortletEventChangeListener> eventListeners = new HashMap<String, PortletEventChangeListener>();
 
-        private final Collection<WindowStateListener> windowStateListeners = new CopyOnWriteArrayList<>();
+        private final Collection<WindowStateChangeListener> windowStateListeners = new CopyOnWriteArrayList<>();
 
-        private final Collection<PortletModeListener> portletModeListeners = new CopyOnWriteArrayList<>();
+        private final Collection<PortletModeChangeListener> portletModeListeners = new CopyOnWriteArrayList<>();
 
         private VaadinPortletEventContextImpl(C view) {
             this.view = view;
 
             if (view instanceof EventHandler) {
                 EventHandler handler = (EventHandler) view;
-                addGenericEventListener(handler::handleEvent);
+                addGenericEventChangeListener(handler::handleEvent);
             }
-            if (view instanceof WindowStateHandler) {
-                addWindowStateListener(
-                        ((WindowStateHandler) view)::windowStateChange);
+            if (view instanceof WindowStateChangeHandler) {
+                addWindowStateChangeListener(
+                        ((WindowStateChangeHandler) view)::windowStateChange);
             }
-            if (view instanceof PortletModeHandler) {
-                addPortletModeListener(
-                        ((PortletModeListener) view)::portletModeChange);
+            if (view instanceof PortletModeChangeHandler) {
+                addPortletModeChangeListener(
+                        ((PortletModeChangeListener) view)::portletModeChange);
             }
         }
 
@@ -214,14 +214,14 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         }
 
         @Override
-        public Registration addGenericEventListener(
-                PortletEventListener listener) {
-            return addEventListener(".*", listener);
+        public Registration addGenericEventChangeListener(
+                PortletEventChangeListener listener) {
+            return addEventChangeListener(".*", listener);
         }
 
         @Override
-        public Registration addEventListener(String eventType,
-                PortletEventListener listener) {
+        public Registration addEventChangeListener(String eventType,
+                PortletEventChangeListener listener) {
             Objects.requireNonNull(listener);
 
             String namespace = VaadinPortletService.getCurrentResponse()
@@ -242,15 +242,15 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         }
 
         @Override
-        public Registration addWindowStateListener(
-                WindowStateListener listener) {
+        public Registration addWindowStateChangeListener(
+                WindowStateChangeListener listener) {
             windowStateListeners.add(Objects.requireNonNull(listener));
             return () -> windowStateListeners.remove(listener);
         }
 
         @Override
-        public Registration addPortletModeListener(
-                PortletModeListener listener) {
+        public Registration addPortletModeChangeListener(
+                PortletModeChangeListener listener) {
             portletModeListeners.add(Objects.requireNonNull(listener));
             return () -> portletModeListeners.remove(listener);
         }
@@ -334,7 +334,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      * @param event
      *            the event object
      */
-    protected void fireModeChange(PortletModeHandler view,
+    protected void fireModeChange(PortletModeChangeHandler view,
             PortletModeEvent event) {
         view.portletModeChange(event);
     }
@@ -348,7 +348,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      * @param event
      *            the event object
      */
-    protected void fireWindowStateChange(WindowStateHandler view,
+    protected void fireWindowStateChange(WindowStateChangeHandler view,
             WindowStateEvent event) {
         view.windowStateChange(event);
     }
@@ -514,12 +514,12 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
             session.access(() -> {
                 assert viewContext.view.getElement().getNode().isAttached();
-                PortletEventListener listener = viewContext.eventListeners
+                PortletEventChangeListener listener = viewContext.eventListeners
                         .get(uid);
                 if (listener == null) {
                     LoggerFactory.getLogger(VaadinPortlet.class).error(
                             "{} is not found for the uid='{}', event '{}' is not delivered",
-                            PortletEventListener.class.getSimpleName(), uid,
+                            PortletEventChangeListener.class.getSimpleName(), uid,
                             event);
                 } else {
                     listener.onPortletEvent(new PortletEvent(event, map));

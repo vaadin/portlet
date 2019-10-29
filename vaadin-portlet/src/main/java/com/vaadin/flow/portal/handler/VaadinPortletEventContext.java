@@ -57,14 +57,14 @@ public interface VaadinPortletEventContext extends Serializable {
     /**
      * Adds a listener which will receive any {@link PortletEvent}.
      *
-     * @see #addEventListener(String, PortletEventListener)
+     * @see #addEventChangeListener(String, PortletEventChangeListener)
      * @see EventHandler
      *
      * @param listener
      *            a portlet event listener, not {@code null}
      * @return an event registration handle for removing the listener
      */
-    Registration addGenericEventListener(PortletEventListener listener);
+    Registration addGenericEventChangeListener(PortletEventChangeListener listener);
 
     /**
      * Adds a listener which will receive only events with the given
@@ -74,7 +74,7 @@ public interface VaadinPortletEventContext extends Serializable {
      * {@code "^myCompany\..*"}. registers a listener for all event types
      * beginning with {@code "myCompany."}.
      *
-     * @see #addGenericEventListener(PortletEventListener)
+     * @see #addGenericEventChangeListener(PortletEventChangeListener)
      *
      * @param eventType
      *            an event type to listen
@@ -82,29 +82,29 @@ public interface VaadinPortletEventContext extends Serializable {
      *            a portlet event listener, not {@code null}
      * @return an event registration handle for removing the listener
      */
-    Registration addEventListener(String eventType,
-            PortletEventListener listener);
+    Registration addEventChangeListener(String eventType,
+            PortletEventChangeListener listener);
 
     /**
      * Adds a window state listener.
      *
-     * @see WindowStateHandler
+     * @see WindowStateChangeHandler
      *
      * @param listener
      *            a window state listener, not {@code null}
      * @return a registration handle for removing the listener
      */
-    Registration addWindowStateListener(WindowStateListener listener);
+    Registration addWindowStateChangeListener(WindowStateChangeListener listener);
 
     /**
      * Adds a portlet mode listener.
      *
-     * @see PortletModeHandler
+     * @see PortletModeChangeHandler
      *
      * @param listener
      *            a portlet mode listener, not {@code null}
      * @return a registration handle for removing the listener
      */
-    Registration addPortletModeListener(PortletModeListener listener);
+    Registration addPortletModeChangeListener(PortletModeChangeListener listener);
 
 }

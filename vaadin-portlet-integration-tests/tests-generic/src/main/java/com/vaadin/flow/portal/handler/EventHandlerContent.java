@@ -18,8 +18,8 @@ package com.vaadin.flow.portal.handler;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 
-public class EventHandlerContent extends Div implements PortletModeHandler,
-        WindowStateHandler {
+public class EventHandlerContent extends Div implements PortletModeChangeHandler,
+        WindowStateChangeHandler {
 
     static final String MODE_LABEL_ID = "mode_label_id";
     static final String WINDOW_STATE_LABEL_ID = "window_state_label_id";

@@ -35,7 +35,7 @@ public class OtherEventTargetView extends Div
 
         NativeButton button = new NativeButton("Start listening events",
                 event -> {
-                    registration = context.addEventListener("click",
+                    registration = context.addEventChangeListener("click",
                             this::handleEvent);
                 });
         button.setId("start-listen");

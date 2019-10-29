@@ -67,10 +67,10 @@ public class RenderView extends VerticalLayout
 
     @Override
     public void onPortletEventContextInit(VaadinPortletEventContext context) {
-        context.addPortletModeListener(event -> {
+        context.addPortletModeChangeListener(event -> {
             modeInfo.setText(event.getPortletMode().toString());
         });
-        context.addWindowStateListener(event -> {
+        context.addWindowStateChangeListener(event -> {
             stateInfo.setText(event.getWindowState().toString());
         });
     }

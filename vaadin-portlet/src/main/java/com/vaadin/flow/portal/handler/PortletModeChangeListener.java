@@ -18,22 +18,20 @@ package com.vaadin.flow.portal.handler;
 import java.io.Serializable;
 
 /**
- * A listener for window state change events.
+ * A listener portlet mode change events.
  *
  * @see VaadinPortletEventContext
- * @see WindowStateHandler
- *
+ * @see PortletModeChangeHandler
  * @author Vaadin Ltd
  *
  */
-@FunctionalInterface
-public interface WindowStateListener extends Serializable {
+public interface PortletModeChangeListener extends Serializable {
 
     /**
-     * Invoked when the window state changes.
+     * Invoked when the portlet mode changes.
      *
      * @param event
      *            the event object
      */
-    void windowStateChange(WindowStateEvent event);
+    void portletModeChange(PortletModeEvent event);
 }

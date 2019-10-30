@@ -175,6 +175,8 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
                 .append(" params['vaadin.ev']=[];params['vaadin.ev'][0]=type;");
         selectAction.append(
                 " params['vaadin.uid']=[];params['vaadin.uid'][0]=uid;");
+        selectAction.append(
+                " params['vaadin.window.name']=[];params['vaadin.window.name'][0]=window.name;");
         selectAction.append("if (payload){ ");
         selectAction.append(" Object.getOwnPropertyNames(payload).forEach(");
         selectAction

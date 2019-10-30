@@ -19,6 +19,7 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import org.junit.Test;
+import org.openqa.selenium.JavascriptExecutor;
 
 import com.vaadin.flow.portal.AbstractPlutoPortalTest;
 import com.vaadin.testbench.TestBenchElement;
@@ -61,6 +62,44 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
         setWindowStateInPortal(WindowState.MINIMIZED);
         waitUntil(driver -> !$(TestBenchElement.class)
                 .attribute("id", EventHandlerContent.WINDOW_STATE_LABEL_ID)
+                .exists());
+    }
+
+    @Test
+    public void windowStateAndModeChangedInPortal_portletStateIsPreservedtOnRefresh() {
+        setWindowStateInPortal(WindowState.MAXIMIZED);
+        waitUntil(driver -> WindowState.MAXIMIZED.toString().equals(
+                getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID)));
+
+        driver.navigate().refresh();
+
+        waitUntil(driver -> WindowState.MAXIMIZED.toString().equals(
+                getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID)));
+    }
+
+    @Test
+    public void windowStateAndModeChangedInPortal_portletsOnDifferentTabsReceiveEventsIndependently() {
+        String firstTab = driver.getWindowHandle();
+
+        String secondTab = openInAnotherWindow();
+        setWindowStateInPortal(WindowState.MAXIMIZED);
+        setPortletModeInPortal(PortletMode.EDIT);
+
+        driver.switchTo().window(firstTab);
+        setWindowStateInPortal(WindowState.MINIMIZED);
+
+        driver.switchTo().window(secondTab);
+        waitUntil(driver -> WindowState.MAXIMIZED.toString().equals(
+                getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID)));
+        waitUntil(driver -> PortletMode.EDIT.toString().equals(
+                getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
+
+        driver.switchTo().window(firstTab);
+        waitUntil(driver -> !$(TestBenchElement.class)
+                .attribute("id", EventHandlerContent.WINDOW_STATE_LABEL_ID)
+                .exists());
+        waitUntil(driver -> !$(TestBenchElement.class)
+                .attribute("id", EventHandlerContent.MODE_LABEL_ID)
                 .exists());
     }
 

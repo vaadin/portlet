@@ -28,6 +28,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
@@ -132,6 +133,18 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
                         Function.identity(), (oldValue, newValue) -> oldValue));
         nameMap.get("page").selectByText(testPage);
         findElement(By.id("removePageButton")).click();
+    }
+
+    protected String openInAnotherWindow() {
+        final String firstWin = getDriver().getWindowHandle();
+        ((JavascriptExecutor) getDriver()).executeScript(
+                "window.open('" + getURL(route + "/" + testPage) + "','_blank');");
+        final String secondWin = driver.getWindowHandles().stream()
+                .filter(windowId -> !windowId.equals(firstWin))
+                .findFirst()
+                .get();
+        driver.switchTo().window(secondWin);
+        return secondWin;
     }
 
     /**

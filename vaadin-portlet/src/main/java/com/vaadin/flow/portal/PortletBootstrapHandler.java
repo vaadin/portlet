@@ -170,7 +170,7 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
                 .append(" var params = hub.newParameters();")
                 .append(" params['vaadin.ev']=[];params['vaadin.ev'][0]=type;")
                 .append(" params['vaadin.uid']=[];params['vaadin.uid'][0]=uid;")
-                .append(" params['vaadin.wn']=[];params['vaadin.wn'][0]=wn;")
+                .append(" params['vaadin.wn']=[];params['vaadin.wn'][0]=window.name;")
                 .append("if (payload){ ")
                 .append(" Object.getOwnPropertyNames(payload).forEach(")
                 .append(" function(prop){ params[prop] = payload[prop]; });}")

@@ -236,8 +236,8 @@ public class VaadinPortletTest {
                 (VaadinPortlet.VaadinPortletEventContextImpl)component.context;
         VaadinPortlet.VaadinPortletEventContextImpl prevContext =
                 new VaadinPortlet.VaadinPortletEventContextImpl(component,"");
-        prevContext.portletMode = context.portletMode;
-        prevContext.windowState = context.windowState;
+        prevContext.setCachedPortletMode(context.getCachedPortletMode());
+        prevContext.setCachedWindowState(context.getCachedWindowState());
         context.updateCachedModeAndStateFireEventsOnChange(mode, state,
                 prevContext);
     }

@@ -168,9 +168,9 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
         private final Collection<PortletModeListener> portletModeListeners = new CopyOnWriteArrayList<>();
 
-        PortletMode portletMode = null;
+        private PortletMode portletMode = null;
 
-        WindowState windowState = null;
+        private WindowState windowState = null;
 
         VaadinPortletEventContextImpl(C view, String windowName) {
             this.view = view;
@@ -284,13 +284,22 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             }
         }
 
-        private PortletMode getCachedPortletMode() {
+        PortletMode getCachedPortletMode() {
             return portletMode;
         }
 
-        private WindowState getCachedWindowState() {
+        void setCachedPortletMode(PortletMode portletMode) {
+            this.portletMode = portletMode;
+        }
+
+        WindowState getCachedWindowState() {
             return windowState;
         }
+
+        void setCachedWindowState(WindowState windowState) {
+            this.windowState = windowState;
+        }
+
     }
 
     @Override

@@ -80,7 +80,6 @@ import com.vaadin.flow.server.Constants;
 import com.vaadin.flow.server.DefaultDeploymentConfiguration;
 import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.SessionExpiredException;
-import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.shared.Registration;
@@ -157,7 +156,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private static final String WEB_COMPONENT_BOOTSTRAP_HANDLER_URL_SUBKEY = "webComponentBootstrapHandlerURL";
     private static final String WEB_COMPONENT_UIDL_REQUEST_HANDLER_URL_SUBKEY = "webComponentUidlRequestHandlerURL";
 
-    private static class VaadinPortletEventContextImpl<C extends Component>
+    static class VaadinPortletEventContextImpl<C extends Component>
             implements VaadinPortletEventContext {
 
         private final C view;
@@ -189,31 +188,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                         ((PortletModeHandler) view)::portletModeChange);
             }
 
-            VaadinPortlet<C> thisPortlet = VaadinPortlet.getCurrent();
-            VaadinPortletSession session = VaadinPortletSession.getCurrent();
-            PortletRequest request = VaadinPortletRequest
-                    .getCurrentPortletRequest();
-            String namespace = VaadinPortletResponse.getCurrentPortletResponse()
-                    .getNamespace();
-            /*
-             * Note: mode update events must be sent to handlers before window
-             * state update events.
-             */
-            updateMapAndCallHandlerIfChanged(thisPortlet, session,
-                    PORTLET_MODE_SESSION_SUBKEY, namespace,
-                    request.getPortletMode().toString(),
-                    PortletMode.UNDEFINED.toString(),
-                    (oldMode, newMode) -> firePortletModeEvent(
-                            new PortletModeEvent(new PortletMode(newMode),
-                                    new PortletMode(oldMode))));
-
-            updateMapAndCallHandlerIfChanged(thisPortlet, session,
-                    WINDOW_STATE_SESSION_SUBKEY, namespace,
-                    request.getWindowState().toString(),
-                    WindowState.UNDEFINED.toString(),
-                    (oldState, newState) -> fireWindowStateEvent(
-                            new WindowStateEvent(new WindowState(newState),
-                                    new WindowState(oldState))));
+            fireEventsOnModeOrWindowStateChange();
         }
 
         @Override
@@ -307,6 +282,35 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             }
             map.put(namespace, newValue);
         }
+
+        void fireEventsOnModeOrWindowStateChange() {
+            VaadinPortlet<C> thisPortlet = VaadinPortlet.getCurrent();
+            VaadinPortletSession session = VaadinPortletSession.getCurrent();
+            PortletRequest request = VaadinPortletRequest
+                    .getCurrentPortletRequest();
+            String namespace = VaadinPortletResponse.getCurrentPortletResponse()
+                    .getNamespace();
+            /*
+             * Note: mode update events must be sent to handlers before window
+             * state update events.
+             */
+            updateMapAndCallHandlerIfChanged(thisPortlet, session,
+                    PORTLET_MODE_SESSION_SUBKEY, namespace,
+                    request.getPortletMode().toString(),
+                    PortletMode.UNDEFINED.toString(),
+                    (oldMode, newMode) -> firePortletModeEvent(
+                            new PortletModeEvent(new PortletMode(newMode),
+                                    new PortletMode(oldMode))));
+
+            updateMapAndCallHandlerIfChanged(thisPortlet, session,
+                    WINDOW_STATE_SESSION_SUBKEY, namespace,
+                    request.getWindowState().toString(),
+                    WindowState.UNDEFINED.toString(),
+                    (oldState, newState) -> fireWindowStateEvent(
+                            new WindowStateEvent(new WindowState(newState),
+                                    new WindowState(oldState))));
+        }
+
     }
 
     @Override

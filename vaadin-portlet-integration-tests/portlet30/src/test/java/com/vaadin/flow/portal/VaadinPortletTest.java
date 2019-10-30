@@ -20,6 +20,7 @@ import org.mockito.Mockito;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.page.ExtendedClientDetails;
 import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.portal.handler.PortletModeEvent;
 import com.vaadin.flow.portal.handler.VaadinPortletEventContext;
@@ -105,17 +106,23 @@ public class VaadinPortletTest {
         VaadinPortletRequest request = Mockito.mock(VaadinPortletRequest.class);
 
         PortletRequest portletRequest = Mockito.mock(PortletRequest.class);
+        Mockito.when(portletRequest.getPortletMode()).thenReturn(PortletMode.VIEW);
+        Mockito.when(portletRequest.getWindowState()).thenReturn(WindowState.NORMAL);
         Mockito.when(request.getPortletRequest()).thenReturn(portletRequest);
         CurrentInstance.set(VaadinRequest.class, request);
 
         VaadinSession.setCurrent(session);
 
         UI ui = new UI();
+        UI.setCurrent(ui);
+
+        ExtendedClientDetails details = Mockito.mock(ExtendedClientDetails.class);
+        Mockito.when(details.getWindowName()).thenReturn("window name");
+        ui.getInternals().setExtendedClientDetails(details);
 
         component = new TestComponent();
         ui.add(component);
         portlet.configure(null, component);
-
     }
 
     @After
@@ -213,6 +220,16 @@ public class VaadinPortletTest {
         Mockito.when(state.toString()).thenReturn(windowState);
         Mockito.when(request.getWindowState()).thenReturn(state);
 
-        portlet.render(request, response);
+        PortletRequest portletRequest = Mockito.mock(PortletRequest.class);
+        Mockito.when(portletRequest.getPortletMode()).thenReturn(mode);
+        Mockito.when(portletRequest.getWindowState()).thenReturn(state);
+        Mockito.when(VaadinPortletRequest.getCurrentPortletRequest())
+                .thenReturn(portletRequest);
+
+        Mockito.when(VaadinPortletResponse.getCurrentPortletResponse())
+                .thenReturn(response);
+
+        ((VaadinPortlet.VaadinPortletEventContextImpl) component.context)
+                .fireEventsOnModeOrWindowStateChange();
     }
 }

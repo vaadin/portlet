@@ -15,9 +15,13 @@
  */
 package com.vaadin.flow.portal.rendermodes;
 
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.vaadin.flow.component.button.testbench.ButtonElement;
@@ -41,36 +45,43 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
 
         stateChange.click();
 
-        waitUntil(ExpectedConditions.presenceOfElementLocated(By.id(RenderView.WINDOW_STATE_CHANGE)));
+        waitUntil(ExpectedConditions.presenceOfElementLocated(
+                By.id(RenderView.WINDOW_STATE_CHANGE)));
 
-        stateChange = $(ButtonElement.class)
-                .id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = $(ButtonElement.class)
-                .id(RenderView.PORTLET_MODE_CHANGE);
+        stateChange = $(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
+        modeChange = $(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
+
+        WebElement stateInfo = findElement(By.id("state-info"));
+        Assert.assertEquals(WindowState.MAXIMIZED.toString(),
+                stateInfo.getText());
 
         Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_EDIT, modeChange.getText());
 
         modeChange.click();
 
-        waitUntil(ExpectedConditions.presenceOfElementLocated(By.id(RenderView.WINDOW_STATE_CHANGE)));
+        waitUntil(ExpectedConditions.presenceOfElementLocated(
+                By.id(RenderView.WINDOW_STATE_CHANGE)));
 
-        stateChange = $(ButtonElement.class)
-                .id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = $(ButtonElement.class)
-                .id(RenderView.PORTLET_MODE_CHANGE);
+        stateChange = $(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
+        modeChange = $(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
+
+        WebElement modeInfo = findElement(By.id("mode-info"));
+        Assert.assertEquals(PortletMode.EDIT.toString(), modeInfo.getText());
 
         Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());
 
         stateChange.click();
 
-        waitUntil(ExpectedConditions.presenceOfElementLocated(By.id(RenderView.WINDOW_STATE_CHANGE)));
+        waitUntil(ExpectedConditions.presenceOfElementLocated(
+                By.id(RenderView.WINDOW_STATE_CHANGE)));
 
-        stateChange = $(ButtonElement.class)
-                .id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = $(ButtonElement.class)
-                .id(RenderView.PORTLET_MODE_CHANGE);
+        stateChange = $(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
+        modeChange = $(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
+
+        stateInfo = findElement(By.id("state-info"));
+        Assert.assertEquals(WindowState.NORMAL.toString(), stateInfo.getText());
 
         Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());

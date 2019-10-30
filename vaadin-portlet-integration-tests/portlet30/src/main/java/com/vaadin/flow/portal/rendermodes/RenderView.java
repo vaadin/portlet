@@ -19,10 +19,14 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.portal.VaadinPortlet;
+import com.vaadin.flow.portal.handler.VaadinPortletEventContext;
+import com.vaadin.flow.portal.handler.VaadinPortletEventView;
 
-public class RenderView extends VerticalLayout {
+public class RenderView extends VerticalLayout
+        implements VaadinPortletEventView {
 
     public static final String STATE_MAXIMIZE = "Maximize";
     public static final String STATE_NORMALIZE = "Normalize";
@@ -32,6 +36,9 @@ public class RenderView extends VerticalLayout {
     public static final String PORTLET_MODE_CHANGE = "portlet-mode-change";
 
     private Button windowState, portletMode;
+
+    private Div stateInfo;
+    private Div modeInfo;
 
     public RenderView() {
         VaadinPortlet portlet = RenderPortlet.getCurrent();
@@ -48,7 +55,24 @@ public class RenderView extends VerticalLayout {
                 event -> switchPortletMode());
         portletMode.setId(PORTLET_MODE_CHANGE);
 
+        stateInfo = new Div();
+        stateInfo.setId("state-info");
+        modeInfo = new Div();
+        modeInfo.setId("mode-info");
+
         add(windowState, portletMode);
+        add(stateInfo);
+        add(modeInfo);
+    }
+
+    @Override
+    public void onPortletEventContextInit(VaadinPortletEventContext context) {
+        context.addPortletModeChangeListener(event -> {
+            modeInfo.setText(event.getPortletMode().toString());
+        });
+        context.addWindowStateChangeListener(event -> {
+            stateInfo.setText(event.getWindowState().toString());
+        });
     }
 
     private void switchWindowState() {

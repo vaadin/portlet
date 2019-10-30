@@ -158,8 +158,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
         private final C view;
 
-        private final String windowName;
-
         private final AtomicLong nextUid = new AtomicLong();
 
         private final Map<String, PortletEventListener> eventListeners = new HashMap<String, PortletEventListener>();
@@ -172,9 +170,8 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
         private WindowState windowState = null;
 
-        VaadinPortletEventContextImpl(C view, String windowName) {
+        VaadinPortletEventContextImpl(C view) {
             this.view = view;
-            this.windowName = windowName;
 
             if (view instanceof EventHandler) {
                 EventHandler handler = (EventHandler) view;
@@ -343,14 +340,8 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         assert VaadinSession.getCurrent().hasLock();
 
         SerializableRunnable runnable = () -> {
-            // We rely on the component being attached and the window name
-            // having been retrieved here---this is due to the implementation of
-            // @PreserveOnRefresh
-            UI ui = component.getUI().get();
-            String windowName = ui.getInternals().getExtendedClientDetails()
-                    .getWindowName();
             VaadinPortletEventContextImpl<C> context = new VaadinPortletEventContextImpl<>(
-                    component, windowName);
+                    component);
             if (component instanceof VaadinPortletEventView) {
                 VaadinPortletEventView view = (VaadinPortletEventView) component;
                 view.onPortletEventContextInit(context);
@@ -367,6 +358,13 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                 VaadinPortletSession session = portlet.getSession(request,
                         response);
                 String namespace = response.getNamespace();
+
+                // We rely on the component being attached and the window name
+                // having been retrieved here---this is due to the implementation of
+                // @PreserveOnRefresh
+                UI ui = component.getUI().get();
+                String windowName = ui.getInternals().getExtendedClientDetails()
+                        .getWindowName();
 
                 try {
                     VaadinPortletEventContextImpl prevContext = getViewContext(

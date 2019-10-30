@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2019 Vaadin Ltd.
+ * Copyright 2000-2018 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,22 +15,21 @@
  */
 package com.vaadin.flow.portal.handler;
 
-import java.io.Serializable;
-
 /**
- * A component which implements this interface will receive events which are
- * sent via IPC.
+ * A listener for portlet events.
+ *
+ * @see VaadinPortletEventContext
  *
  * @author Vaadin Ltd
  *
  */
 @FunctionalInterface
-public interface EventHandler extends Serializable {
+public interface PortletEventListener {
 
     /**
      * This method gets called when an IPC event is received.
      *
      * @param event
      */
-    void handleEvent(PortletEvent event);
+    void onPortletEvent(PortletEvent event);
 }

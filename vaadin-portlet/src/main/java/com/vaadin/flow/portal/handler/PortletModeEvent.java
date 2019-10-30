@@ -18,8 +18,8 @@ package com.vaadin.flow.portal.handler;
 import javax.portlet.PortletMode;
 
 /**
- * An event of this class is fired when the {@link PortletMode} of the
- * portlet is updated to a mode different from its current mode.
+ * An event of this class is fired when the {@link PortletMode} of the portlet
+ * is updated to a mode different from its current mode.
  */
 public class PortletModeEvent {
 
@@ -29,10 +29,11 @@ public class PortletModeEvent {
     /**
      * Creates a new event.
      *
-     * @param portletMode the updated portlet mode
+     * @param portletMode
+     *            the updated portlet mode
      */
     public PortletModeEvent(PortletMode portletMode,
-                            PortletMode prevPortletMode) {
+            PortletMode prevPortletMode) {
         this.portletMode = portletMode;
         this.prevPortletMode = prevPortletMode;
     }

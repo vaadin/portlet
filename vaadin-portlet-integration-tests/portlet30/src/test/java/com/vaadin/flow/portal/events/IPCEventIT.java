@@ -16,7 +16,6 @@
 package com.vaadin.flow.portal.events;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -31,9 +30,9 @@ public class IPCEventIT extends AbstractPlutoPortalTest {
     }
 
     @Test
-    @Ignore
     public void sendEventFromSourceToTarget() throws InterruptedException {
         addPortlet("event-source", getPage());
+        addPortlet("other-event-target", getPage());
 
         waitUntil(driver -> !findElements(By.id("send-event")).isEmpty());
 
@@ -42,10 +41,29 @@ public class IPCEventIT extends AbstractPlutoPortalTest {
 
         sendEvent.click();
 
-        waitUntil(driver -> !findElements(By.id("event")).isEmpty());
+        waitUntil(driver -> !findElements(By.className("event")).isEmpty());
 
-        WebElement event = findElement(By.id("event"));
+        WebElement event = findElement(By.className("event"));
         Assert.assertEquals("click[left]", event.getText());
-    }
 
+        Assert.assertTrue(findElements(By.className("other-event")).isEmpty());
+
+        // add an event listener programmatically
+        findElement(By.id("start-listen")).click();
+
+        sendEvent.click();
+
+        waitUntil(driver -> findElements(By.className("event")).size() == 2);
+
+        // event should be received by a programmatic listener
+        Assert.assertFalse(findElements(By.className("other-event")).isEmpty());
+
+        // once event is received the programmatic listener should remove
+        // itself, so no more events
+        sendEvent.click();
+
+        waitUntil(driver -> findElements(By.className("event")).size() == 3);
+        Assert.assertEquals(1,
+                findElements(By.className("other-event")).size());
+    }
 }

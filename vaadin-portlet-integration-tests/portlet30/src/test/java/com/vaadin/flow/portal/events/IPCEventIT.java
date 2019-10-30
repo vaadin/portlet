@@ -15,6 +15,8 @@
  */
 package com.vaadin.flow.portal.events;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -65,5 +67,36 @@ public class IPCEventIT extends AbstractPlutoPortalTest {
         waitUntil(driver -> findElements(By.className("event")).size() == 3);
         Assert.assertEquals(1,
                 findElements(By.className("other-event")).size());
+    }
+
+
+    @Test
+    public void sendEventFromSourceToTarget_portletsOnDifferentTabsReceiveEventsIndependently() throws InterruptedException {
+        addPortlet("event-source", getPage());
+        addPortlet("other-event-target", getPage());
+
+        String firstTab = driver.getWindowHandle();
+        String secondTab = openInAnotherWindow();
+
+        driver.switchTo().window(firstTab);
+        waitUntil(driver -> !findElements(By.id("send-event")).isEmpty());
+        $(NativeButtonElement.class).id("send-event").click();
+
+        driver.switchTo().window(secondTab);
+        waitUntil(driver -> !findElements(By.id("send-event")).isEmpty());
+        $(NativeButtonElement.class).id("send-event").click();
+
+        driver.switchTo().window(firstTab);
+        waitUntil(driver -> !findElements(By.className("event")).isEmpty());
+        List<WebElement> events1 = findElements(By.className("event"));
+        Assert.assertEquals(1, events1.size());
+        Assert.assertEquals("click[left]", events1.get(0).getText());
+
+        driver.switchTo().window(secondTab);
+        waitUntil(driver -> !findElements(By.className("event")).isEmpty());
+        List<WebElement> events2 = findElements(By.className("event"));
+        Assert.assertEquals(1, events2.size());
+        Assert.assertEquals("click[left]", events2.get(0).getText());
+
     }
 }

@@ -163,32 +163,25 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
     }
 
     private String getEventPollerFunction() {
-        StringBuilder selectAction = new StringBuilder();
-
-        selectAction.append("function(type, payload, uid) {");
-        selectAction.append(" if(hub.isInProgress()) {");
-        selectAction.append(
-                "  setTimeout(function(){ portletObj.eventPoller(type, payload, uid); }, 10);");
-        selectAction.append(" } else {");
-        selectAction.append(" var params = hub.newParameters();");
-        selectAction
-                .append(" params['vaadin.ev']=[];params['vaadin.ev'][0]=type;");
-        selectAction.append(
-                " params['vaadin.uid']=[];params['vaadin.uid'][0]=uid;");
-        selectAction.append("if (payload){ ");
-        selectAction.append(" Object.getOwnPropertyNames(payload).forEach(");
-        selectAction
-                .append(" function(prop){ params[prop] = payload[prop]; });}");
-        selectAction.append("  hub.action(params).then(function(){ ");
-        // call {@code action} method on the hub is not enough: it won't be an
-        // UIDL request. We need to make a fake UIDL request so that the client
-        // state is updated according to the server side state.
-        selectAction.append("var clients = elem.constructor._getClients();");
-        selectAction.append("clients[portletObj.appId].poll(); });");
-        selectAction.append(" }");
-        selectAction.append("};");
-
-        return selectAction.toString();
+        return new StringBuilder().append("function(type, payload, uid) {")
+                .append(" if(hub.isInProgress()) {")
+                .append("  setTimeout(function(){ portletObj.eventPoller(type, payload, uid); }, 10);")
+                .append(" } else {")
+                .append(" var params = hub.newParameters();")
+                .append(" params['vaadin.ev']=[];params['vaadin.ev'][0]=type;")
+                .append(" params['vaadin.uid']=[];params['vaadin.uid'][0]=uid;")
+                .append(" params['vaadin.wn']=[];params['vaadin.wn'][0]=window.name;")
+                .append("if (payload){ ")
+                .append(" Object.getOwnPropertyNames(payload).forEach(")
+                .append(" function(prop){ params[prop] = payload[prop]; });}")
+                .append("  hub.action(params).then(function(){ ")
+                // call {@code action} method on the hub is not enough: it won't
+                // be an UIDL request. We need to make a fake UIDL request so
+                // that the client state is updated according to the server side
+                // state.
+                .append("var clients = elem.constructor._getClients();")
+                .append("clients[portletObj.appId].poll(); });").append(" }")
+                .append("};").toString();
     }
 
     private void initClientPortlet(StringBuilder builder) {

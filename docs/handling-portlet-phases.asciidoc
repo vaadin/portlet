@@ -10,6 +10,7 @@ The portlet model operates on https://portals.apache.org/pluto/v301/portlet-api.
 Normally, the phase request contain data that the user might be interested in but since it makes little sense for a Vaadin Portlet to handle such requests, listeners were introduced.
 In this section we take a look at different listeners, which allows Vaadin Portlets to hook into the different phases while operating within the UI thread of their Vaadin application.
 
+=== Listeners
 As described in <<creating-vaadin-portlets#,Creating Vaadin Portlets>>, the Vaadin Portlet consist of two parts: a class extending `VaadinPortlet` and a class extending Vaadin `Component`.
 Vaadin Portlet support offers various listeners which allows implementing view component to react to updates from the portal.
 To add an listener, your view should first implement `VaadinPortletEventView`.
@@ -23,7 +24,7 @@ The available listeners are:
 
 Next, we will have a look at the listeners which enable the view component react to changes to the portlet's state.
 
-=== `PortletModeListener`
+==== `PortletModeListener`
 
 Portlets can operate in different modes.
 The standard modes in the portlet specification are `View`, `Edit`, and `Help`.
@@ -43,7 +44,7 @@ public class MyPortletView extends Div implements VaadinPortletEventView {
 
 The type of `event` object is `PortletModeEvent` which contains information like the portlet mode, the previous portlet mode, and helpful shorthands for accessing the most commonly needed properties.
 
-=== `WindowStateListener`
+==== `WindowStateListener`
 
 A portlet window have different sizes, or window states.
 The standard states in the portlet specification are `Normal`, `Maximized`, and `Minimized`.
@@ -63,7 +64,7 @@ public class MyPortletView extends Div implements VaadinPortletEventView {
 
 The type of `event` object is `WindowStateEvent` which contains the information about the window state and helpful shorthands for accessing the most commonly needed properties.
 
-=== Listeners Invocation Order
+==== Listeners Invocation Order
 
 In some cases, you may want to have a component class with several listeners.
 Vaadin Portlet support calls each listener only once per portlet request and in the following order.
@@ -72,12 +73,10 @@ Vaadin Portlet support calls each listener only once per portlet request and in 
 2. `WindowStateListener`
 3. `EventListener`
 
-== Changing the Portlet States from Java
+=== Changing the Portlet States from Java
 
-In addition to handling the different state changes originating from the client-side, you can also affect the same changes from the Java code.
+In addition to handling the different state changes originating from the client-side, you can also invoke the same changes from the Java code.
 This is done by using the API provided by the `VaadinPortlet`, or calling the same methods on your own portlet class extending `VaadinPortlet`.
-
-=== Changing States via `VaadinPortlet`
 
 You can change the portlet mode of the portlet by calling:
 
@@ -143,10 +142,12 @@ public class MyView extends Div implements VaadinPortletEventView {
 }
 ----
 
-[NOTE]
+=== Using Handler interfaces
+
 There is another way to listen to changes in window state and portlet mode.
 In this way, instead of `VaadinPortletEventView`, your view should implement `WindowStateHandler` and/or `PortletModeHandler` interfaces.
 The following example shows how to react to changes to window state using `WindowStateHandler` interface and changes to portlet mode using `PortletModeHandler` interface.
+
 [source,java]
 ----
 public class MyView extends Div

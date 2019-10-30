@@ -7,77 +7,76 @@ So in order to operate seamlessly in the portlet environment, Vaadin Portlet sup
 == Portlet Requests and Phases
 
 The portlet model operates on https://portals.apache.org/pluto/v301/portlet-api.html[phases] which do not mesh naturally with Vaadin.
-Normally, the phase request contain data that the user might be interested in but since it makes little sense for a Vaadin Portlet to handle such requests, interfaces were introduced.
-In this section we take a look at the interfaces, Vaadin Portlets to hook into the different phases, while operating within the UI thread of their Vaadin application.
+Normally, the phase request contain data that the user might be interested in but since it makes little sense for a Vaadin Portlet to handle such requests, listeners were introduced.
+In this section we take a look at different listeners, which allows Vaadin Portlets to hook into the different phases while operating within the UI thread of their Vaadin application.
 
+=== Listeners
 As described in <<creating-vaadin-portlets#,Creating Vaadin Portlets>>, the Vaadin Portlet consist of two parts: a class extending `VaadinPortlet` and a class extending Vaadin `Component`.
-Vaadin Portlet support offers various interfaces which allows implementing view component to react to updates from the portal.
+Vaadin Portlet support offers various listeners which allows implementing view component to react to updates from the portal.
+To add an listener, your view should first implement `VaadinPortletEventView`.
+Then in `VaadinPortletEventView.onPortletEventContextInit`, you have access to `VaadinPortletEventContext` which allows you to add the listeners you need.
 
-The interfaces available for implementation by the view component are:
+The available listeners are:
 
-- `PortletModeHandler`
-- `WindowStateHandler`
-- `EventHandler` (part of the <<inter-portlet-communication#,Inter-Portlet Communication>>)
+- `PortletModeListener`
+- `WindowStateListener`
+- `PortletEventListener` (part of the <<inter-portlet-communication#,Inter-Portlet Communication>>)
 
-Next, we will have a look at the interfaces which enable the view component react to changes to the portlet's state.
+Next, we will have a look at the listeners which enable the view component react to changes to the portlet's state.
 
-=== `PortletModeHandler` interface
+==== `PortletModeListener`
 
 Portlets can operate in different modes.
 The standard modes in the portlet specification are `View`, `Edit`, and `Help`.
 User of the portlet can change these modes using the controls on the portlet window, or through the portlet API.
 
-React to changes to the portlet mode by implementing `PortletModeHandler` on your portlet view class:
+React to changes to the portlet mode by adding a `PortletModeListener` to `VaadinPortletEventContext` class:
 
 [source,java]
 ----
-public class MyPortletView extends Div implements PortletModeHandler {
+public class MyPortletView extends Div implements VaadinPortletEventView {
     @Override
-    public void portletModeChange(PortletModeEvent event) {
-        showHelpText(event.isHelp());
+    public void onPortletEventContextInit(VaadinPortletEventContext context) {
+        context.addPortletModeListener(event -> showHelpText(event.isHelpMode()));
     }
 }
 ----
 
-The `PortletModeEvent` contains information the portlet mode and helpful shorthands for accessing the most commonly needed properties.
+The type of `event` object is `PortletModeEvent` which contains information like the portlet mode, the previous portlet mode, and helpful shorthands for accessing the most commonly needed properties.
 
-=== `WindowStateHandler` interface
+==== `WindowStateListener`
 
 A portlet window have different sizes, or window states.
 The standard states in the portlet specification are `Normal`, `Maximized`, and `Minimized`.
-User of the portlet can change these modes using the controls on the portlet window, or through the portlet API.
+User of the portlet can change these states using the controls on the portlet window, or through the portlet API.
 
-React to changes to the window states by implementing `WindowStateHandler` on your portlet view class:
+React to changes to the window states by adding a `WindowStateListener` to `VaadinPortletEventContext` class:
 
 [source,java]
 ----
-public class MyPortletView extends Div implements WindowStateHandler {
+public class MyPortletView extends Div implements VaadinPortletEventView {
     @Override
-    public void windowStateChange(WindowStateEvent event) {
-        showDetailsField(event.isMaximized());
+    public void onPortletEventContextInit(VaadinPortletEventContext context) {
+        context.addWindowStateListener(event -> showDetailsField(event.isMaximized()));
     }
 }
 ----
 
-The `WindowStateEvent` contains the information about the window state and helpful shorthands for accessing the most commonly needed properties.
+The type of `event` object is `WindowStateEvent` which contains the information about the window state and helpful shorthands for accessing the most commonly needed properties.
 
-=== Handler Invocation Order
+==== Listeners Invocation Order
 
-In some cases, you may want to have a component class which implements many of the provided interfaces.
-Vaadin Portlet support is guaranteed to call each method only once per portlet request and in a predictable order.
+In some cases, you may want to have a component class with several listeners.
+Vaadin Portlet support calls each listener only once per portlet request and in the following order.
 
-==== Interface Invocation Orders:
+1. `PortletModeListener`
+2. `WindowStateListener`
+3. `EventListener`
 
-. `PortletModeHandler`
-. `WindowStateHandler`
-. `EventHandler`
+=== Changing the Portlet States from Java
 
-== Changing the Portlet States from Java
-
-In addition to handling the different state changes originating from the client-side, you can also affect the same changes from the Java code.
+In addition to handling the different state changes originating from the client-side, you can also invoke the same changes from the Java code.
 This is done by using the API provided by the `VaadinPortlet`, or calling the same methods on your own portlet class extending `VaadinPortlet`.
-
-=== Changing States via `VaadinPortlet`
 
 You can change the portlet mode of the portlet by calling:
 
@@ -98,10 +97,10 @@ VaadinPortlet.getCurrent().setWindowState(WindowState.MAXIMIZED);
 === Example of a Vaadin Portlet Reacting to and Changing States
 
 This is a full example with two class, `MyPortlet` (a portlet class) extending `VaadinPortlet` and `MyView` extending `Div` (a view class).
-The view class implements both status related handler interfaces: `PortletModeHandler` and `WindowStateHandler`.
+The view class implements `VaadinPortletEventView`.
 
 `MyView` reacts to the status changes by updating the text of a `Paragraph`, informing the user whether the portlet mode or the window state changed.
-The example also show how the developer can change portlet mode and window state from the Java code.
+The example also shows how the developer can change portlet mode and window state from the Java code.
 The view contains two buttons.
 One with "Maximize" text changes the window state of the portlet to `MAXIMIZED`, and the other with "Show help" text sets the portlet mode to `HELP`.
 
@@ -116,35 +115,60 @@ public class MyPortlet extends VaadinPortlet<MyView> {
 .MyView.java
 [source,java]
 ----
-public class MyView extends Div
-        implements PortletModeHandler, WindowStateHandler{
+public class MyView extends Div implements VaadinPortletEventView {
 
-    Paragraph stateInformation;
+    private Paragraph stateInformation;
 
     public MyView() {
-        stateInformation = new Paragraph("Use the portlet controls or the " +
-                "buttons below to change the portlets state!");
+        stateInformation = new Paragraph("Use the portlet controls or the "
+                + "buttons below to change the portlet's state!");
 
-        Button maximizeButton = new Button("Maximize", event ->
-                VaadinPortlet.getCurrent().setWindowState(WindowState.MAXIMIZED));
+        Button maximizeButton = new Button("Maximize", event -> VaadinPortlet
+                .getCurrent().setWindowState(WindowState.MAXIMIZED));
 
-        Button helpButton = new Button("Show help", event ->
-                VaadinPortlet.getCurrent().setPortletMode(PortletMode.HELP));
+        Button helpButton = new Button("Show help", event -> VaadinPortlet
+                .getCurrent().setPortletMode(PortletMode.HELP));
 
         add(stateInformation, maximizeButton, helpButton);
     }
 
     @Override
-    public void portletModeChange(PortletModeEvent event) {
-        stateInformation.setText("Portlet mode changed to " +
-                event.getPortletMode());
-    }
-
-    @Override
-    public void windowStateChange(WindowStateEvent event) {
-        stateInformation.setText("Window state changed to " +
-                event.getWindowState());
+    public void onPortletEventContextInit(VaadinPortletEventContext context) {
+        context.addWindowStateListener(event -> stateInformation
+                .setText("Window state changed to " + event.getWindowState()));
+        context.addPortletModeListener(event -> stateInformation
+                .setText("Portlet mode changed to " + event.getPortletMode()));
     }
 }
 ----
 
+=== Using Handler interfaces
+
+There is another way to listen to changes in window state and portlet mode.
+In this way, instead of `VaadinPortletEventView`, your view should implement `WindowStateHandler` and/or `PortletModeHandler` interfaces.
+The following example shows how to react to changes to window state using `WindowStateHandler` interface and changes to portlet mode using `PortletModeHandler` interface.
+
+[source,java]
+----
+public class MyView extends Div
+implements PortletModeHandler, WindowStateHandler {
+
+    private Paragraph stateInformation = new Paragraph();
+
+    public MyView() {
+        add(stateInformation);
+    }
+
+    @Override
+    public void portletModeChange(PortletModeEvent event) {
+        stateInformation
+                .setText("Portlet mode changed to " + event.getPortletMode());
+    }
+
+    @Override
+    public void windowStateChange(WindowStateEvent event) {
+        stateInformation
+                .setText("Window state changed to " + event.getWindowState());
+    }
+}
+----

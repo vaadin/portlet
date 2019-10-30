@@ -368,34 +368,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         component.getElement().addAttachListener(event -> runnable.run());
     }
 
-    /**
-     * Sends the given {@link PortletModeEvent} to the given view instance of
-     * this portlet.
-     *
-     * @param view
-     *            the view instance
-     * @param event
-     *            the event object
-     */
-    protected void fireModeChange(PortletModeHandler view,
-            PortletModeEvent event) {
-        view.portletModeChange(event);
-    }
-
-    /**
-     * Sends the given {@link WindowStateEvent} to the given view instance of
-     * this portlet.
-     *
-     * @param view
-     *            the view instance
-     * @param event
-     *            the event object
-     */
-    protected void fireWindowStateChange(WindowStateHandler view,
-            WindowStateEvent event) {
-        view.windowStateChange(event);
-    }
-
     protected DeploymentConfiguration createDeploymentConfiguration(
             Properties initParameters) {
         initParameters.put(Constants.SERVLET_PARAMETER_COMPATIBILITY_MODE,

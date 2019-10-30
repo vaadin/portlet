@@ -18,8 +18,8 @@ package com.vaadin.flow.portal.handler;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
+import org.junit.Assert;
 import org.junit.Test;
-import org.openqa.selenium.JavascriptExecutor;
 
 import com.vaadin.flow.portal.AbstractPlutoPortalTest;
 import com.vaadin.testbench.TestBenchElement;
@@ -28,6 +28,22 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
 
     public EventHandlerIT() {
         super("eventhandler");
+    }
+
+    @Test
+    public void modeUpdatedInPortal_noWindowStateHandlerCalled() {
+        setPortletModeInPortal(PortletMode.EDIT);
+        waitUntil(driver -> PortletMode.EDIT.toString().equals(
+                getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
+        Assert.assertEquals("", getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID));
+    }
+
+    @Test
+    public void windowStateUpdatedInPortal_noModeStateHandlerCalled() {
+        setWindowStateInPortal(WindowState.MAXIMIZED);
+        waitUntil(driver -> WindowState.MAXIMIZED.toString().equals(
+                getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID)));
+        Assert.assertEquals("", getLabelContent(EventHandlerContent.MODE_LABEL_ID));
     }
 
     @Test

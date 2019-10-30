@@ -627,7 +627,10 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      * Get the window state for this portlet.
      *
      * @return window state
+     * @deprecated this method will be moved into
+     *             {@link VaadinPortletEventContext}
      */
+    @Deprecated
     public WindowState getWindowState() {
         return VaadinPortletRequest.getCurrent().getWindowState();
     }
@@ -636,7 +639,10 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      * Get the portlet mode for this portlet.
      *
      * @return portlet mode
+     * @deprecated this method will be moved into
+     *             {@link VaadinPortletEventContext}
      */
+    @Deprecated
     public PortletMode getPortletMode() {
         return VaadinPortletRequest.getCurrent().getPortletMode();
     }
@@ -646,7 +652,10 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      *
      * @param newWindowState
      *            window state to set
+     * @deprecated this method will be moved into
+     *             {@link VaadinPortletEventContext}
      */
+    @Deprecated
     public void setWindowState(WindowState newWindowState) {
         if (isPortlet3) {
             PortletHubUtil.updatePortletState(newWindowState.toString(),
@@ -661,7 +670,10 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      *
      * @param newPortletMode
      *            portlet mode to set
+     * @deprecated this method will be moved into
+     *             {@link VaadinPortletEventContext}
      */
+    @Deprecated
     public void setPortletMode(PortletMode newPortletMode) {
         if (isPortlet3) {
             PortletHubUtil.updatePortletState(getWindowState().toString(),
@@ -683,7 +695,10 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      *            executed as a listener for the event, the factory may use the
      *            first parameter to access to the event type (name) and the
      *            second parameter to access to the event payload.
+     * @deprecated this method will be moved into
+     *             {@link VaadinPortletEventContext}
      */
+    @Deprecated
     public void addEventListener(Component portletComponent, String eventName,
             BiFunction<String, String, String> listenerFactory) {
         StringBuilder listenerBuilder = new StringBuilder();

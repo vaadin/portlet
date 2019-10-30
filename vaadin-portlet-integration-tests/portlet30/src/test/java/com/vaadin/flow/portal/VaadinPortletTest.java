@@ -106,8 +106,10 @@ public class VaadinPortletTest {
         VaadinPortletRequest request = Mockito.mock(VaadinPortletRequest.class);
 
         PortletRequest portletRequest = Mockito.mock(PortletRequest.class);
-        Mockito.when(portletRequest.getPortletMode()).thenReturn(PortletMode.VIEW);
-        Mockito.when(portletRequest.getWindowState()).thenReturn(WindowState.NORMAL);
+        Mockito.when(portletRequest.getPortletMode())
+                .thenReturn(PortletMode.VIEW);
+        Mockito.when(portletRequest.getWindowState())
+                .thenReturn(WindowState.NORMAL);
         Mockito.when(request.getPortletRequest()).thenReturn(portletRequest);
         CurrentInstance.set(VaadinRequest.class, request);
 
@@ -116,8 +118,9 @@ public class VaadinPortletTest {
         UI ui = new UI();
         UI.setCurrent(ui);
 
-        ExtendedClientDetails details = Mockito.mock(ExtendedClientDetails.class);
-        Mockito.when(details.getWindowName()).thenReturn("window name");
+        ExtendedClientDetails details = Mockito
+                .mock(ExtendedClientDetails.class);
+        Mockito.when(details.getWindowName()).thenReturn("");
         ui.getInternals().setExtendedClientDetails(details);
 
         component = new TestComponent();
@@ -229,7 +232,13 @@ public class VaadinPortletTest {
         Mockito.when(VaadinPortletResponse.getCurrentPortletResponse())
                 .thenReturn(response);
 
-        ((VaadinPortlet.VaadinPortletEventContextImpl) component.context)
-                .fireEventsOnModeOrWindowStateChange();
+        VaadinPortlet.VaadinPortletEventContextImpl context =
+                (VaadinPortlet.VaadinPortletEventContextImpl)component.context;
+        VaadinPortlet.VaadinPortletEventContextImpl prevContext =
+                new VaadinPortlet.VaadinPortletEventContextImpl(component,"");
+        prevContext.portletMode = context.portletMode;
+        prevContext.windowState = context.windowState;
+        context.updateCachedModeAndStateFireEventsOnChange(mode, state,
+                prevContext);
     }
 }

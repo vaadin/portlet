@@ -187,8 +187,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                 addPortletModeChangeListener(
                         ((PortletModeHandler) view)::portletModeChange);
             }
-
-            fireEventsOnModeOrWindowStateChange();
         }
 
         @Override
@@ -266,18 +264,18 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
         private void updateMapAndCallHandlerIfChanged(VaadinPortlet<C> portlet,
                 VaadinPortletSession session, String sessionSubkey,
-                String namespace, String newValue, String defaultValue,
+                String namespace, String newValue,
                 BiConsumer<String, String> valueChangeHandler) {
             Map<String, String> map = (Map<String, String>) session
                     .getAttribute(portlet.getSessionWindowAttributeKey(
                             windowName, sessionSubkey));
             if (map == null) {
                 map = new HashMap<>();
-                session.setAttribute(
-                        portlet.getSessionAttributeKey(sessionSubkey), map);
+                session.setAttribute(portlet.getSessionWindowAttributeKey(
+                        windowName, sessionSubkey), map);
             }
-            String oldValue = map.getOrDefault(namespace, defaultValue);
-            if (!newValue.equals(oldValue) && !oldValue.equals(defaultValue)) {
+            String oldValue = map.get(namespace);
+            if (oldValue != null && !newValue.equals(oldValue)) {
                 valueChangeHandler.accept(oldValue, newValue);
             }
             map.put(namespace, newValue);
@@ -297,7 +295,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             updateMapAndCallHandlerIfChanged(thisPortlet, session,
                     PORTLET_MODE_SESSION_SUBKEY, namespace,
                     request.getPortletMode().toString(),
-                    PortletMode.UNDEFINED.toString(),
                     (oldMode, newMode) -> firePortletModeEvent(
                             new PortletModeEvent(new PortletMode(newMode),
                                     new PortletMode(oldMode))));
@@ -305,7 +302,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             updateMapAndCallHandlerIfChanged(thisPortlet, session,
                     WINDOW_STATE_SESSION_SUBKEY, namespace,
                     request.getWindowState().toString(),
-                    WindowState.UNDEFINED.toString(),
                     (oldState, newState) -> fireWindowStateEvent(
                             new WindowStateEvent(new WindowState(newState),
                                     new WindowState(oldState))));
@@ -365,6 +361,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                 VaadinPortletEventView view = (VaadinPortletEventView) component;
                 view.onPortletEventContextInit(context);
             }
+            context.fireEventsOnModeOrWindowStateChange();
         };
         if (component.getElement().getNode().isAttached()) {
             runnable.run();
@@ -764,15 +761,19 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             String subKey) {
         Map<String, T> map = (Map<String, T>) session
                 .getAttribute(getSessionAttributeKey(subKey));
-        if (map != null) {
-            return map.get(namespace);
-        } else {
-            return null;
-        }
+        return map != null ? map.get(namespace) : null;
+    }
+
+
+    public <T> T getSessionWindowAttribute(VaadinSession session,
+            String namespace, String windowName, String subKey) {
+        Map<String, T> map = (Map<String, T>) session
+                .getAttribute(getSessionWindowAttributeKey(windowName, subKey));
+        return map != null ? map.get(namespace) : null;
     }
 
     public <T> void setSessionWindowAttribute(VaadinSession session,
-                                              String namespace, String windowName, String subKey, T value) {
+            String namespace, String windowName, String subKey, T value) {
         setSessionAttribute(session, namespace, windowName + "-" + subKey,
                 value);
     }
@@ -810,10 +811,16 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
             setSessionWindowAttribute(session, namespace, windowName,
                     VIEW_CONTEXT_SESSION_SUBKEY, context);
-            setSessionPortletMode(session, namespace, windowName,
-                    request.getPortletMode());
-            setSessionWindowState(session, namespace, windowName,
-                    request.getWindowState());
+            if (getSessionWindowAttribute(session, namespace, windowName,
+                    PORTLET_MODE_SESSION_SUBKEY) == null) {
+                setSessionPortletMode(session, namespace, windowName,
+                        request.getPortletMode());
+            }
+            if (getSessionWindowAttribute(session, namespace, windowName,
+                    WINDOW_STATE_SESSION_SUBKEY) == null) {
+                setSessionWindowState(session, namespace, windowName,
+                        request.getWindowState());
+            }
         }
     }
 }

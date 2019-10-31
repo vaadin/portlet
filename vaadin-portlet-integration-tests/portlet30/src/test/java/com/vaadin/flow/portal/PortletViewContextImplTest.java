@@ -15,7 +15,9 @@
  */
 package com.vaadin.flow.portal;
 
+import javax.portlet.PortletMode;
 import javax.portlet.PortletResponse;
+import javax.portlet.WindowState;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -185,6 +187,39 @@ public class PortletViewContextImplTest {
         context.fireWindowStateEvent(event);
 
         Assert.assertSame(event, listener.get());
+    }
+
+    @Test
+    public void updateModeAndState_listenerIsNotCalledOnInitialChangeAndIfNoStateChange() {
+        Div component = new Div();
+        ui.add(component);
+        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+                component, new AtomicBoolean());
+
+        AtomicReference<WindowStateEvent> windowListener = new AtomicReference<>();
+        context.addWindowStateChangeListener(
+                event -> Assert.assertNull(windowListener.getAndSet(event)));
+
+        AtomicReference<PortletModeEvent> portletListener = new AtomicReference<>();
+        context.addPortletModeChangeListener(
+                event -> Assert.assertNull(portletListener.getAndSet(event)));
+
+        context.updateModeAndState(PortletMode.EDIT, WindowState.NORMAL);
+
+        Assert.assertNull(windowListener.get());
+        Assert.assertNull(portletListener.get());
+
+        context.updateModeAndState(PortletMode.VIEW, WindowState.MAXIMIZED);
+
+        Assert.assertEquals(WindowState.MAXIMIZED,
+                windowListener.get().getWindowState());
+
+        Assert.assertEquals(PortletMode.VIEW,
+                portletListener.get().getPortletMode());
+
+        // listeners doesn't throw because they have not been called (they
+        // already has a value)
+        context.updateModeAndState(PortletMode.VIEW, WindowState.MAXIMIZED);
     }
 
     @Test

@@ -244,10 +244,10 @@ class PortletViewContextImpl<C extends Component>
          * Note: mode update events must be sent to handlers before window state
          * update events.
          */
-        if (!Objects.equals(portletMode, oldMode)) {
+        if (oldMode != null && !oldMode.equals(portletMode)) {
             firePortletModeEvent(new PortletModeEvent(portletMode, oldMode));
         }
-        if (!Objects.equals(windowState, oldState)) {
+        if (oldState != null && !oldState.equals(windowState)) {
             fireWindowStateEvent(new WindowStateEvent(windowState, oldState));
         }
     }

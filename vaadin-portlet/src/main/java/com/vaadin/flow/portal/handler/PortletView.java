@@ -18,24 +18,25 @@ package com.vaadin.flow.portal.handler;
 import java.io.Serializable;
 
 /**
- * Provides an event context to fire events and subscribe a listener to receive
- * events.
+ * Provides a context to for portlet instance's related actions (like fire an
+ * event, registering listeners, updating modes).
  *
+ * @see PortletViewContext
  * @author Vaadin Ltd
  * @since
  *
  */
-public interface VaadinPortletEventView extends Serializable {
+public interface PortletView extends Serializable {
 
     /**
      * This method gets called once for a portlet component if it implements
      * this interface.
      * <p>
      * Implement the interface and the method to be able to store the
-     * {@code context} object and use it to fire events and subscribe to them.
+     * {@code context} object and use it to invoke contextual methods.
      *
      * @param context
-     *            a portlet event context
+     *            a portlet context
      */
-    void onPortletEventContextInit(VaadinPortletEventContext context);
+    void onPortletViewContextInit(PortletViewContext context);
 }

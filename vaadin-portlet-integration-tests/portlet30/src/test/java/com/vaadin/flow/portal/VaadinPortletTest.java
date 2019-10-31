@@ -23,8 +23,8 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.page.ExtendedClientDetails;
 import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.portal.handler.PortletModeEvent;
-import com.vaadin.flow.portal.handler.VaadinPortletEventContext;
-import com.vaadin.flow.portal.handler.VaadinPortletEventView;
+import com.vaadin.flow.portal.handler.PortletView;
+import com.vaadin.flow.portal.handler.PortletViewContext;
 import com.vaadin.flow.portal.handler.WindowStateEvent;
 import com.vaadin.flow.server.SessionExpiredException;
 import com.vaadin.flow.server.VaadinRequest;
@@ -52,15 +52,16 @@ public class VaadinPortletTest {
         }
     };
 
-    private static class TestComponent extends Div
-            implements VaadinPortletEventView {
+    private static class TestComponent extends Div implements PortletView {
 
-        private VaadinPortletEventContext context;
+        private PortletViewContext context;
+
+        private int initCounts;
 
         @Override
-        public void onPortletEventContextInit(
-                VaadinPortletEventContext context) {
+        public void onPortletViewContextInit(PortletViewContext context) {
             this.context = context;
+            initCounts++;
         }
 
     }
@@ -69,6 +70,7 @@ public class VaadinPortletTest {
 
     private TestComponent component;
     private VaadinPortletService service;
+    private UI ui;
 
     @Before
     public void setUp() throws SessionExpiredException {
@@ -115,7 +117,12 @@ public class VaadinPortletTest {
 
         VaadinSession.setCurrent(session);
 
-        UI ui = new UI();
+        ui = new UI() {
+            @Override
+            public VaadinSession getSession() {
+                return session;
+            }
+        };
         UI.setCurrent(ui);
 
         ExtendedClientDetails details = Mockito
@@ -130,8 +137,7 @@ public class VaadinPortletTest {
 
     @After
     public void tearDown() {
-        VaadinSession.setCurrent(null);
-        VaadinPortletService.setCurrent(null);
+        CurrentInstance.clearAll();
     }
 
     @Test
@@ -204,6 +210,26 @@ public class VaadinPortletTest {
         Assert.assertNull(listener.get());
     }
 
+    @Test
+    public void configure_onPortletViewContextInitIsCalledOnce_listenersAreNotCalledTwice()
+            throws PortletException, IOException {
+        Assert.assertEquals(1, component.initCounts);
+
+        AtomicReference<PortletModeEvent> listener = new AtomicReference<>();
+        component.context.addPortletModeChangeListener(
+                event -> Assert.assertNull(listener.getAndSet(event)));
+
+        // re-attach
+        requestModeAndState("foo", "bar");
+
+        Assert.assertEquals(1, component.initCounts);
+
+        listener.set(null);
+        // fire an event one more time, listener should not throw ( should not
+        // be called twice)
+        requestModeAndState("foo", "bar");
+    }
+
     private void requestModeAndState(String portletMode, String windowState)
             throws PortletException, IOException {
         RenderRequest request = Mockito.mock(RenderRequest.class);
@@ -232,13 +258,9 @@ public class VaadinPortletTest {
         Mockito.when(VaadinPortletResponse.getCurrentPortletResponse())
                 .thenReturn(response);
 
-        VaadinPortlet.VaadinPortletEventContextImpl context =
-                (VaadinPortlet.VaadinPortletEventContextImpl)component.context;
-        VaadinPortlet.VaadinPortletEventContextImpl prevContext =
-                new VaadinPortlet.VaadinPortletEventContextImpl(component);
-        prevContext.setCachedPortletMode(context.getCachedPortletMode());
-        prevContext.setCachedWindowState(context.getCachedWindowState());
-        context.updateCachedModeAndStateFireEventsOnChange(mode, state,
-                prevContext);
+        // detach
+        ui.remove(component);
+        // attach
+        ui.add(component);
     }
 }

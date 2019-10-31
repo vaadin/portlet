@@ -17,6 +17,8 @@ package com.vaadin.flow.portal.handler;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -30,10 +32,10 @@ import com.vaadin.flow.shared.Registration;
  * @author Vaadin Ltd
  * @since
  *
- * @see VaadinPortletEventView#onPortletEventContextInit(VaadinPortletEventContext)
+ * @see PortletView#onPortletViewContextInit(PortletViewContext)
  *
  */
-public interface VaadinPortletEventContext extends Serializable {
+public interface PortletViewContext extends Serializable {
 
     /**
      * Fires an event with the given {@code parameters} and {@code eventName}.
@@ -106,5 +108,37 @@ public interface VaadinPortletEventContext extends Serializable {
      * @return a registration handle for removing the listener
      */
     Registration addPortletModeChangeListener(PortletModeListener listener);
+
+    /**
+     * Get the window state for the portlet instance represented by the context.
+     *
+     * @return window state
+     */
+    WindowState getWindowState();
+
+    /**
+     * Get the portlet mode for the portlet instance represented by the context.
+     *
+     * @return portlet mode
+     */
+    PortletMode getPortletMode();
+
+    /**
+     * Set a new window state for the portlet instance represented by the
+     * context.
+     *
+     * @param newWindowState
+     *            window state to set
+     */
+    void setWindowState(WindowState newWindowState);
+
+    /**
+     * Set a new portlet mode for the portlet instance represented by the
+     * context.
+     *
+     * @param newPortletMode
+     *            portlet mode to set
+     */
+    void setPortletMode(PortletMode newPortletMode);
 
 }

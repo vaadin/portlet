@@ -20,7 +20,7 @@ import java.io.Serializable;
 /**
  * A listener portlet mode change events.
  *
- * @see VaadinPortletEventContext
+ * @see PortletViewContext
  * @see PortletModeHandler
  * @author Vaadin Ltd
  *

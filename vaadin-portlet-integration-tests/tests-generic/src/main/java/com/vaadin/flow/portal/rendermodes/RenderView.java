@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2019 Vaadin Ltd.
+  * Copyright 2000-2019 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,8 +21,10 @@ import javax.portlet.WindowState;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.portal.VaadinPortlet;
+import com.vaadin.flow.portal.handler.PortletView;
+import com.vaadin.flow.portal.handler.PortletViewContext;
 
-public class RenderView extends VerticalLayout {
+public class RenderView extends VerticalLayout implements PortletView {
 
     public static final String STATE_MAXIMIZE = "Maximize";
     public static final String STATE_NORMALIZE = "Normalize";
@@ -33,18 +35,22 @@ public class RenderView extends VerticalLayout {
 
     private Button windowState, portletMode;
 
-    public RenderView() {
-        VaadinPortlet portlet = RenderPortlet.getCurrent();
+    private PortletViewContext context;
+
+    @Override
+    public void onPortletViewContextInit(PortletViewContext context) {
+        this.context = context;
         windowState = new Button(
-                WindowState.NORMAL.equals(portlet.getWindowState()) ?
-                        STATE_MAXIMIZE :
-                        STATE_NORMALIZE, event -> switchWindowState());
+                WindowState.NORMAL.equals(context.getWindowState())
+                        ? STATE_MAXIMIZE
+                        : STATE_NORMALIZE,
+                event -> switchWindowState());
         windowState.setId(WINDOW_STATE_CHANGE);
 
         portletMode = new Button(
-                PortletMode.EDIT.equals(portlet.getPortletMode()) ?
-                        MODE_VIEW :
-                        MODE_EDIT, event -> switchPortletMode());
+                PortletMode.EDIT.equals(context.getPortletMode()) ? MODE_VIEW
+                        : MODE_EDIT,
+                event -> switchPortletMode());
         portletMode.setId(PORTLET_MODE_CHANGE);
 
         add(windowState, portletMode);
@@ -52,22 +58,22 @@ public class RenderView extends VerticalLayout {
 
     private void switchWindowState() {
         VaadinPortlet portlet = RenderPortlet.getCurrent();
-        if (WindowState.NORMAL.equals(portlet.getWindowState())) {
-            portlet.setWindowState(WindowState.MAXIMIZED);
+        if (WindowState.NORMAL.equals(context.getWindowState())) {
+            context.setWindowState(WindowState.MAXIMIZED);
             windowState.setText(STATE_NORMALIZE);
-        } else if (WindowState.MAXIMIZED.equals(portlet.getWindowState())) {
-            portlet.setWindowState(WindowState.NORMAL);
+        } else if (WindowState.MAXIMIZED.equals(context.getWindowState())) {
+            context.setWindowState(WindowState.NORMAL);
             windowState.setText(STATE_MAXIMIZE);
         }
     }
 
     private void switchPortletMode() {
         VaadinPortlet portlet = RenderPortlet.getCurrent();
-        if (PortletMode.EDIT.equals(portlet.getPortletMode())) {
-            portlet.setPortletMode(PortletMode.VIEW);
+        if (PortletMode.EDIT.equals(context.getPortletMode())) {
+            context.setPortletMode(PortletMode.VIEW);
             portletMode.setText(MODE_EDIT);
         } else {
-            portlet.setPortletMode(PortletMode.EDIT);
+            context.setPortletMode(PortletMode.EDIT);
             portletMode.setText(MODE_VIEW);
         }
     }

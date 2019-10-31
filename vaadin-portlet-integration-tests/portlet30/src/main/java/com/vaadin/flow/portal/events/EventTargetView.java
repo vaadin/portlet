@@ -20,11 +20,11 @@ import java.util.Arrays;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.portal.handler.EventHandler;
 import com.vaadin.flow.portal.handler.PortletEvent;
-import com.vaadin.flow.portal.handler.VaadinPortletEventContext;
+import com.vaadin.flow.portal.handler.PortletViewContext;
 
 public class EventTargetView extends Div implements EventHandler {
 
-    private VaadinPortletEventContext context;
+    private PortletViewContext context;
 
     public EventTargetView() {
         Div div = new Div();

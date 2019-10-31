@@ -15,16 +15,18 @@
  */
 package com.vaadin.flow.portal.handler;
 
+import java.io.Serializable;
+
 /**
  * A listener for portlet events.
  *
- * @see VaadinPortletEventContext
+ * @see PortletViewContext
  *
  * @author Vaadin Ltd
  *
  */
 @FunctionalInterface
-public interface PortletEventListener {
+public interface PortletEventListener extends Serializable {
 
     /**
      * This method gets called when an IPC event is received.

@@ -20,7 +20,7 @@ import java.io.Serializable;
 /**
  * A listener for window state change events.
  *
- * @see VaadinPortletEventContext
+ * @see PortletViewContext
  * @see WindowStateHandler
  *
  * @author Vaadin Ltd

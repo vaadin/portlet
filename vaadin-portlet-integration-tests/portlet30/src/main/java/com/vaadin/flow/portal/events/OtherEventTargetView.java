@@ -18,14 +18,13 @@ package com.vaadin.flow.portal.events;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.portal.handler.PortletEvent;
-import com.vaadin.flow.portal.handler.VaadinPortletEventContext;
-import com.vaadin.flow.portal.handler.VaadinPortletEventView;
+import com.vaadin.flow.portal.handler.PortletView;
+import com.vaadin.flow.portal.handler.PortletViewContext;
 import com.vaadin.flow.shared.Registration;
 
-public class OtherEventTargetView extends Div
-        implements VaadinPortletEventView {
+public class OtherEventTargetView extends Div implements PortletView {
 
-    private VaadinPortletEventContext context;
+    private PortletViewContext context;
     private Registration registration;
 
     public OtherEventTargetView() {
@@ -43,7 +42,7 @@ public class OtherEventTargetView extends Div
     }
 
     @Override
-    public void onPortletEventContextInit(VaadinPortletEventContext context) {
+    public void onPortletViewContextInit(PortletViewContext context) {
         this.context = context;
     }
 

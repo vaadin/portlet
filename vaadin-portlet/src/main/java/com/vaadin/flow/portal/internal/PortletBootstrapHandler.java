@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal;
+package com.vaadin.flow.portal.internal;
 
 import javax.portlet.PortletContext;
 import javax.portlet.PortletResponse;
@@ -24,6 +24,9 @@ import javax.portlet.ResourceURL;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import com.vaadin.flow.portal.VaadinPortlet;
+import com.vaadin.flow.portal.VaadinPortletRequest;
+import com.vaadin.flow.portal.VaadinPortletResponse;
 import com.vaadin.flow.server.SynchronizedRequestHandler;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinResponse;
@@ -32,6 +35,8 @@ import com.vaadin.flow.server.communication.WebComponentProvider;
 
 /**
  * Bootstrap handler for portlet bootstrapping.
+ *
+ * For internal use only.
  *
  * @since
  */

@@ -31,7 +31,6 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.portlet.StateAwareResponse;
-import javax.servlet.http.HttpSessionBindingListener;
 import javax.xml.namespace.QName;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -42,6 +41,7 @@ import java.util.Set;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.internal.CurrentInstance;
+import com.vaadin.flow.portal.internal.PortletStreamResourceRegistry;
 import com.vaadin.flow.server.StreamResourceRegistry;
 import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.server.VaadinSession;
@@ -64,13 +64,9 @@ import com.vaadin.flow.shared.Registration;
 @SuppressWarnings("serial")
 public class VaadinPortletSession extends VaadinSession {
 
-    private final Set<PortletListener> portletListeners = new LinkedHashSet<>();
-
     private final Map<String, QName> eventActionDestinationMap = new HashMap<>();
-    private final Map<String, Serializable> eventActionValueMap = new HashMap<>();
 
     private final Map<String, String> sharedParameterActionNameMap = new HashMap<>();
-    private final Map<String, String> sharedParameterActionValueMap = new HashMap<>();
 
     /**
      * Create a portlet service session for the given portlet service.
@@ -120,119 +116,6 @@ public class VaadinPortletSession extends VaadinSession {
         VaadinPortletResponse response = (VaadinPortletResponse) CurrentInstance
                 .get(VaadinResponse.class);
         return response.getService().getPortlet().getPortletConfig();
-    }
-
-    /**
-     * Adds a listener for various types of portlet requests.
-     *
-     * @param listener
-     *         to add
-     * @since 8.0
-     */
-    public Registration addPortletListener(PortletListener listener) {
-        portletListeners.add(listener);
-        return () -> portletListeners.remove(listener);
-    }
-
-    /**
-     * Removes a portlet request listener registered with
-     * {@link #addPortletListener(PortletListener)}.
-     *
-     * @param listener
-     *         to remove
-     * @deprecated Use a {@link Registration} object returned by
-     * {@link #addPortletListener(PortletListener)} to remove a
-     * listener
-     */
-    @Deprecated
-    public void removePortletListener(PortletListener listener) {
-        portletListeners.remove(listener);
-    }
-
-    /**
-     * For internal use by the framework only - API subject to change.
-     */
-    public void firePortletRenderRequest(UI uI, RenderRequest request,
-            RenderResponse response) {
-        for (PortletListener l : new ArrayList<>(portletListeners)) {
-            l.handleRenderRequest(request,
-                    new RestrictedRenderResponse(response), uI);
-        }
-    }
-
-    /**
-     * For internal use by the framework only - API subject to change.
-     */
-    public void firePortletActionRequest(UI uI, ActionRequest request,
-            ActionResponse response) {
-        String key = request.getParameter(ActionRequest.ACTION_NAME);
-        if (eventActionDestinationMap.containsKey(key)) {
-            // this action request is only to send queued portlet events
-            response.setEvent(eventActionDestinationMap.get(key),
-                    eventActionValueMap.get(key));
-            // cleanup
-            eventActionDestinationMap.remove(key);
-            eventActionValueMap.remove(key);
-        } else if (sharedParameterActionNameMap.containsKey(key)) {
-            // this action request is only to set shared render parameters
-            response.setRenderParameter(sharedParameterActionNameMap.get(key),
-                    sharedParameterActionValueMap.get(key));
-            // cleanup
-            sharedParameterActionNameMap.remove(key);
-            sharedParameterActionValueMap.remove(key);
-        } else {
-            // normal action request, notify listeners
-            for (PortletListener l : new ArrayList<>(portletListeners)) {
-                l.handleActionRequest(request, response, uI);
-            }
-        }
-    }
-
-    /**
-     * For internal use by the framework only - API subject to change.
-     */
-    public void firePortletEventRequest(UI uI, EventRequest request,
-            EventResponse response) {
-        for (PortletListener l : new ArrayList<>(portletListeners)) {
-            l.handleEventRequest(request, response, uI);
-        }
-    }
-
-    /**
-     * For internal use by the framework only - API subject to change.
-     */
-    public void firePortletResourceRequest(UI uI, ResourceRequest request,
-            ResourceResponse response) {
-        for (PortletListener l : new ArrayList<>(portletListeners)) {
-            l.handleResourceRequest(request, response, uI);
-        }
-    }
-
-    /**
-     * Listener interface for the various types of JSR-286 portlet requests.
-     *
-     * Direct rendering of output is not possible in a portlet listener and the
-     * JSR-286 limitations on allowed operations in each phase or portlet
-     * request processing must be respected by the listeners.
-     *
-     * Note that internal action requests used by the framework to trigger
-     * events or set shared parameters do not call the action request listener
-     * but will result in a later event or render request that will trigger the
-     * corresponding listener.
-     */
-    public interface PortletListener extends Serializable {
-
-        void handleRenderRequest(RenderRequest request,
-                RenderResponse response, UI uI);
-
-        void handleActionRequest(ActionRequest request,
-                ActionResponse response, UI uI);
-
-        void handleEventRequest(EventRequest request,
-                EventResponse response, UI uI);
-
-        void handleResourceRequest(ResourceRequest request,
-                ResourceResponse response, UI uI);
     }
 
     /**
@@ -294,7 +177,6 @@ public class VaadinPortletSession extends VaadinSession {
             PortletURL actionUrl = generateActionURL(actionKey);
             if (actionUrl != null) {
                 eventActionDestinationMap.put(actionKey, name);
-                eventActionValueMap.put(actionKey, value);
                 uI.getPage().setLocation(actionUrl.toString());
             } else {
                 // this should never happen as we already know the response is a
@@ -344,7 +226,6 @@ public class VaadinPortletSession extends VaadinSession {
             PortletURL actionUrl = generateActionURL(actionKey);
             if (actionUrl != null) {
                 sharedParameterActionNameMap.put(actionKey, name);
-                sharedParameterActionValueMap.put(actionKey, value);
                 uI.getPage().setLocation(actionUrl.toString());
             } else {
                 // this should never happen as we already know the response is a

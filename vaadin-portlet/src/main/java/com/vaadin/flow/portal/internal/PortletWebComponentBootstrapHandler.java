@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal;
+package com.vaadin.flow.portal.internal;
 
 import javax.portlet.PortletResponse;
 
@@ -24,11 +24,18 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.function.DeploymentConfiguration;
+import com.vaadin.flow.portal.VaadinPortlet;
+import com.vaadin.flow.portal.VaadinPortletResponse;
+import com.vaadin.flow.portal.VaadinPortletService;
+import com.vaadin.flow.portal.VaadinPortletSession;
 import com.vaadin.flow.server.DevModeHandler;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.server.communication.WebComponentBootstrapHandler;
 
+/**
+ * For internal use only.
+ */
 public class PortletWebComponentBootstrapHandler
         extends WebComponentBootstrapHandler {
 

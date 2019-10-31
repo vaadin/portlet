@@ -34,6 +34,11 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.UsageStatistics;
+import com.vaadin.flow.portal.internal.PortletBootstrapHandler;
+import com.vaadin.flow.portal.internal.PortletStreamRequestHandler;
+import com.vaadin.flow.portal.internal.PortletUidlRequestHandler;
+import com.vaadin.flow.portal.internal.PortletWebComponentBootstrapHandler;
+import com.vaadin.flow.portal.internal.PortletWebComponentProvider;
 import com.vaadin.flow.server.PwaRegistry;
 import com.vaadin.flow.server.RequestHandler;
 import com.vaadin.flow.server.RouteRegistry;

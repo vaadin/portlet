@@ -22,7 +22,7 @@ import javax.portlet.WindowState;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -322,7 +322,7 @@ public class PortletViewContextImplTest {
                 .dumpPendingJavaScriptInvocations().get(0);
         String expression = invocation.getInvocation().getExpression();
         Assert.assertThat(expression,
-                CoreMatchers.containsString("].registerListener"));
+                Matchers.containsString("].registerListener"));
         // the first param is namespace
         Assert.assertEquals(namespace,
                 invocation.getInvocation().getParameters().get(0));

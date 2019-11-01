@@ -40,6 +40,7 @@ import com.vaadin.flow.portal.handler.PortletModeHandler;
 import com.vaadin.flow.portal.handler.WindowStateEvent;
 import com.vaadin.flow.portal.handler.WindowStateHandler;
 import com.vaadin.flow.server.SessionExpiredException;
+import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.shared.Registration;
 
@@ -107,6 +108,8 @@ public class PortletViewContextImplTest {
 
         Mockito.when(portletResponse.getNamespace()).thenReturn(namespace);
 
+        VaadinPortletRequest request = Mockito.mock(VaadinPortletRequest.class);
+        CurrentInstance.set(VaadinRequest.class, request);
     }
 
     @After
@@ -220,6 +223,63 @@ public class PortletViewContextImplTest {
         // listeners doesn't throw because they have not been called (they
         // already has a value)
         context.updateModeAndState(PortletMode.VIEW, WindowState.MAXIMIZED);
+    }
+
+    @Test
+    public void updateModeAndState_eventsAreFromClient() {
+        Div component = new Div();
+        ui.add(component);
+        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+                component, new AtomicBoolean());
+
+        AtomicReference<WindowStateEvent> windowListener = new AtomicReference<>();
+        context.addWindowStateChangeListener(
+                event -> Assert.assertNull(windowListener.getAndSet(event)));
+
+        AtomicReference<PortletModeEvent> portletListener = new AtomicReference<>();
+        context.addPortletModeChangeListener(
+                event -> Assert.assertNull(portletListener.getAndSet(event)));
+
+        context.updateModeAndState(PortletMode.EDIT, WindowState.NORMAL);
+
+        context.updateModeAndState(PortletMode.VIEW, WindowState.MAXIMIZED);
+
+        Assert.assertTrue(windowListener.get().isFromClient());
+
+        Assert.assertTrue(portletListener.get().isFromClient());
+    }
+
+    @Test
+    public void setWindowState_serverEventIsFired() {
+        Div component = new Div();
+        ui.add(component);
+        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+                component, new AtomicBoolean());
+
+        AtomicReference<WindowStateEvent> windowListener = new AtomicReference<>();
+        context.addWindowStateChangeListener(
+                event -> Assert.assertNull(windowListener.getAndSet(event)));
+
+        context.setWindowState(WindowState.MAXIMIZED);
+        Assert.assertFalse(windowListener.get().isFromClient());
+        Assert.assertEquals(WindowState.MAXIMIZED,
+                windowListener.get().getWindowState());
+    }
+
+    @Test
+    public void portletMode_serverEventIsFired() {
+        Div component = new Div();
+        ui.add(component);
+        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+                component, new AtomicBoolean());
+
+        AtomicReference<PortletModeEvent> listener = new AtomicReference<>();
+        context.addPortletModeChangeListener(
+                event -> Assert.assertNull(listener.getAndSet(event)));
+
+        context.setPortletMode(PortletMode.EDIT);
+        Assert.assertFalse(listener.get().isFromClient());
+        Assert.assertEquals(PortletMode.EDIT, listener.get().getPortletMode());
     }
 
     @Test

@@ -18,6 +18,8 @@ package com.vaadin.flow.portal.rendermodes;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
+import java.util.Locale;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -25,7 +27,9 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.vaadin.flow.component.button.testbench.ButtonElement;
+import com.vaadin.flow.component.html.testbench.SelectElement;
 import com.vaadin.flow.portal.AbstractPlutoPortalTest;
+import com.vaadin.testbench.TestBenchElement;
 
 public class HubRenderIT extends AbstractPlutoPortalTest {
 
@@ -57,6 +61,8 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
 
         Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_EDIT, modeChange.getText());
+        Assert.assertEquals("VIEW", getWindowMode());
+        Assert.assertFalse(isNormalWindowState());
 
         modeChange.click();
 
@@ -71,6 +77,8 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
 
         Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());
+        Assert.assertEquals("EDIT", getWindowMode());
+        Assert.assertFalse(isNormalWindowState());
 
         stateChange.click();
 
@@ -85,6 +93,19 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
 
         Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());
+        Assert.assertEquals("EDIT", getWindowMode());
+        Assert.assertTrue(isNormalWindowState());
+    }
+
+    private String getWindowMode() {
+        SelectElement modeSelector = $(TestBenchElement.class)
+                .attribute("name", "modeSelectionForm").first()
+                .$(SelectElement.class).first();
+        return modeSelector.getSelectedText().toUpperCase(Locale.ENGLISH);
+    }
+
+    private boolean isNormalWindowState() {
+        return findElements(By.id("portlets-left-column")).size() > 0;
     }
 
 }

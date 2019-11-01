@@ -25,17 +25,24 @@ public class WindowStateEvent {
 
     private final WindowState windowState;
     private final WindowState prevWindowState;
+    private final boolean fromClient;
 
     /**
      * Creates a new event.
      *
-     * @param windowState
+     * @param newState
      *            the updated window state
+     * @param oldState
+     *            the old window state value
+     * @param fromClient
+     *            <code>true</code> if the event originated from the client
+     *            side, <code>false</code> otherwise
      */
-    public WindowStateEvent(WindowState windowState,
-            WindowState prevWindowState) {
-        this.windowState = windowState;
-        this.prevWindowState = prevWindowState;
+    public WindowStateEvent(WindowState newState, WindowState oldState,
+            boolean fromClient) {
+        this.windowState = newState;
+        this.prevWindowState = oldState;
+        this.fromClient = fromClient;
     }
 
     /**
@@ -82,5 +89,15 @@ public class WindowStateEvent {
      */
     public WindowState getPreviousWindowState() {
         return prevWindowState;
+    }
+
+    /**
+     * Checks if this event originated from the client side.
+     *
+     * @return <code>true</code> if the event originated from the client side,
+     *         <code>false</code> otherwise
+     */
+    public boolean isFromClient() {
+        return fromClient;
     }
 }

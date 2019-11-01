@@ -15,13 +15,17 @@
  */
 package com.vaadin.flow.portal.rendermodes;
 
+import java.util.Locale;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.vaadin.flow.component.button.testbench.ButtonElement;
+import com.vaadin.flow.component.html.testbench.SelectElement;
 import com.vaadin.flow.portal.AbstractPlutoPortalTest;
+import com.vaadin.testbench.TestBenchElement;
 
 public class RenderIT extends AbstractPlutoPortalTest {
 
@@ -41,39 +45,53 @@ public class RenderIT extends AbstractPlutoPortalTest {
 
         stateChange.click();
 
-        waitUntil(ExpectedConditions.presenceOfElementLocated(By.id(RenderView.WINDOW_STATE_CHANGE)));
+        waitUntil(ExpectedConditions.presenceOfElementLocated(
+                By.id(RenderView.WINDOW_STATE_CHANGE)));
 
-        stateChange = $(ButtonElement.class)
-                .id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = $(ButtonElement.class)
-                .id(RenderView.PORTLET_MODE_CHANGE);
+        stateChange = $(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
+        modeChange = $(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
 
         Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_EDIT, modeChange.getText());
+        Assert.assertEquals("VIEW", getWindowMode());
+        Assert.assertFalse(isNormalWindowState());
 
         modeChange.click();
 
-        waitUntil(ExpectedConditions.presenceOfElementLocated(By.id(RenderView.WINDOW_STATE_CHANGE)));
+        waitUntil(ExpectedConditions.presenceOfElementLocated(
+                By.id(RenderView.WINDOW_STATE_CHANGE)));
 
-        stateChange = $(ButtonElement.class)
-                .id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = $(ButtonElement.class)
-                .id(RenderView.PORTLET_MODE_CHANGE);
+        stateChange = $(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
+        modeChange = $(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
 
         Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());
+        Assert.assertEquals("EDIT", getWindowMode());
+        Assert.assertFalse(isNormalWindowState());
 
         stateChange.click();
 
-        waitUntil(ExpectedConditions.presenceOfElementLocated(By.id(RenderView.WINDOW_STATE_CHANGE)));
+        waitUntil(ExpectedConditions.presenceOfElementLocated(
+                By.id(RenderView.WINDOW_STATE_CHANGE)));
 
-        stateChange = $(ButtonElement.class)
-                .id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = $(ButtonElement.class)
-                .id(RenderView.PORTLET_MODE_CHANGE);
+        stateChange = $(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
+        modeChange = $(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
 
         Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());
+        Assert.assertEquals("EDIT", getWindowMode());
+        Assert.assertTrue(isNormalWindowState());
+    }
+
+    private String getWindowMode() {
+        SelectElement modeSelector = $(TestBenchElement.class)
+                .attribute("name", "modeSelectionForm").first()
+                .$(SelectElement.class).first();
+        return modeSelector.getSelectedText().toUpperCase(Locale.ENGLISH);
+    }
+
+    private boolean isNormalWindowState() {
+        return findElements(By.id("portlets-left-column")).size() > 0;
     }
 
 }

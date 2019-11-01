@@ -130,6 +130,9 @@ public class VaadinPortletTest {
         Mockito.when(details.getWindowName()).thenReturn("");
         ui.getInternals().setExtendedClientDetails(details);
 
+        Mockito.when(request.getPortletMode()).thenReturn(PortletMode.VIEW);
+        Mockito.when(request.getWindowState()).thenReturn(WindowState.NORMAL);
+
         component = new TestComponent();
         ui.add(component);
         portlet.configure(null, component);

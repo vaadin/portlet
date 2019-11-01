@@ -26,16 +26,24 @@ public class PortletModeEvent {
     private final PortletMode portletMode;
     private final PortletMode prevPortletMode;
 
+    private final boolean fromClient;
+
     /**
      * Creates a new event.
      *
-     * @param portletMode
+     * @param newMode
      *            the updated portlet mode
+     * @param oldMode
+     *            previous mode value
+     * @param fromClient
+     *            <code>true</code> if the event originated from the client
+     *            side, <code>false</code> otherwise
      */
-    public PortletModeEvent(PortletMode portletMode,
-            PortletMode prevPortletMode) {
-        this.portletMode = portletMode;
-        this.prevPortletMode = prevPortletMode;
+    public PortletModeEvent(PortletMode newMode, PortletMode oldMode,
+            boolean fromClient) {
+        this.portletMode = newMode;
+        this.prevPortletMode = oldMode;
+        this.fromClient = fromClient;
     }
 
     /**
@@ -82,6 +90,16 @@ public class PortletModeEvent {
      */
     public PortletMode getPreviousPortletMode() {
         return prevPortletMode;
+    }
+
+    /**
+     * Checks if this event originated from the client side.
+     *
+     * @return <code>true</code> if the event originated from the client side,
+     *         <code>false</code> otherwise
+     */
+    public boolean isFromClient() {
+        return fromClient;
     }
 
 }

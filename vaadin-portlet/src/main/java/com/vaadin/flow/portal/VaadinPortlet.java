@@ -23,7 +23,6 @@ import javax.portlet.GenericPortlet;
 import javax.portlet.HeaderRequest;
 import javax.portlet.HeaderResponse;
 import javax.portlet.PortletConfig;
-import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
@@ -33,12 +32,9 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.portlet.WindowState;
-
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -57,8 +53,7 @@ import com.vaadin.flow.portal.handler.PortletEvent;
 import com.vaadin.flow.portal.handler.PortletView;
 import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.server.Command;
-import com.vaadin.flow.server.Constants;
-import com.vaadin.flow.server.DefaultDeploymentConfiguration;
+import com.vaadin.flow.server.DeploymentConfigurationFactory;
 import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.SessionExpiredException;
 import com.vaadin.flow.server.VaadinService;
@@ -138,25 +133,9 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     public void init(PortletConfig config) throws PortletException {
         CurrentInstance.clearAll();
         super.init(config);
-        Properties initParameters = new Properties();
-
-        // Read default parameters from the context
-        final PortletContext context = config.getPortletContext();
-        for (final Enumeration<String> e = context.getInitParameterNames(); e
-                .hasMoreElements();) {
-            final String name = e.nextElement();
-            initParameters.setProperty(name, context.getInitParameter(name));
-        }
-
-        // Override with application settings from portlet.xml
-        for (final Enumeration<String> e = config.getInitParameterNames(); e
-                .hasMoreElements();) {
-            final String name = e.nextElement();
-            initParameters.setProperty(name, config.getInitParameter(name));
-        }
 
         DeploymentConfiguration deploymentConfiguration = createDeploymentConfiguration(
-                initParameters);
+                config);
         try {
             vaadinService = createPortletService(deploymentConfiguration);
         } catch (ServiceException e) {
@@ -215,10 +194,10 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     }
 
     protected DeploymentConfiguration createDeploymentConfiguration(
-            Properties initParameters) {
-        initParameters.put(Constants.SERVLET_PARAMETER_COMPATIBILITY_MODE,
-                "false");
-        return new DefaultDeploymentConfiguration(getClass(), initParameters);
+            PortletConfig config) {
+        return DeploymentConfigurationFactory
+                .createDeploymentConfiguration(getClass(),
+                        new VaadinPortletConfig(config));
     }
 
     protected VaadinPortletService createPortletService(

@@ -85,6 +85,9 @@ class PortletViewContextImpl<C extends Component>
             doAddPortletModeChangeListener(
                     ((PortletModeHandler) view)::portletModeChange);
         }
+
+        portletMode = VaadinPortletRequest.getCurrent().getPortletMode();
+        windowState = VaadinPortletRequest.getCurrent().getWindowState();
     }
 
     /**
@@ -139,7 +142,7 @@ class PortletViewContextImpl<C extends Component>
      */
     @Override
     public WindowState getWindowState() {
-        return VaadinPortletRequest.getCurrent().getWindowState();
+        return windowState;
     }
 
     /**
@@ -149,7 +152,7 @@ class PortletViewContextImpl<C extends Component>
      */
     @Override
     public PortletMode getPortletMode() {
-        return VaadinPortletRequest.getCurrent().getPortletMode();
+        return portletMode;
     }
 
     /**
@@ -256,11 +259,11 @@ class PortletViewContextImpl<C extends Component>
          * Note: mode update events must be sent to handlers before window state
          * update events.
          */
-        if (oldMode != null && !oldMode.equals(portletMode)) {
+        if (!oldMode.equals(portletMode)) {
             firePortletModeEvent(
                     new PortletModeEvent(portletMode, oldMode, true));
         }
-        if (oldState != null && !oldState.equals(windowState)) {
+        if (!oldState.equals(windowState)) {
             fireWindowStateEvent(
                     new WindowStateEvent(windowState, oldState, true));
         }

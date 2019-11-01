@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal;
+package com.vaadin.flow.portal.internal;
 
 import javax.portlet.ClientDataRequest;
 import javax.portlet.PortletRequest;
@@ -28,6 +28,7 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.RequestContext;
 import org.apache.commons.fileupload.portlet.PortletFileUpload;
 
+import com.vaadin.flow.portal.VaadinPortletRequest;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.communication.StreamReceiverHandler;
 
@@ -35,6 +36,8 @@ import com.vaadin.flow.server.communication.StreamReceiverHandler;
  * Extends {@link StreamReceiverHandler} to handle upload
  * {@link VaadinRequest}s where the underlying request is of type
  * {@link ClientDataRequest} instead of {@link HttpServletRequest}.
+ *
+ * For internal use only.
  */
 public class PortletStreamReceiverHandler extends StreamReceiverHandler {
 

@@ -47,9 +47,14 @@ import com.vaadin.flow.portal.handler.PortletViewContext;
 import com.vaadin.flow.portal.handler.WindowStateEvent;
 import com.vaadin.flow.portal.handler.WindowStateHandler;
 import com.vaadin.flow.portal.handler.WindowStateListener;
-import com.vaadin.flow.portal.util.PortletHubUtil;
+import com.vaadin.flow.portal.internal.PortletHubUtil;
 import com.vaadin.flow.shared.Registration;
 
+/**
+ * For internal use only.
+ *
+ * @param <C>
+ */
 class PortletViewContextImpl<C extends Component>
         implements PortletViewContext {
 

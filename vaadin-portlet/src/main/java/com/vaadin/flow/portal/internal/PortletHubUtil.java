@@ -13,11 +13,14 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal.util;
+package com.vaadin.flow.portal.internal;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.portal.VaadinPortletService;
 
+/**
+ * For internal use only.
+ */
 public final class PortletHubUtil {
 
     private PortletHubUtil() {

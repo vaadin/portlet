@@ -166,6 +166,12 @@ class PortletViewContextImpl<C extends Component>
         } else {
             stateChangeAction(newWindowState, getPortletMode());
         }
+        if (!Objects.equals(newWindowState, windowState)) {
+            WindowState oldValue = windowState;
+            windowState = newWindowState;
+            fireWindowStateEvent(
+                    new WindowStateEvent(newWindowState, oldValue, false));
+        }
     }
 
     /**
@@ -181,6 +187,12 @@ class PortletViewContextImpl<C extends Component>
                     newPortletMode.toString());
         } else {
             stateChangeAction(getWindowState(), newPortletMode);
+        }
+        if (!Objects.equals(newPortletMode, portletMode)) {
+            PortletMode oldValue = portletMode;
+            portletMode = newPortletMode;
+            firePortletModeEvent(
+                    new PortletModeEvent(newPortletMode, oldValue, false));
         }
     }
 
@@ -245,10 +257,12 @@ class PortletViewContextImpl<C extends Component>
          * update events.
          */
         if (oldMode != null && !oldMode.equals(portletMode)) {
-            firePortletModeEvent(new PortletModeEvent(portletMode, oldMode));
+            firePortletModeEvent(
+                    new PortletModeEvent(portletMode, oldMode, true));
         }
         if (oldState != null && !oldState.equals(windowState)) {
-            fireWindowStateEvent(new WindowStateEvent(windowState, oldState));
+            fireWindowStateEvent(
+                    new WindowStateEvent(windowState, oldState, true));
         }
     }
 

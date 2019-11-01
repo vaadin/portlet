@@ -33,9 +33,10 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
     @Test
     public void modeUpdatedInPortal_noWindowStateHandlerCalled() {
         setPortletModeInPortal(PortletMode.EDIT);
-        waitUntil(driver -> PortletMode.EDIT.toString().equals(
-                getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
-        Assert.assertEquals("", getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID));
+        waitUntil(driver -> PortletMode.EDIT.toString()
+                .equals(getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
+        Assert.assertEquals("",
+                getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID));
     }
 
     @Test
@@ -43,7 +44,8 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
         setWindowStateInPortal(WindowState.MAXIMIZED);
         waitUntil(driver -> WindowState.MAXIMIZED.toString().equals(
                 getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID)));
-        Assert.assertEquals("", getLabelContent(EventHandlerContent.MODE_LABEL_ID));
+        Assert.assertEquals("",
+                getLabelContent(EventHandlerContent.MODE_LABEL_ID));
     }
 
     @Test
@@ -51,16 +53,16 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
         // This test is neutral on whether an event for the initial mode is sent
 
         setPortletModeInPortal(PortletMode.EDIT);
-        waitUntil(driver -> PortletMode.EDIT.toString().equals(
-                getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
+        waitUntil(driver -> PortletMode.EDIT.toString()
+                .equals(getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
 
         setPortletModeInPortal(PortletMode.HELP);
-        waitUntil(driver -> PortletMode.HELP.toString().equals(
-                getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
+        waitUntil(driver -> PortletMode.HELP.toString()
+                .equals(getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
 
         setPortletModeInPortal(PortletMode.VIEW);
-        waitUntil(driver -> PortletMode.VIEW.toString().equals(
-                getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
+        waitUntil(driver -> PortletMode.VIEW.toString()
+                .equals(getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
     }
 
     @Test
@@ -107,20 +109,18 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
         driver.switchTo().window(secondTab);
         waitUntil(driver -> WindowState.MAXIMIZED.toString().equals(
                 getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID)));
-        waitUntil(driver -> PortletMode.EDIT.toString().equals(
-                getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
+        waitUntil(driver -> PortletMode.EDIT.toString()
+                .equals(getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
 
         driver.switchTo().window(firstTab);
         waitUntil(driver -> !$(TestBenchElement.class)
                 .attribute("id", EventHandlerContent.WINDOW_STATE_LABEL_ID)
                 .exists());
         waitUntil(driver -> !$(TestBenchElement.class)
-                .attribute("id", EventHandlerContent.MODE_LABEL_ID)
-                .exists());
+                .attribute("id", EventHandlerContent.MODE_LABEL_ID).exists());
     }
 
     protected String getLabelContent(String id) {
         return $(TestBenchElement.class).id(id).getText();
     }
-
 }

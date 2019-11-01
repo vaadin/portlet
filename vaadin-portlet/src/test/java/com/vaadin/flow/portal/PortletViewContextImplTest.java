@@ -366,6 +366,57 @@ public class PortletViewContextImplTest {
         Assert.assertEquals(uid, assertJsHubRegistration("bar"));
     }
 
+    @Test
+    public void getWindowState_returnInitialWindowState() {
+        Div component = new Div();
+        ui.add(component);
+
+        Mockito.when(request.getWindowState()).thenReturn(WindowState.NORMAL);
+        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+                component, new AtomicBoolean());
+
+        Assert.assertEquals(WindowState.NORMAL, context.getWindowState());
+    }
+
+    @Test
+    public void getWindowState_updateState_returnUpdatedWindowState() {
+        Div component = new Div();
+        ui.add(component);
+
+        Mockito.when(request.getWindowState()).thenReturn(WindowState.NORMAL);
+        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+                component, new AtomicBoolean());
+
+        context.setWindowState(WindowState.MAXIMIZED);
+
+        Assert.assertEquals(WindowState.MAXIMIZED, context.getWindowState());
+    }
+
+    @Test
+    public void getPortletMode_returnInitialPortletMode() {
+        Div component = new Div();
+        ui.add(component);
+
+        Mockito.when(request.getPortletMode()).thenReturn(PortletMode.EDIT);
+        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+                component, new AtomicBoolean());
+
+        Assert.assertEquals(PortletMode.EDIT, context.getPortletMode());
+    }
+
+    @Test
+    public void getPortletMode_updateMode_returnUpdatedModeState() {
+        Div component = new Div();
+        ui.add(component);
+
+        Mockito.when(request.getPortletMode()).thenReturn(PortletMode.EDIT);
+        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+                component, new AtomicBoolean());
+
+        context.setPortletMode(PortletMode.VIEW);
+        Assert.assertEquals(PortletMode.VIEW, context.getPortletMode());
+    }
+
     private String assertJsHubRegistration(String event) {
         ui.getInternals().getStateTree().runExecutionsBeforeClientResponse();
 

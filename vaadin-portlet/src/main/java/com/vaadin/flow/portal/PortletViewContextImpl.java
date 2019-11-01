@@ -65,9 +65,9 @@ class PortletViewContextImpl<C extends Component>
 
     private final Collection<PortletModeListener> portletModeListeners = new CopyOnWriteArrayList<>();
 
-    private PortletMode portletMode = null;
+    private PortletMode portletMode;
 
-    private WindowState windowState = null;
+    private WindowState windowState;
 
     PortletViewContextImpl(C view, AtomicBoolean portlet3) {
         this.view = view;

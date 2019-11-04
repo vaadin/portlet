@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,11 +21,7 @@ import com.vaadin.flow.server.VaadinService;
 public class VaadinPortletConfig implements VaadinConfig {
 
     private PortletConfig config;
-
-    protected Map<String, String> forcedParameters = new HashMap<String, String>() {{
-        put(Constants.SERVLET_PARAMETER_COMPATIBILITY_MODE,
-                Boolean.FALSE.toString());
-    }};
+    final Map<String, String> forcedParameters;
 
     /**
      * Creates an instance of this context with given {@link PortletConfig}.
@@ -36,6 +31,10 @@ public class VaadinPortletConfig implements VaadinConfig {
      */
     public VaadinPortletConfig(PortletConfig config) {
         this.config = config;
+        Map<String, String> constantParameters = new HashMap<>();
+        constantParameters.put(Constants.SERVLET_PARAMETER_COMPATIBILITY_MODE,
+                Boolean.FALSE.toString());
+        forcedParameters = Collections.unmodifiableMap(constantParameters);
     }
 
     /**
@@ -61,8 +60,8 @@ public class VaadinPortletConfig implements VaadinConfig {
     @Override
     public Enumeration<String> getConfigParameterNames() {
         ensurePortletConfig();
-        Set<String> initParameterNames = new HashSet<>(Collections
-                .list(config.getInitParameterNames()));
+        Set<String> initParameterNames = new HashSet<>(
+                Collections.list(config.getInitParameterNames()));
         forcedParameters.keySet().forEach(initParameterNames::add);
         return Collections.enumeration(initParameterNames);
     }

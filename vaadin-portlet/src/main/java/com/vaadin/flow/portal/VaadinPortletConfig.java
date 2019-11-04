@@ -59,7 +59,7 @@ public class VaadinPortletConfig implements VaadinConfig {
     }
 
     @Override
-    public Enumeration<String> getInitParameterNames() {
+    public Enumeration<String> getConfigParameterNames() {
         ensurePortletConfig();
         Set<String> initParameterNames = new HashSet<>(Collections
                 .list(config.getInitParameterNames()));
@@ -68,7 +68,7 @@ public class VaadinPortletConfig implements VaadinConfig {
     }
 
     @Override
-    public String getInitParameter(String name) {
+    public String getConfigParameter(String name) {
         ensurePortletConfig();
         String initParameter;
         if (forcedParameters.containsKey(name)) {

@@ -57,7 +57,7 @@ public class VaadinPortletConfigTest {
 
     @Test
     public void testGetPropertyNames_returnsExpectedProperties() {
-        List<String> list = Collections.list(config.getInitParameterNames());
+        List<String> list = Collections.list(config.getConfigParameterNames());
         Assert.assertEquals(
                 "Context should return only keys defined in PortletContext",
                 properties.size(), list.size());
@@ -66,11 +66,11 @@ public class VaadinPortletConfigTest {
                 Assert.assertEquals(
                         "Any forced parameter should be overridden by the VaadinPortletConfiguration",
                         config.forcedParameters.get(key),
-                        config.getInitParameter(key));
+                        config.getConfigParameter(key));
             } else {
                 Assert.assertEquals(String.format(
                         "Value should be same from context for key '%s'", key),
-                        properties.get(key), config.getInitParameter(key));
+                        properties.get(key), config.getConfigParameter(key));
             }
         }
     }

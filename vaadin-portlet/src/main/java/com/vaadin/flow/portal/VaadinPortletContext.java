@@ -92,13 +92,13 @@ public class VaadinPortletContext implements VaadinContext {
     }
 
     @Override
-    public Enumeration<String> getInitParameterNames() {
+    public Enumeration<String> getContextParameterNames() {
         ensurePortletContext();
         return context.getInitParameterNames();
     }
 
     @Override
-    public String getInitParameter(String name) {
+    public String getContextParameter(String name) {
         ensurePortletContext();
         return context.getInitParameter(name);
     }

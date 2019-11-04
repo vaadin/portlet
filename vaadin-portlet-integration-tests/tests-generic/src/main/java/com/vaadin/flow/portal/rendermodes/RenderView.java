@@ -20,7 +20,6 @@ import javax.portlet.WindowState;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.portal.VaadinPortlet;
 import com.vaadin.flow.portal.handler.PortletView;
 import com.vaadin.flow.portal.handler.PortletViewContext;
 
@@ -57,7 +56,6 @@ public class RenderView extends VerticalLayout implements PortletView {
     }
 
     private void switchWindowState() {
-        VaadinPortlet portlet = RenderPortlet.getCurrent();
         if (WindowState.NORMAL.equals(context.getWindowState())) {
             context.setWindowState(WindowState.MAXIMIZED);
             windowState.setText(STATE_NORMALIZE);
@@ -68,7 +66,6 @@ public class RenderView extends VerticalLayout implements PortletView {
     }
 
     private void switchPortletMode() {
-        VaadinPortlet portlet = RenderPortlet.getCurrent();
         if (PortletMode.EDIT.equals(context.getPortletMode())) {
             context.setPortletMode(PortletMode.VIEW);
             portletMode.setText(MODE_EDIT);

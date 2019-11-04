@@ -20,6 +20,7 @@ import javax.portlet.WindowState;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openqa.selenium.By;
 
 import com.vaadin.flow.portal.AbstractPlutoPortalTest;
 import com.vaadin.testbench.TestBenchElement;
@@ -55,14 +56,20 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
         setPortletModeInPortal(PortletMode.EDIT);
         waitUntil(driver -> PortletMode.EDIT.toString()
                 .equals(getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
+        Assert.assertEquals(PortletMode.EDIT.toString(),
+                findElement(By.id("request-mode-info")).getText());
 
         setPortletModeInPortal(PortletMode.HELP);
         waitUntil(driver -> PortletMode.HELP.toString()
                 .equals(getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
+        Assert.assertEquals(PortletMode.HELP.toString(),
+                findElement(By.id("request-mode-info")).getText());
 
         setPortletModeInPortal(PortletMode.VIEW);
         waitUntil(driver -> PortletMode.VIEW.toString()
                 .equals(getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
+        Assert.assertEquals(PortletMode.VIEW.toString(),
+                findElement(By.id("request-mode-info")).getText());
     }
 
     @Test
@@ -72,10 +79,14 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
         setWindowStateInPortal(WindowState.MAXIMIZED);
         waitUntil(driver -> WindowState.MAXIMIZED.toString().equals(
                 getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID)));
+        Assert.assertEquals(WindowState.MAXIMIZED.toString(),
+                findElement(By.id("request-state-info")).getText());
 
         setWindowStateInPortal(WindowState.NORMAL);
         waitUntil(driver -> WindowState.NORMAL.toString().equals(
                 getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID)));
+        Assert.assertEquals(WindowState.NORMAL.toString(),
+                findElement(By.id("request-state-info")).getText());
 
         setWindowStateInPortal(WindowState.MINIMIZED);
         waitUntil(driver -> !$(TestBenchElement.class)

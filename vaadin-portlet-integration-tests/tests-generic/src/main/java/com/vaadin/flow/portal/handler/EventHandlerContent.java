@@ -17,15 +17,19 @@ package com.vaadin.flow.portal.handler;
 
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.portal.VaadinPortletRequest;
 
-public class EventHandlerContent extends Div implements PortletModeHandler,
-        WindowStateHandler {
+public class EventHandlerContent extends Div
+        implements PortletModeHandler, WindowStateHandler {
 
     static final String MODE_LABEL_ID = "mode_label_id";
     static final String WINDOW_STATE_LABEL_ID = "window_state_label_id";
 
     private final Span modeLabel;
     private final Span windowStateLabel;
+
+    private Div requestStateInfo;
+    private Div requestModeInfo;
 
     public EventHandlerContent() {
         modeLabel = new Span();
@@ -35,15 +39,25 @@ public class EventHandlerContent extends Div implements PortletModeHandler,
         windowStateLabel = new Span();
         windowStateLabel.setId(WINDOW_STATE_LABEL_ID);
         add(windowStateLabel);
+
+        requestStateInfo = new Div();
+        requestStateInfo.setId("request-state-info");
+        requestModeInfo = new Div();
+        requestModeInfo.setId("request-mode-info");
+        add(requestStateInfo, requestModeInfo);
     }
 
     @Override
     public void portletModeChange(PortletModeEvent event) {
         modeLabel.setText(event.getPortletMode().toString());
+        requestModeInfo.setText(
+                VaadinPortletRequest.getCurrent().getPortletMode().toString());
     }
 
     @Override
     public void windowStateChange(WindowStateEvent event) {
         windowStateLabel.setText(event.getWindowState().toString());
+        requestStateInfo.setText(
+                VaadinPortletRequest.getCurrent().getWindowState().toString());
     }
 }

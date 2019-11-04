@@ -62,8 +62,7 @@ public class RenderView extends VerticalLayout implements PortletView {
         modeInfo.setId("mode-info");
 
         add(windowState, portletMode);
-        add(stateInfo);
-        add(modeInfo);
+        add(stateInfo, modeInfo);
 
         context.addPortletModeChangeListener(event -> {
             modeInfo.setText(event.getPortletMode().toString());

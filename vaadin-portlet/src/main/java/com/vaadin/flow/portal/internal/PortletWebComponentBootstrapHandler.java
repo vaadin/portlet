@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.function.DeploymentConfiguration;
+import com.vaadin.flow.portal.PortletConstants;
 import com.vaadin.flow.portal.VaadinPortlet;
 import com.vaadin.flow.portal.VaadinPortletResponse;
 import com.vaadin.flow.portal.VaadinPortletService;
@@ -98,7 +99,9 @@ public class PortletWebComponentBootstrapHandler
 
     private String getStaticResourcesMappingURI(
             DeploymentConfiguration configuration) {
-        String uri = configuration.getStaticResourcesMappingURI();
+        String uri = configuration.getStringProperty(
+                PortletConstants.PORTLET_PARAMETER_STATIC_RESOURCES_MAPPING,
+                "/vaadin-portlet-static/");
         if (uri.isEmpty()) {
             return "/";
         }

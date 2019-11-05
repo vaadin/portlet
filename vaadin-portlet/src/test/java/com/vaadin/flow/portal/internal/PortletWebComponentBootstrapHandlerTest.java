@@ -23,6 +23,7 @@ import org.mockito.Mockito;
 
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.CurrentInstance;
+import com.vaadin.flow.portal.PortletConstants;
 import com.vaadin.flow.portal.VaadinPortletService;
 import com.vaadin.flow.server.VaadinService;
 
@@ -52,8 +53,9 @@ public class PortletWebComponentBootstrapHandlerTest {
     public void modifyPath_staticResourcesPathIsEmpty_pathIsPrefixedWithSlash() {
         Mockito.when(configuration.isProductionMode()).thenReturn(true);
 
-        Mockito.when(configuration.getStaticResourcesMappingURI())
-                .thenReturn("");
+        Mockito.when(configuration.getStringProperty(Mockito.eq(
+                PortletConstants.PORTLET_PARAMETER_STATIC_RESOURCES_MAPPING),
+                Mockito.anyString())).thenReturn("");
         String path = handler.modifyPath("bar", "./VAADIN/foo");
         Assert.assertEquals("/./VAADIN/foo", path);
     }
@@ -62,8 +64,9 @@ public class PortletWebComponentBootstrapHandlerTest {
     public void modifyPath_staticResourcesPathHasNoSlashes_pathIsPrefixedAndPostfixedWithSlash() {
         Mockito.when(configuration.isProductionMode()).thenReturn(true);
 
-        Mockito.when(configuration.getStaticResourcesMappingURI())
-                .thenReturn("baz");
+        Mockito.when(configuration.getStringProperty(Mockito.eq(
+                PortletConstants.PORTLET_PARAMETER_STATIC_RESOURCES_MAPPING),
+                Mockito.anyString())).thenReturn("baz");
         String path = handler.modifyPath("bar", "./VAADIN/foo");
         Assert.assertEquals("/baz/./VAADIN/foo", path);
     }
@@ -72,8 +75,9 @@ public class PortletWebComponentBootstrapHandlerTest {
     public void modifyPath_staticResourcesPathHasAllSlashes_pathIsConcatenatedWithMappingURI() {
         Mockito.when(configuration.isProductionMode()).thenReturn(true);
 
-        Mockito.when(configuration.getStaticResourcesMappingURI())
-                .thenReturn("/baz/");
+        Mockito.when(configuration.getStringProperty(Mockito.eq(
+                PortletConstants.PORTLET_PARAMETER_STATIC_RESOURCES_MAPPING),
+                Mockito.anyString())).thenReturn("/baz/");
         String path = handler.modifyPath("bar", "./VAADIN/foo");
         Assert.assertEquals("/baz/./VAADIN/foo", path);
     }

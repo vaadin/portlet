@@ -31,7 +31,9 @@ import com.vaadin.flow.portal.VaadinPortletSession;
 import com.vaadin.flow.server.DevModeHandler;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinResponse;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.communication.WebComponentBootstrapHandler;
+import com.vaadin.pro.licensechecker.LicenseChecker;
 
 /**
  * For internal use only.
@@ -93,6 +95,18 @@ public class PortletWebComponentBootstrapHandler
                 portletNs, portletNs, portletNs, appId));
 
         super.writeBootstrapPage(contentType, response, head, serviceUrl);
+    }
+
+    @Override
+    protected BootstrapContext createAndInitUI(Class<? extends UI> uiClass,
+            VaadinRequest request, VaadinResponse response,
+            VaadinSession session) {
+        // This will throw an exception on the server side during an attempt to
+        // load UI. There is also a license check when the portlet is written to
+        // the page. That check shows a message on the client side
+        LicenseChecker.checkLicense(VaadinPortletService.PROJECT_NAME,
+                VaadinPortletService.getPortletVerion());
+        return super.createAndInitUI(uiClass, request, response, session);
     }
 
     private boolean checkWebpackConnection() {

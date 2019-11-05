@@ -16,7 +16,7 @@
 package com.vaadin.flow.portal;
 
 import javax.portlet.PortletContext;
-import javax.servlet.ServletContext;
+import java.util.Enumeration;
 import java.util.function.Supplier;
 
 import com.vaadin.flow.server.VaadinContext;
@@ -26,7 +26,6 @@ import com.vaadin.flow.server.VaadinServletService;
 /**
  * {@link VaadinContext} that goes with {@link VaadinServletService}.
  *
- * @author miki
  * @since
  */
 public class VaadinPortletContext implements VaadinContext {
@@ -53,7 +52,7 @@ public class VaadinPortletContext implements VaadinContext {
     }
 
     /**
-     * Ensures there is a valid instance of {@link ServletContext}.
+     * Ensures there is a valid instance of {@link PortletContext}.
      */
     private void ensurePortletContext() {
         if (context == null && VaadinService
@@ -86,11 +85,22 @@ public class VaadinPortletContext implements VaadinContext {
         context.setAttribute(value.getClass().getName(), value);
     }
 
-
     @Override
     public void removeAttribute(Class<?> clazz) {
         ensurePortletContext();
         context.removeAttribute(clazz.getName());
+    }
+
+    @Override
+    public Enumeration<String> getContextParameterNames() {
+        ensurePortletContext();
+        return context.getInitParameterNames();
+    }
+
+    @Override
+    public String getContextParameter(String name) {
+        ensurePortletContext();
+        return context.getInitParameter(name);
     }
 
 }

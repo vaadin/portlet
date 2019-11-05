@@ -62,8 +62,9 @@ public class PortletWebComponentBootstrapHandler
             if (deploymentConfiguration.isProductionMode()
                     || !deploymentConfiguration.enableDevServer()) {
                 // Without dev server we serve static files from the
-                // vaadin-portlet-static.war
-                return "/vaadin-portlet-static/" + path;
+                // dedicated URI
+                return getStaticResourcesMappingURI(deploymentConfiguration)
+                        + path;
             } else if (DevModeHandler.getDevModeHandler() != null
                     && checkWebpackConnection()) {
                 // With dev server running request directly from dev server
@@ -93,6 +94,25 @@ public class PortletWebComponentBootstrapHandler
                 portletNs, portletNs, portletNs, appId));
 
         super.writeBootstrapPage(contentType, response, head, serviceUrl);
+    }
+
+    private String getStaticResourcesMappingURI(
+            DeploymentConfiguration configuration) {
+        String uri = configuration.getStaticResourcesMappingURI();
+        if (uri.isEmpty()) {
+            return "/";
+        }
+        if (uri.charAt(0) == '/' && uri.charAt(uri.length() - 1) == '/') {
+            return uri;
+        }
+        StringBuilder result = new StringBuilder(uri);
+        if (uri.charAt(0) != '/') {
+            result.insert(0, '/');
+        }
+        if (uri.charAt(uri.length() - 1) != '/') {
+            result.append('/');
+        }
+        return result.toString();
     }
 
     private boolean checkWebpackConnection() {

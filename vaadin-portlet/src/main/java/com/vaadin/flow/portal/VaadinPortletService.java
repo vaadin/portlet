@@ -21,6 +21,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -53,10 +54,9 @@ import com.vaadin.flow.server.WebBrowser;
 import com.vaadin.flow.server.WrappedSession;
 import com.vaadin.flow.server.startup.ApplicationRouteRegistry;
 import com.vaadin.flow.theme.AbstractTheme;
-import com.vaadin.pro.licensechecker.LicenseChecker;
 
 public class VaadinPortletService extends VaadinService {
-    private static final String PROJECT_NAME = "vaadin-portlet";
+    public static final String PROJECT_NAME = "vaadin-portlet";
 
     private static final String VERSION_PROPERTIES_NAME = "version.properties";
     private static final String PORTLET_VERSION_PROPERTY = "portlet.version";
@@ -78,7 +78,6 @@ public class VaadinPortletService extends VaadinService {
     private void verifyLicense(boolean productionMode) {
         if (!productionMode) {
             String portletVersion = getPortletVerion();
-            LicenseChecker.checkLicense(PROJECT_NAME, portletVersion);
 
             UsageStatistics.markAsUsed(PROJECT_NAME, portletVersion);
             UsageStatistics.markAsUsed("vaadin", Version.getFullVersion());
@@ -166,26 +165,26 @@ public class VaadinPortletService extends VaadinService {
         return false;
     }
 
-    //    /**
-    //     * Gets the request type for the request.
-    //     *
-    //     * @param request
-    //     *         the request to get a request type for
-    //     * @return the request type
-    //     * @deprecated As of 7.0. Will likely change or be removed in a future
-    //     * version
-    //     */
-    //    @Deprecated
-    //    protected RequestType getRequestType(VaadinRequest request) {
-    //        RequestType type = (RequestType) request
-    //                .getAttribute(RequestType.class.getName());
-    //        if (type == null) {
-    //            // type = getPortlet().getRequestType((VaadinPortletRequest)
-    //            // request);
-    //            // request.setAttribute(RequestType.class.getName(), type);
-    //        }
-    //        return type;
-    //    }
+    // /**
+    // * Gets the request type for the request.
+    // *
+    // * @param request
+    // * the request to get a request type for
+    // * @return the request type
+    // * @deprecated As of 7.0. Will likely change or be removed in a future
+    // * version
+    // */
+    // @Deprecated
+    // protected RequestType getRequestType(VaadinRequest request) {
+    // RequestType type = (RequestType) request
+    // .getAttribute(RequestType.class.getName());
+    // if (type == null) {
+    // // type = getPortlet().getRequestType((VaadinPortletRequest)
+    // // request);
+    // // request.setAttribute(RequestType.class.getName(), type);
+    // }
+    // return type;
+    // }
 
     /**
      * Gets the currently processed portlet request. The current portlet request
@@ -194,7 +193,7 @@ public class VaadinPortletService extends VaadinService {
      * server implementations reuse request instances.
      *
      * @return the current portlet request instance if available, otherwise
-     * <code>null</code>
+     *         <code>null</code>
      */
     public static PortletRequest getCurrentPortletRequest() {
         VaadinPortletRequest currentRequest = getCurrentRequest();
@@ -212,20 +211,20 @@ public class VaadinPortletService extends VaadinService {
      * implementations reuse request instances.
      *
      * @return the current Vaadin portlet request instance if available,
-     * otherwise <code>null</code>
+     *         otherwise <code>null</code>
      */
     public static VaadinPortletRequest getCurrentRequest() {
         return (VaadinPortletRequest) VaadinService.getCurrentRequest();
     }
 
     /**
-     * Gets the currently processed portlet response. The current portlet response
-     * is automatically defined when the request is started. The current portlet
-     * response can not be used in e.g. background threads because of the way
-     * server implementations reuse response instances.
+     * Gets the currently processed portlet response. The current portlet
+     * response is automatically defined when the request is started. The
+     * current portlet response can not be used in e.g. background threads
+     * because of the way server implementations reuse response instances.
      *
      * @return the current portlet response instance if available, otherwise
-     * <code>null</code>
+     *         <code>null</code>
      */
     public static PortletResponse getCurrentPortletResponse() {
         VaadinPortletResponse currentRequest = getCurrentResponse();
@@ -243,7 +242,7 @@ public class VaadinPortletService extends VaadinService {
      * the way server implementations reuse response instances.
      *
      * @return the current Vaadin portlet response instance if available,
-     * otherwise <code>null</code>
+     *         otherwise <code>null</code>
      */
     public static VaadinPortletResponse getCurrentResponse() {
         return (VaadinPortletResponse) VaadinService.getCurrentResponse();
@@ -275,9 +274,9 @@ public class VaadinPortletService extends VaadinService {
     @Override
     protected void writeToHttpSession(WrappedSession wrappedSession,
             VaadinSession session) {
-        getWrappedPortletSession(wrappedSession)
-                .setAttribute(getSessionAttributeName(), session,
-                        PortletSession.PORTLET_SCOPE);
+        getWrappedPortletSession(wrappedSession).setAttribute(
+                getSessionAttributeName(), session,
+                PortletSession.PORTLET_SCOPE);
     }
 
     @Override
@@ -289,9 +288,8 @@ public class VaadinPortletService extends VaadinService {
 
     @Override
     protected void removeFromHttpSession(WrappedSession wrappedSession) {
-        getWrappedPortletSession(wrappedSession)
-                .removeAttribute(getSessionAttributeName(),
-                        PortletSession.PORTLET_SCOPE);
+        getWrappedPortletSession(wrappedSession).removeAttribute(
+                getSessionAttributeName(), PortletSession.PORTLET_SCOPE);
     }
 
     @Override
@@ -301,8 +299,8 @@ public class VaadinPortletService extends VaadinService {
 
     @Override
     protected PwaRegistry getPwaRegistry() {
-        getLogger()
-                .debug("PWA is not supported for portlets. Returning null reference");
+        getLogger().debug(
+                "PWA is not supported for portlets. Returning null reference");
         return null;
     }
 
@@ -315,9 +313,8 @@ public class VaadinPortletService extends VaadinService {
     public String getMainDivId(VaadinSession session, VaadinRequest request) {
         PortletRequest portletRequest = ((VaadinPortletRequest) request)
                 .getPortletRequest();
-         /*
-         * We need to generate a unique ID because some portals already create
-         a
+        /*
+         * We need to generate a unique ID because some portals already create a
          * DIV with the portlet's Window ID as the DOM ID.
          */
         return "v-" + portletRequest.getWindowID();
@@ -353,8 +350,8 @@ public class VaadinPortletService extends VaadinService {
     @Override
     public Optional<String> getThemedUrl(String url, WebBrowser browser,
             AbstractTheme theme) {
-        getLogger()
-                .debug("Theme is present in the bundle. No theme resolution is done for portlets.");
+        getLogger().debug(
+                "Theme is present in the bundle. No theme resolution is done for portlets.");
         return null;
     }
 
@@ -375,8 +372,8 @@ public class VaadinPortletService extends VaadinService {
 
         Properties properties = new Properties();
         try {
-            properties.load(classLoader
-                    .getResourceAsStream(VERSION_PROPERTIES_NAME));
+            properties.load(
+                    classLoader.getResourceAsStream(VERSION_PROPERTIES_NAME));
         } catch (IOException e) {
             throw new UncheckedIOException(String.format(
                     "Failed to load the resource file '%s'. Double check jar package integrity.",

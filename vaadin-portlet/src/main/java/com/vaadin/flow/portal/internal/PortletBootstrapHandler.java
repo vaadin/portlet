@@ -24,14 +24,17 @@ import javax.portlet.ResourceURL;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.portal.VaadinPortlet;
 import com.vaadin.flow.portal.VaadinPortletRequest;
 import com.vaadin.flow.portal.VaadinPortletResponse;
+import com.vaadin.flow.portal.VaadinPortletService;
 import com.vaadin.flow.server.SynchronizedRequestHandler;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.communication.WebComponentProvider;
+import com.vaadin.pro.licensechecker.LicenseChecker;
 
 /**
  * Bootstrap handler for portlet bootstrapping.
@@ -82,22 +85,40 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
         String namespace = resp.getNamespace();
         writer.write("<script src='" + scriptUrl + "'></script>");
         StringBuilder initScript = new StringBuilder();
-        initScript.append("<script>customElements.whenDefined('").append(tag)
-                .append("').then(function(){ var elem = document.querySelector('")
-                .append(tag)
-                .append("'); elem.constructor._getClientStrategy = ")
-                .append("function(portletComponent){ ")
-                .append("   var clients = elem.constructor._getClients();")
-                .append("   if (!clients){ return undefined;  }")
-                .append("   var portlet = window.Vaadin.Flow.Portlets[portletComponent.getAttribute('data-portlet-id')];")
-                .append("   return clients[portlet.appId]; };")
-                .append(getRegisterHubScript(tag, namespace))
-                .append(initListenerRegistrationScript(namespace))
-                .append("});</script>");
 
-        writer.write(initScript.toString());
-        writer.write("<" + tag + " data-portlet-id='" + namespace + "'></" + tag
-                + ">");
+        try {
+            DeploymentConfiguration config = request.getService()
+                    .getDeploymentConfiguration();
+            if (!config.isProductionMode()) {
+                // This will throw an exception which is caught below (and the
+                // message will be shown in the browser).
+                // There is also a license check when the UI is going to be
+                // instantiated. That will throw a server side exception.
+                LicenseChecker.checkLicense(VaadinPortletService.PROJECT_NAME,
+                        VaadinPortletService.getPortletVerion());
+            }
+
+            initScript.append("<script>customElements.whenDefined('")
+                    .append(tag)
+                    .append("').then(function(){ var elem = document.querySelector('")
+                    .append(tag)
+                    .append("'); elem.constructor._getClientStrategy = ")
+                    .append("function(portletComponent){ ")
+                    .append("   var clients = elem.constructor._getClients();")
+                    .append("   if (!clients){ return undefined;  }")
+                    .append("   var portlet = window.Vaadin.Flow.Portlets[portletComponent.getAttribute('data-portlet-id')];")
+                    .append("   return clients[portlet.appId]; };")
+                    .append(getRegisterHubScript(tag, namespace))
+                    .append(initListenerRegistrationScript(namespace))
+                    .append("});</script>");
+
+            writer.write(initScript.toString());
+            writer.write("<" + tag + " data-portlet-id='" + namespace + "'></"
+                    + tag + ">");
+        } catch (Exception exception) {
+            String message = exception.getMessage();
+            writer.write("<div style='color:red;'>" + message + "</div>");
+        }
 
         return true;
     }

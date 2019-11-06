@@ -24,6 +24,7 @@ import javax.portlet.ResourceURL;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.portal.VaadinPortlet;
 import com.vaadin.flow.portal.VaadinPortletRequest;
 import com.vaadin.flow.portal.VaadinPortletResponse;
@@ -86,12 +87,16 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
         StringBuilder initScript = new StringBuilder();
 
         try {
-            // This will throw an exception which is caught below (and the
-            // message will be shown in the browser).
-            // There is also a license check when the UI is going to be
-            // instantiated. That will throw a server side exception.
-            LicenseChecker.checkLicense(VaadinPortletService.PROJECT_NAME,
-                    VaadinPortletService.getPortletVerion());
+            DeploymentConfiguration config = request.getService()
+                    .getDeploymentConfiguration();
+            if (!config.isProductionMode()) {
+                // This will throw an exception which is caught below (and the
+                // message will be shown in the browser).
+                // There is also a license check when the UI is going to be
+                // instantiated. That will throw a server side exception.
+                LicenseChecker.checkLicense(VaadinPortletService.PROJECT_NAME,
+                        VaadinPortletService.getPortletVerion());
+            }
 
             initScript.append("<script>customElements.whenDefined('")
                     .append(tag)

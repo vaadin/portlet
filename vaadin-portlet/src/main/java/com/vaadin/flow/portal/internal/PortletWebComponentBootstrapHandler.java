@@ -124,11 +124,16 @@ public class PortletWebComponentBootstrapHandler
     protected BootstrapContext createAndInitUI(Class<? extends UI> uiClass,
             VaadinRequest request, VaadinResponse response,
             VaadinSession session) {
-        // This will throw an exception on the server side during an attempt to
-        // load UI. There is also a license check when the portlet is written to
-        // the page. That check shows a message on the client side
-        LicenseChecker.checkLicense(VaadinPortletService.PROJECT_NAME,
-                VaadinPortletService.getPortletVerion());
+        DeploymentConfiguration config = request.getService()
+                .getDeploymentConfiguration();
+        if (!config.isProductionMode()) {
+            // This will throw an exception on the server side during an attempt
+            // to load UI. There is also a license check when the portlet is
+            // written to the page. That check shows a message on the client
+            // side
+            LicenseChecker.checkLicense(VaadinPortletService.PROJECT_NAME,
+                    VaadinPortletService.getPortletVerion());
+        }
         return super.createAndInitUI(uiClass, request, response, session);
     }
 

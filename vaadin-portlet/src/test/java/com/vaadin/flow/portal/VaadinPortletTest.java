@@ -4,12 +4,13 @@ import javax.portlet.ActionURL;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
-
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.After;
@@ -21,6 +22,7 @@ import org.mockito.Mockito;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.page.ExtendedClientDetails;
+import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.portal.handler.PortletModeEvent;
 import com.vaadin.flow.portal.handler.PortletView;
@@ -35,11 +37,6 @@ import com.vaadin.flow.shared.Registration;
 public class VaadinPortletTest {
 
     private VaadinPortlet<TestComponent> portlet = new VaadinPortlet<TestComponent>() {
-
-        @Override
-        protected void doDispatch(RenderRequest request,
-                RenderResponse response) throws PortletException, IOException {
-        }
 
         @Override
         protected String getTitle(RenderRequest request) {
@@ -100,14 +97,14 @@ public class VaadinPortletTest {
         VaadinPortletResponse response = Mockito
                 .mock(VaadinPortletResponse.class);
         CurrentInstance.set(VaadinResponse.class, response);
-        PortletResponse portletResponse = Mockito.mock(PortletResponse.class);
+        RenderResponse portletResponse = Mockito.mock(RenderResponse.class);
         Mockito.when(response.getPortletResponse()).thenReturn(portletResponse);
 
         Mockito.when(portletResponse.getNamespace()).thenReturn(namespace);
 
         VaadinPortletRequest request = Mockito.mock(VaadinPortletRequest.class);
 
-        PortletRequest portletRequest = Mockito.mock(PortletRequest.class);
+        RenderRequest portletRequest = Mockito.mock(RenderRequest.class);
         Mockito.when(portletRequest.getPortletMode())
                 .thenReturn(PortletMode.VIEW);
         Mockito.when(portletRequest.getWindowState())
@@ -265,5 +262,42 @@ public class VaadinPortletTest {
         ui.remove(component);
         // attach
         ui.add(component);
+    }
+
+    @Test
+    public void doDispatch_devServerEnabled_showErrorMessage()
+            throws PortletException, IOException, NoSuchFieldException,
+            IllegalAccessException {
+        DeploymentConfiguration configuration = Mockito
+                .mock(DeploymentConfiguration.class);
+        Mockito.when(configuration.enableDevServer()).thenReturn(true);
+
+        Mockito.when(service.getDeploymentConfiguration())
+                .thenReturn(configuration);
+
+        VaadinPortletResponse response = (VaadinPortletResponse) CurrentInstance
+                .get(VaadinResponse.class);
+        RenderResponse renderResponse = Mockito.mock(RenderResponse.class);
+        Mockito.when(response.getPortletResponse()).thenReturn(renderResponse);
+        Mockito.when(renderResponse.getNamespace()).thenReturn(namespace);
+        StringWriter stringWriter = new StringWriter();
+        Mockito.when(renderResponse.getWriter())
+                .thenReturn(new PrintWriter(stringWriter));
+
+        VaadinPortletRequest request = (VaadinPortletRequest) CurrentInstance
+                .get(VaadinRequest.class);
+        RenderRequest renderRequest = Mockito.mock(RenderRequest.class);
+        Mockito.when(request.getPortletRequest()).thenReturn(renderRequest);
+
+        portlet.doDispatch(renderRequest, renderResponse);
+
+        Field devModeErrorMessageField = VaadinPortlet.class
+                .getDeclaredField("DEV_MODE_ERROR_MESSAGE");
+        devModeErrorMessageField.setAccessible(true);
+        String expectedDevModeErrorMessage = (String) devModeErrorMessageField
+                .get(null);
+        Assert.assertEquals(
+                "When dev server is enabled, DEV_MODE_ERROR_MESSAGE should be shown in the portlet.",
+                expectedDevModeErrorMessage, stringWriter.toString().trim());
     }
 }

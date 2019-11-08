@@ -75,6 +75,9 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private static final String VAADIN_WINDOW_NAME = "vaadin.wn";
     private static final String ACTION_STATE = "state";
     private static final String ACTION_MODE = "mode";
+    private static final String DEV_MODE_ERROR_MESSAGE = "<h2>⚠️Vaadin Portlet does not work in development mode running webpack-dev-server</h2>"
+            + "<p>To run a portlet in development mode, you need to activate both <code>prepare-frontend</code> and <code>build-frontend</code> goals of <code>vaadin-maven-plugin</code>. "
+            + "To run a portlet in production mode see <a href='https://vaadin.com/docs/v14/flow/production/tutorial-production-mode-basic.html' target='_blank'>this</a>.</p>";
 
     private VaadinPortletService vaadinService;
 
@@ -197,10 +200,11 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     protected DeploymentConfiguration createDeploymentConfiguration(
             PortletConfig config) throws PortletException {
         try {
-            return DeploymentConfigurationFactory
-                    .createDeploymentConfiguration(getClass(), new VaadinPortletConfig(config));
-        } catch(VaadinConfigurationException e) {
-            throw new PortletException("Failed to construct DeploymentConfiguration.", e);
+            return DeploymentConfigurationFactory.createDeploymentConfiguration(
+                    getClass(), new VaadinPortletConfig(config));
+        } catch (VaadinConfigurationException e) {
+            throw new PortletException(
+                    "Failed to construct DeploymentConfiguration.", e);
         }
     }
 
@@ -232,6 +236,11 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     protected void doDispatch(RenderRequest request, RenderResponse response)
             throws PortletException, IOException {
         try {
+            if (getService().getDeploymentConfiguration().enableDevServer()) {
+                response.getWriter().println(DEV_MODE_ERROR_MESSAGE);
+                return;
+            }
+
             // try to let super handle - it'll call methods annotated for
             // handling, the default doXYZ(), or throw if a handler for the mode
             // is not found

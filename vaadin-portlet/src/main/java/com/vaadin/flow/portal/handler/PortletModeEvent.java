@@ -41,8 +41,8 @@ public class PortletModeEvent implements Serializable {
      */
     public PortletModeEvent(PortletMode newMode, PortletMode oldMode,
             boolean fromClient) {
-        this.portletMode = newMode.toString();
-        this.prevPortletMode = oldMode.toString();
+        this.portletMode = newMode != null ? newMode.toString() : null;
+        this.prevPortletMode = oldMode != null ? oldMode.toString() : null;
         this.fromClient = fromClient;
     }
 

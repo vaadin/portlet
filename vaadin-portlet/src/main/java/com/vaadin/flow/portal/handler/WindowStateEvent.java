@@ -41,8 +41,8 @@ public class WindowStateEvent implements Serializable {
      */
     public WindowStateEvent(WindowState newState, WindowState oldState,
             boolean fromClient) {
-        this.windowState = newState.toString();
-        this.prevWindowState = oldState.toString();
+        this.windowState = newState != null ? newState.toString() : null;
+        this.prevWindowState = oldState != null ? oldState.toString() : null;
         this.fromClient = fromClient;
     }
 

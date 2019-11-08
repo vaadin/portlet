@@ -66,26 +66,34 @@ public class PortletStreamReceiverHandler extends StreamReceiverHandler {
     }
 
     private RequestContext getRequestContext(VaadinRequest request) {
-        return new RequestContext() {
-            @Override
-            public String getCharacterEncoding() {
-                return request.getCharacterEncoding();
-            }
+        return new StreamRequestContext(request);
+    }
 
-            @Override
-            public String getContentType() {
-                return request.getContentType();
-            }
+    private static class StreamRequestContext implements RequestContext {
+        private final VaadinRequest request;
 
-            @Override
-            public int getContentLength() {
-                return request.getContentLength();
-            }
+        StreamRequestContext(VaadinRequest request) {
+            this.request = request;
+        }
 
-            @Override
-            public InputStream getInputStream() throws IOException {
-                return request.getInputStream();
-            }
-        };
+        @Override
+        public String getCharacterEncoding() {
+            return request.getCharacterEncoding();
+        }
+
+        @Override
+        public String getContentType() {
+            return request.getContentType();
+        }
+
+        @Override
+        public int getContentLength() {
+            return request.getContentLength();
+        }
+
+        @Override
+        public InputStream getInputStream() throws IOException {
+            return request.getInputStream();
+        }
     }
 }

@@ -16,15 +16,15 @@
 package com.vaadin.flow.portal.handler;
 
 import javax.portlet.PortletMode;
+import java.io.Serializable;
 
 /**
  * An event of this class is fired when the {@link PortletMode} of the portlet
  * is updated to a mode different from its current mode.
  */
-public class PortletModeEvent {
-
-    private final PortletMode portletMode;
-    private final PortletMode prevPortletMode;
+public class PortletModeEvent implements Serializable {
+    private final String portletMode;
+    private final String prevPortletMode;
 
     private final boolean fromClient;
 
@@ -41,8 +41,8 @@ public class PortletModeEvent {
      */
     public PortletModeEvent(PortletMode newMode, PortletMode oldMode,
             boolean fromClient) {
-        this.portletMode = newMode;
-        this.prevPortletMode = oldMode;
+        this.portletMode = newMode != null ? newMode.toString() : null;
+        this.prevPortletMode = oldMode != null ? oldMode.toString() : null;
         this.fromClient = fromClient;
     }
 
@@ -52,7 +52,7 @@ public class PortletModeEvent {
      * @return the update portlet mode
      */
     public PortletMode getPortletMode() {
-        return portletMode;
+        return new PortletMode(portletMode);
     }
 
     /**
@@ -61,7 +61,7 @@ public class PortletModeEvent {
      * @return true iff the portlet is in view mode
      */
     public boolean isViewMode() {
-        return PortletMode.VIEW.equals(portletMode);
+        return PortletMode.VIEW.toString().equals(portletMode);
     }
 
     /**
@@ -70,7 +70,7 @@ public class PortletModeEvent {
      * @return true iff the portlet is in edit mode
      */
     public boolean isEditMode() {
-        return PortletMode.EDIT.equals(portletMode);
+        return PortletMode.EDIT.toString().equals(portletMode);
     }
 
     /**
@@ -79,7 +79,7 @@ public class PortletModeEvent {
      * @return true iff the portlet is in help mode
      */
     public boolean isHelpMode() {
-        return PortletMode.HELP.equals(portletMode);
+        return PortletMode.HELP.toString().equals(portletMode);
     }
 
     /**
@@ -89,7 +89,7 @@ public class PortletModeEvent {
      * @return the previous window state.
      */
     public PortletMode getPreviousPortletMode() {
-        return prevPortletMode;
+        return new PortletMode(prevPortletMode);
     }
 
     /**

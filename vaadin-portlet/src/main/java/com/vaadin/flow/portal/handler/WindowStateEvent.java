@@ -16,15 +16,16 @@
 package com.vaadin.flow.portal.handler;
 
 import javax.portlet.WindowState;
+import java.io.Serializable;
 
 /**
  * An event of this class is fired when the {@link WindowState} of the portlet
  * is updated to a state different from its current state.
  */
-public class WindowStateEvent {
+public class WindowStateEvent implements Serializable {
 
-    private final WindowState windowState;
-    private final WindowState prevWindowState;
+    private final String windowState;
+    private final String prevWindowState;
     private final boolean fromClient;
 
     /**
@@ -40,8 +41,8 @@ public class WindowStateEvent {
      */
     public WindowStateEvent(WindowState newState, WindowState oldState,
             boolean fromClient) {
-        this.windowState = newState;
-        this.prevWindowState = oldState;
+        this.windowState = newState != null ? newState.toString() : null;
+        this.prevWindowState = oldState != null ? oldState.toString() : null;
         this.fromClient = fromClient;
     }
 
@@ -51,7 +52,7 @@ public class WindowStateEvent {
      * @return the update portlet window state
      */
     public WindowState getWindowState() {
-        return windowState;
+        return new WindowState(windowState);
     }
 
     /**
@@ -60,7 +61,7 @@ public class WindowStateEvent {
      * @return true iff the window state is {@link WindowState#NORMAL}
      */
     public boolean isNormal() {
-        return WindowState.NORMAL.equals(windowState);
+        return WindowState.NORMAL.toString().equals(windowState);
     }
 
     /**
@@ -69,7 +70,7 @@ public class WindowStateEvent {
      * @return true iff the window state is {@link WindowState#MINIMIZED}
      */
     public boolean isMinimized() {
-        return WindowState.MINIMIZED.equals(windowState);
+        return WindowState.MINIMIZED.toString().equals(windowState);
     }
 
     /**
@@ -78,7 +79,7 @@ public class WindowStateEvent {
      * @return true iff the window state is {@link WindowState#MAXIMIZED}
      */
     public boolean isMaximized() {
-        return WindowState.MAXIMIZED.equals(windowState);
+        return WindowState.MAXIMIZED.toString().equals(windowState);
     }
 
     /**
@@ -88,7 +89,7 @@ public class WindowStateEvent {
      * @return the previous window state.
      */
     public WindowState getPreviousWindowState() {
-        return prevWindowState;
+        return new WindowState(prevWindowState);
     }
 
     /**

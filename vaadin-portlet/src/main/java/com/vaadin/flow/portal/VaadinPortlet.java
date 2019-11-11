@@ -15,6 +15,12 @@
  */
 package com.vaadin.flow.portal;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.EventRequest;
@@ -32,11 +38,6 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.portlet.WindowState;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -172,8 +173,11 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             // having been retrieved here---this is due to the
             // implementation of
             // @PreserveOnRefresh
-            String windowName = component.getUI().get().getInternals()
-                    .getExtendedClientDetails().getWindowName();
+            String windowName = null;
+            if (component.getUI().isPresent()) {
+                windowName = component.getUI().get().getInternals()
+                        .getExtendedClientDetails().getWindowName();
+            }
             String namespace = VaadinPortletResponse.getCurrentPortletResponse()
                     .getNamespace();
             VaadinSession session = component.getUI().get().getSession();
@@ -287,8 +291,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             throws PortletException {
         Set<String> names = request.getActionParameters().getNames();
 
-        VaadinPortletSession session = getSession(request, response);
-
         if (!isPortlet3.get() && names.contains(ACTION_STATE)) {
             WindowState windowState = new WindowState(
                     request.getActionParameters().getValue(ACTION_STATE));
@@ -308,11 +310,22 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             map.remove(VAADIN_UID);
             map.remove(VAADIN_WINDOW_NAME);
 
+            VaadinPortletSession session = getSession(request, response);
+            if (session == null) {
+                getLogger().debug("Unable to retrieve session, cannot " +
+                        "fire event '" + event + "'");
+                return;
+            }
+
             PortletViewContextImpl<C> viewContext = getViewContext(session,
                     response.getNamespace(), windowName);
-            session.access(() -> {
-                viewContext.firePortletEvent(uid, new PortletEvent(event, map));
-            });
+            if (viewContext != null) {
+                session.access(() -> viewContext.firePortletEvent(uid,
+                        new PortletEvent(event, map)));
+            } else {
+                getLogger().debug("Unable to retrieve view context, cannot " +
+                        "fire event '" + event + "'");
+            }
         }
     }
 

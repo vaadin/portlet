@@ -15,14 +15,6 @@
  */
 package com.vaadin.flow.portal;
 
-import javax.portlet.ActionURL;
-import javax.portlet.MimeResponse;
-import javax.portlet.PortletMode;
-import javax.portlet.PortletModeException;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
-import javax.portlet.WindowState;
-import javax.portlet.WindowStateException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +22,14 @@ import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+
+import javax.portlet.ActionURL;
+import javax.portlet.MimeResponse;
+import javax.portlet.PortletMode;
+import javax.portlet.PortletModeException;
+import javax.portlet.PortletResponse;
+import javax.portlet.WindowState;
+import javax.portlet.WindowStateException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,9 +74,12 @@ class PortletViewContextImpl<C extends Component>
 
     private String windowState;
 
-    PortletViewContextImpl(C view, AtomicBoolean portlet3, PortletRequest request) {
+    PortletViewContextImpl(C view, AtomicBoolean portlet3,
+            PortletMode portletMode, WindowState windowState) {
         this.view = view;
         isPortlet3 = portlet3;
+        this.portletMode = portletMode.toString();
+        this.windowState = windowState.toString();
 
         if (view instanceof EventHandler) {
             EventHandler handler = (EventHandler) view;
@@ -90,9 +93,6 @@ class PortletViewContextImpl<C extends Component>
             doAddPortletModeChangeListener(
                     ((PortletModeHandler) view)::portletModeChange);
         }
-
-        portletMode = request.getPortletMode().toString();
-        windowState = request.getWindowState().toString();
     }
 
     /**

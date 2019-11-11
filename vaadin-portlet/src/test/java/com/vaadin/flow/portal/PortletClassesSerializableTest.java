@@ -55,25 +55,21 @@ public class PortletClassesSerializableTest extends ClassesSerializableTest {
         PortletMode portletMode = PortletMode.VIEW;
         WindowState windowState = WindowState.NORMAL;
 
-        PortletRequest request = Mockito.mock(PortletRequest.class);
-        Mockito.when(request.getPortletMode()).thenReturn(portletMode);
-        Mockito.when(request.getWindowState()).thenReturn(windowState);
-
         ComponentParameter view = new ComponentParameter();
         AtomicBoolean atomicBoolean = new AtomicBoolean(true);
-        PortletViewContextImpl<ComponentParameter> original =
-                new PortletViewContextImpl<>(view, atomicBoolean, request);
+        PortletViewContextImpl<ComponentParameter> original = new PortletViewContextImpl<>(
+                view, atomicBoolean, portletMode, windowState);
 
-        PortletViewContextImpl<ComponentParameter> deserialized =
-                serializeAndDeserialize(original);
+        PortletViewContextImpl<ComponentParameter> deserialized = serializeAndDeserialize(
+                original);
 
         Assert.assertEquals(portletMode, deserialized.getPortletMode());
         Assert.assertEquals(windowState, deserialized.getWindowState());
 
         // assert that view component has been deserialized and listener is
         // registered
-        deserialized.fireWindowStateEvent(
-                new WindowStateEvent(WindowState.MAXIMIZED, WindowState.MINIMIZED, false));
+        deserialized.fireWindowStateEvent(new WindowStateEvent(
+                WindowState.MAXIMIZED, WindowState.MINIMIZED, false));
         Assert.assertEquals(1, ComponentParameter.integer.get());
     }
 

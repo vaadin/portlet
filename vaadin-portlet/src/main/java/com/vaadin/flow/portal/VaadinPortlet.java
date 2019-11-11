@@ -182,8 +182,8 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             boolean needViewInit = false;
             if (context == null) {
                 needViewInit = true;
-                context = new PortletViewContextImpl<>(component,
-                        isPortlet3, request);
+                context = new PortletViewContextImpl<>(component, isPortlet3,
+                        request.getPortletMode(), request.getWindowState());
                 setViewContext(session, namespace, windowName, context);
             }
             context.init();

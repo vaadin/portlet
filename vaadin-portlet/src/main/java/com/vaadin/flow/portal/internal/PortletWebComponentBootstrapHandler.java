@@ -42,6 +42,8 @@ import com.vaadin.pro.licensechecker.LicenseChecker;
 public class PortletWebComponentBootstrapHandler
         extends WebComponentBootstrapHandler {
 
+    private static final long serialVersionUID = -2115434199999956068L;
+
     // TODO: Update WebComponentBootstrapHandler API to pass also
     // current VaadinReponse instance, to avoid having to rely on
     // VaadinPortletResponse.getCurrentPortletResponse() here.

@@ -23,6 +23,9 @@ import com.vaadin.flow.server.communication.StreamRequestHandler;
  * For internal use only.
  */
 public class PortletStreamRequestHandler extends StreamRequestHandler {
+
+    private static final long serialVersionUID = -3994111371127564400L;
+
     public PortletStreamRequestHandler() {
         super(new PortletStreamReceiverHandler());
     }

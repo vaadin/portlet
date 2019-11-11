@@ -20,6 +20,8 @@ import com.vaadin.flow.server.VaadinService;
  */
 public class VaadinPortletConfig implements VaadinConfig {
 
+    private static final long serialVersionUID = -670689910573086886L;
+
     private PortletConfig config;
     final Map<String, String> forcedParameters;
 

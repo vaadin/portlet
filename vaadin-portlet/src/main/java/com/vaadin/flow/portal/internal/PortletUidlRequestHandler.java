@@ -23,6 +23,8 @@ import com.vaadin.flow.server.communication.UidlRequestHandler;
  */
 public class PortletUidlRequestHandler extends UidlRequestHandler {
 
+    private static final long serialVersionUID = 2999659152945090056L;
+
     @Override
     protected boolean canHandleRequest(VaadinRequest request) {
         return "/uidl".equals(request.getPathInfo());

@@ -45,6 +45,8 @@ import com.vaadin.pro.licensechecker.LicenseChecker;
  */
 public class PortletBootstrapHandler extends SynchronizedRequestHandler {
 
+    private static final long serialVersionUID = -7483736532843878484L;
+
     @Override
     protected boolean canHandleRequest(VaadinRequest request) {
         return ((VaadinPortletRequest) request)

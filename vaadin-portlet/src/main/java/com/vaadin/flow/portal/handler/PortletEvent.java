@@ -28,6 +28,8 @@ import java.util.Map;
  */
 public class PortletEvent implements Serializable {
 
+    private static final long serialVersionUID = 409044092553516988L;
+
     private final String eventName;
     private final Map<String, String[]> parameters;
 

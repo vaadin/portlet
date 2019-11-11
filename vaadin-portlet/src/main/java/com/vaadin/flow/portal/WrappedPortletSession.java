@@ -32,6 +32,8 @@ import com.vaadin.flow.server.WrappedSession;
  */
 public class WrappedPortletSession implements WrappedSession {
 
+    private static final long serialVersionUID = -7039810615453068966L;
+
     private final PortletSession session;
 
     /**

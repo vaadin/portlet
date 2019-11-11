@@ -23,6 +23,9 @@ import java.io.Serializable;
  * is updated to a mode different from its current mode.
  */
 public class PortletModeEvent implements Serializable {
+
+    private static final long serialVersionUID = -7299797733512691744L;
+
     private final String portletMode;
     private final String prevPortletMode;
 

@@ -70,6 +70,8 @@ import com.vaadin.flow.shared.util.SharedUtil;
 public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         implements ExportsWebComponent<C> {
 
+    private static final long serialVersionUID = 7484364303692724318L;
+
     private static final String VAADIN_EVENT = "vaadin.ev";
     private static final String VAADIN_UID = "vaadin.uid";
     private static final String VAADIN_WINDOW_NAME = "vaadin.wn";

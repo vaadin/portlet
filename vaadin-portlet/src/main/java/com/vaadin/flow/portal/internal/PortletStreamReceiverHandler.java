@@ -41,6 +41,8 @@ import com.vaadin.flow.server.communication.StreamReceiverHandler;
  */
 public class PortletStreamReceiverHandler extends StreamReceiverHandler {
 
+    private static final long serialVersionUID = 3239490651489627667L;
+
     @Override
     protected boolean isMultipartUpload(VaadinRequest request) {
         return request instanceof VaadinPortletRequest &&

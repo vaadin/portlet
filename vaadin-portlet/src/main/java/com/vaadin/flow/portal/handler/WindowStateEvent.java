@@ -24,6 +24,8 @@ import java.io.Serializable;
  */
 public class WindowStateEvent implements Serializable {
 
+    private static final long serialVersionUID = -6281350353948388040L;
+
     private final String windowState;
     private final String prevWindowState;
     private final boolean fromClient;

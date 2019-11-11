@@ -36,6 +36,8 @@ import com.vaadin.flow.server.StreamResourceRegistry;
  */
 public class PortletStreamResourceRegistry extends StreamResourceRegistry {
 
+    private static final long serialVersionUID = -7909998471814976320L;
+
     /**
      * Creates stream resource registry for provided {@code session}.
      *

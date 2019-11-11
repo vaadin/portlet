@@ -27,6 +27,8 @@ import com.vaadin.flow.server.communication.WebComponentProvider;
  */
 public class PortletWebComponentProvider extends WebComponentProvider {
 
+    private static final long serialVersionUID = 3036476847663281997L;
+
     public PortletWebComponentProvider() {
         // Disable tag-based cache because the same tag should yield different
         // bootstrap responses in separate portlet namespaces.

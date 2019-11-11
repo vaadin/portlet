@@ -61,8 +61,9 @@ import com.vaadin.flow.shared.Registration;
  *
  * @since 7.0
  */
-@SuppressWarnings("serial")
 public class VaadinPortletSession extends VaadinSession {
+
+    private static final long serialVersionUID = -3522215197977287381L;
 
     private final Map<String, QName> eventActionDestinationMap = new HashMap<>();
 

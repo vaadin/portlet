@@ -30,6 +30,8 @@ import com.vaadin.flow.server.VaadinServletService;
  */
 public class VaadinPortletContext implements VaadinContext {
 
+    private static final long serialVersionUID = 3260429452395987854L;
+
     private transient PortletContext context;
 
     /**

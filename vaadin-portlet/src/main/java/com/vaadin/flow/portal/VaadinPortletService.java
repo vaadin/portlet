@@ -56,6 +56,8 @@ import com.vaadin.flow.server.startup.ApplicationRouteRegistry;
 import com.vaadin.flow.theme.AbstractTheme;
 
 public class VaadinPortletService extends VaadinService {
+    private static final long serialVersionUID = 648838473278902399L;
+
     public static final String PROJECT_NAME = "vaadin-portlet";
 
     private static final String VERSION_PROPERTIES_NAME = "version.properties";

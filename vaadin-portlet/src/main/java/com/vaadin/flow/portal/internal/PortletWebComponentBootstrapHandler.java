@@ -132,7 +132,7 @@ public class PortletWebComponentBootstrapHandler
             // written to the page. That check shows a message on the client
             // side
             LicenseChecker.checkLicense(VaadinPortletService.PROJECT_NAME,
-                    VaadinPortletService.getPortletVerion());
+                    VaadinPortletService.getPortletVersion());
         }
         return super.createAndInitUI(uiClass, request, response, session);
     }

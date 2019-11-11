@@ -77,14 +77,14 @@ public class VaadinPortletService extends VaadinService {
 
     private void verifyLicense(boolean productionMode) {
         if (!productionMode) {
-            String portletVersion = getPortletVerion();
+            String portletVersion = getPortletVersion();
 
             UsageStatistics.markAsUsed(PROJECT_NAME, portletVersion);
             UsageStatistics.markAsUsed("vaadin", Version.getFullVersion());
         }
     }
 
-    public static String getPortletVerion() {
+    public static String getPortletVersion() {
         String portletVersion = PROPERTIES_FILE
                 .getProperty(PORTLET_VERSION_PROPERTY);
         if (portletVersion == null || portletVersion.isEmpty()) {

@@ -58,8 +58,6 @@ import com.vaadin.flow.shared.Registration;
 class PortletViewContextImpl<C extends Component>
         implements PortletViewContext {
 
-    private static final long serialVersionUID = -3967697761418212155L;
-
     private final C view;
 
     private final AtomicBoolean isPortlet3;

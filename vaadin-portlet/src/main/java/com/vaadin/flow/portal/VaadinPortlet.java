@@ -166,39 +166,40 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     }
 
     private void initComponent(C component) {
+        // We rely on the component being attached and the window name
+        // having been retrieved here---this is due to the
+        // implementation of @PreserveOnRefresh
+        UI ui = component.getUI().orElseThrow(() -> new IllegalStateException(
+                "Unable to initialize component, UI instance not available from "
+                        + component.getClass().getName()));
+
+        String windowName = ui.getInternals().getExtendedClientDetails()
+                .getWindowName();
+        String namespace = VaadinPortletResponse.getCurrentPortletResponse()
+                .getNamespace();
+        VaadinSession session = ui.getSession();
+        PortletViewContextImpl<C> context;
         try {
-            PortletRequest request = VaadinPortletRequest
-                    .getCurrentPortletRequest();
-            // We rely on the component being attached and the window name
-            // having been retrieved here---this is due to the
-            // implementation of
-            // @PreserveOnRefresh
-            String windowName = null;
-            if (component.getUI().isPresent()) {
-                windowName = component.getUI().get().getInternals()
-                        .getExtendedClientDetails().getWindowName();
-            }
-            String namespace = VaadinPortletResponse.getCurrentPortletResponse()
-                    .getNamespace();
-            VaadinSession session = component.getUI().get().getSession();
-            PortletViewContextImpl<C> context = getViewContext(session,
-                    namespace, windowName);
-            boolean needViewInit = false;
-            if (context == null) {
-                needViewInit = true;
-                context = new PortletViewContextImpl<>(component, isPortlet3,
-                        request.getPortletMode(), request.getWindowState());
-                setViewContext(session, namespace, windowName, context);
-            }
-            context.init();
-            context.updateModeAndState(request.getPortletMode(),
-                    request.getWindowState());
-            if (needViewInit && component instanceof PortletView) {
-                PortletView view = (PortletView) component;
-                view.onPortletViewContextInit(context);
-            }
+            context = getViewContext(session, namespace, windowName);
         } catch (PortletException exception) {
-            throw new RuntimeException(exception);
+            throw new RuntimeException("Unable to initialize component, "
+                    + "PortletException raised", exception);
+        }
+        PortletRequest request = VaadinPortletRequest
+                .getCurrentPortletRequest();
+        boolean needViewInit = false;
+        if (context == null) {
+            needViewInit = true;
+            context = new PortletViewContextImpl<>(component, isPortlet3,
+                    request.getPortletMode(), request.getWindowState());
+            setViewContext(session, namespace, windowName, context);
+        }
+        context.init();
+        context.updateModeAndState(request.getPortletMode(),
+                request.getWindowState());
+        if (needViewInit && component instanceof PortletView) {
+            PortletView view = (PortletView) component;
+            view.onPortletViewContextInit(context);
         }
     }
 
@@ -314,7 +315,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             VaadinPortletSession session = getSession(request, response);
             if (session == null) {
                 getLogger().debug("Unable to retrieve session, cannot " +
-                        "fire event '" + event + "'");
+                        "fire event '{}'", event);
                 return;
             }
 
@@ -325,7 +326,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                         new PortletEvent(event, map)));
             } else {
                 getLogger().debug("Unable to retrieve view context, cannot " +
-                        "fire event '" + event + "'");
+                        "fire event '{}'", event);
             }
         }
     }

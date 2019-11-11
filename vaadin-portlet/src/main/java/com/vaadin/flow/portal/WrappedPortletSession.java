@@ -19,6 +19,7 @@ import javax.portlet.PortletSession;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Set;
 
 import com.vaadin.flow.server.WrappedSession;
@@ -32,7 +33,7 @@ import com.vaadin.flow.server.WrappedSession;
  */
 public class WrappedPortletSession implements WrappedSession {
 
-    private final PortletSession session;
+    private transient final PortletSession session;
 
     /**
      * Creates a new wrapped portlet session.

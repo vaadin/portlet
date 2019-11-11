@@ -1,12 +1,13 @@
 package com.vaadin.flow.portal;
 
-import javax.portlet.PortletConfig;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import javax.portlet.PortletConfig;
 
 import com.vaadin.flow.server.Constants;
 import com.vaadin.flow.server.VaadinConfig;
@@ -20,8 +21,14 @@ import com.vaadin.flow.server.VaadinService;
  */
 public class VaadinPortletConfig implements VaadinConfig {
 
-    private PortletConfig config;
-    final Map<String, String> forcedParameters;
+    private transient PortletConfig config;
+    static Map<String, String> forcedParameters;
+
+    static {
+        forcedParameters = Collections.singletonMap(
+                Constants.SERVLET_PARAMETER_COMPATIBILITY_MODE,
+                Boolean.FALSE.toString());
+    }
 
     /**
      * Creates an instance of this context with given {@link PortletConfig}.
@@ -31,10 +38,6 @@ public class VaadinPortletConfig implements VaadinConfig {
      */
     public VaadinPortletConfig(PortletConfig config) {
         this.config = config;
-        Map<String, String> constantParameters = new HashMap<>();
-        constantParameters.put(Constants.SERVLET_PARAMETER_COMPATIBILITY_MODE,
-                Boolean.FALSE.toString());
-        forcedParameters = Collections.unmodifiableMap(constantParameters);
     }
 
     /**
@@ -62,7 +65,7 @@ public class VaadinPortletConfig implements VaadinConfig {
         ensurePortletConfig();
         Set<String> initParameterNames = new HashSet<>(
                 Collections.list(config.getInitParameterNames()));
-        forcedParameters.keySet().forEach(initParameterNames::add);
+        initParameterNames.addAll(forcedParameters.keySet());
         return Collections.enumeration(initParameterNames);
     }
 
@@ -76,5 +79,16 @@ public class VaadinPortletConfig implements VaadinConfig {
             initParameter = config.getInitParameter(name);
         }
         return initParameter;
+    }
+    
+    private void writeObject(java.io.ObjectOutputStream out)
+            throws IOException {
+        out.defaultWriteObject();
+    }
+
+    private void readObject(java.io.ObjectInputStream in)
+            throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        ensurePortletConfig();
     }
 }

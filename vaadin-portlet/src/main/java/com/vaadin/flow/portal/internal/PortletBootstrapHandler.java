@@ -95,7 +95,7 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
                 // There is also a license check when the UI is going to be
                 // instantiated. That will throw a server side exception.
                 LicenseChecker.checkLicense(VaadinPortletService.PROJECT_NAME,
-                        VaadinPortletService.getPortletVerion());
+                        VaadinPortletService.getPortletVersion());
             }
 
             initScript.append("<script>customElements.whenDefined('")

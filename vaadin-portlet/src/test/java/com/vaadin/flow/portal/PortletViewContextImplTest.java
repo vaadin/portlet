@@ -112,6 +112,8 @@ public class PortletViewContextImplTest {
 
         request = Mockito.mock(VaadinPortletRequest.class);
         CurrentInstance.set(VaadinRequest.class, request);
+        Mockito.when(request.getPortletMode()).thenReturn(PortletMode.VIEW);
+        Mockito.when(request.getWindowState()).thenReturn(WindowState.NORMAL);
     }
 
     @After
@@ -124,7 +126,7 @@ public class PortletViewContextImplTest {
         TestComponent component = new TestComponent();
         ui.add(component);
         PortletViewContextImpl<TestComponent> context = new PortletViewContextImpl<TestComponent>(
-                component, new AtomicBoolean());
+                component, new AtomicBoolean(), request);
 
         String uid = assertJsHubRegistration(".*");
 
@@ -139,7 +141,7 @@ public class PortletViewContextImplTest {
         TestComponent component = new TestComponent();
         ui.add(component);
         PortletViewContextImpl<TestComponent> context = new PortletViewContextImpl<TestComponent>(
-                component, new AtomicBoolean());
+                component, new AtomicBoolean(), request);
 
         PortletModeEvent event = Mockito.mock(PortletModeEvent.class);
         context.firePortletModeEvent(event);
@@ -152,7 +154,7 @@ public class PortletViewContextImplTest {
         TestComponent component = new TestComponent();
         ui.add(component);
         PortletViewContextImpl<TestComponent> context = new PortletViewContextImpl<TestComponent>(
-                component, new AtomicBoolean());
+                component, new AtomicBoolean(), request);
 
         WindowStateEvent event = Mockito.mock(WindowStateEvent.class);
         context.fireWindowStateEvent(event);
@@ -165,7 +167,7 @@ public class PortletViewContextImplTest {
         Div component = new Div();
         ui.add(component);
         PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
-                component, new AtomicBoolean());
+                component, new AtomicBoolean(), request);
 
         AtomicReference<PortletModeEvent> listener = new AtomicReference<>();
         context.addPortletModeChangeListener(
@@ -182,7 +184,7 @@ public class PortletViewContextImplTest {
         Div component = new Div();
         ui.add(component);
         PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
-                component, new AtomicBoolean());
+                component, new AtomicBoolean(), request);
 
         AtomicReference<WindowStateEvent> listener = new AtomicReference<>();
         context.addWindowStateChangeListener(
@@ -203,7 +205,7 @@ public class PortletViewContextImplTest {
         Mockito.when(request.getWindowState()).thenReturn(WindowState.NORMAL);
 
         PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
-                component, new AtomicBoolean());
+                component, new AtomicBoolean(), request);
 
         AtomicReference<WindowStateEvent> windowListener = new AtomicReference<>();
         context.addWindowStateChangeListener(
@@ -236,7 +238,7 @@ public class PortletViewContextImplTest {
                 .thenReturn(WindowState.MAXIMIZED);
 
         PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
-                component, new AtomicBoolean());
+                component, new AtomicBoolean(), request);
 
         AtomicReference<WindowStateEvent> windowListener = new AtomicReference<>();
         context.addWindowStateChangeListener(
@@ -278,7 +280,7 @@ public class PortletViewContextImplTest {
         Div component = new Div();
         ui.add(component);
         PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
-                component, new AtomicBoolean());
+                component, new AtomicBoolean(), request);
 
         AtomicReference<PortletModeEvent> listener = new AtomicReference<>();
         Registration registration = context.addPortletModeChangeListener(
@@ -296,7 +298,7 @@ public class PortletViewContextImplTest {
         Div component = new Div();
         ui.add(component);
         PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
-                component, new AtomicBoolean());
+                component, new AtomicBoolean(), request);
 
         AtomicReference<WindowStateEvent> listener = new AtomicReference<>();
         Registration registration = context.addWindowStateChangeListener(
@@ -314,7 +316,7 @@ public class PortletViewContextImplTest {
         Div component = new Div();
         ui.add(component);
         PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
-                component, new AtomicBoolean());
+                component, new AtomicBoolean(), request);
 
         AtomicReference<PortletEvent> listener = new AtomicReference<>();
         context.addEventChangeListener("bar",
@@ -333,7 +335,7 @@ public class PortletViewContextImplTest {
         Div component = new Div();
         ui.add(component);
         PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
-                component, new AtomicBoolean());
+                component, new AtomicBoolean(), request);
 
         AtomicReference<PortletEvent> listener = new AtomicReference<>();
         Registration registration = context.addEventChangeListener("bar",
@@ -354,7 +356,7 @@ public class PortletViewContextImplTest {
         Div component = new Div();
         ui.add(component);
         PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
-                component, new AtomicBoolean());
+                component, new AtomicBoolean(), request);
 
         context.addEventChangeListener("bar", event -> {
         });
@@ -373,7 +375,7 @@ public class PortletViewContextImplTest {
 
         Mockito.when(request.getWindowState()).thenReturn(WindowState.NORMAL);
         PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
-                component, new AtomicBoolean());
+                component, new AtomicBoolean(), request);
 
         Assert.assertEquals(WindowState.NORMAL, context.getWindowState());
     }
@@ -385,7 +387,7 @@ public class PortletViewContextImplTest {
 
         Mockito.when(request.getWindowState()).thenReturn(WindowState.NORMAL);
         PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
-                component, new AtomicBoolean());
+                component, new AtomicBoolean(), request);
 
         context.setWindowState(WindowState.MAXIMIZED);
 
@@ -399,7 +401,7 @@ public class PortletViewContextImplTest {
 
         Mockito.when(request.getPortletMode()).thenReturn(PortletMode.EDIT);
         PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
-                component, new AtomicBoolean());
+                component, new AtomicBoolean(), request);
 
         Assert.assertEquals(PortletMode.EDIT, context.getPortletMode());
     }
@@ -411,7 +413,7 @@ public class PortletViewContextImplTest {
 
         Mockito.when(request.getPortletMode()).thenReturn(PortletMode.EDIT);
         PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
-                component, new AtomicBoolean());
+                component, new AtomicBoolean(), request);
 
         context.setPortletMode(PortletMode.VIEW);
         Assert.assertEquals(PortletMode.VIEW, context.getPortletMode());
@@ -442,7 +444,7 @@ public class PortletViewContextImplTest {
         Div component = new Div();
         ui.add(component);
         PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
-                component, new AtomicBoolean(portlet3));
+                component, new AtomicBoolean(portlet3), request);
 
         AtomicReference<WindowStateEvent> windowListener = new AtomicReference<>();
         context.addWindowStateChangeListener(
@@ -460,7 +462,7 @@ public class PortletViewContextImplTest {
         Div component = new Div();
         ui.add(component);
         PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
-                component, new AtomicBoolean());
+                component, new AtomicBoolean(portlet3), request);
 
         AtomicReference<PortletModeEvent> listener = new AtomicReference<>();
         context.addPortletModeChangeListener(

@@ -19,10 +19,10 @@ import javax.portlet.ActionURL;
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletModeException;
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.WindowState;
 import javax.portlet.WindowStateException;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,6 +58,8 @@ import com.vaadin.flow.shared.Registration;
 class PortletViewContextImpl<C extends Component>
         implements PortletViewContext {
 
+    private static final long serialVersionUID = -3967697761418212155L;
+
     private final C view;
 
     private final AtomicBoolean isPortlet3;
@@ -70,11 +72,11 @@ class PortletViewContextImpl<C extends Component>
 
     private final Collection<PortletModeListener> portletModeListeners = new CopyOnWriteArrayList<>();
 
-    private PortletMode portletMode;
+    private String portletMode;
 
-    private WindowState windowState;
+    private String windowState;
 
-    PortletViewContextImpl(C view, AtomicBoolean portlet3) {
+    PortletViewContextImpl(C view, AtomicBoolean portlet3, PortletRequest request) {
         this.view = view;
         isPortlet3 = portlet3;
 
@@ -91,8 +93,8 @@ class PortletViewContextImpl<C extends Component>
                     ((PortletModeHandler) view)::portletModeChange);
         }
 
-        portletMode = VaadinPortletRequest.getCurrent().getPortletMode();
-        windowState = VaadinPortletRequest.getCurrent().getWindowState();
+        portletMode = request.getPortletMode().toString();
+        windowState = request.getWindowState().toString();
     }
 
     /**
@@ -147,7 +149,7 @@ class PortletViewContextImpl<C extends Component>
      */
     @Override
     public WindowState getWindowState() {
-        return windowState;
+        return new WindowState(windowState);
     }
 
     /**
@@ -157,7 +159,7 @@ class PortletViewContextImpl<C extends Component>
      */
     @Override
     public PortletMode getPortletMode() {
-        return portletMode;
+        return new PortletMode(portletMode);
     }
 
     /**
@@ -174,9 +176,9 @@ class PortletViewContextImpl<C extends Component>
         } else {
             stateChangeAction(newWindowState, getPortletMode());
         }
-        if (!Objects.equals(newWindowState, windowState)) {
-            WindowState oldValue = windowState;
-            windowState = newWindowState;
+        if (!windowState.equals(newWindowState.toString())) {
+            WindowState oldValue = getWindowState();
+            windowState = newWindowState.toString();
             fireWindowStateEvent(
                     new WindowStateEvent(newWindowState, oldValue, false));
         }
@@ -196,9 +198,9 @@ class PortletViewContextImpl<C extends Component>
         } else {
             stateChangeAction(getWindowState(), newPortletMode);
         }
-        if (!Objects.equals(newPortletMode, portletMode)) {
-            PortletMode oldValue = portletMode;
-            portletMode = newPortletMode;
+        if (!portletMode.equals(newPortletMode.toString())) {
+            PortletMode oldValue = getPortletMode();
+            portletMode = newPortletMode.toString();
             firePortletModeEvent(
                     new PortletModeEvent(newPortletMode, oldValue, false));
         }
@@ -256,10 +258,10 @@ class PortletViewContextImpl<C extends Component>
      *            a window state value
      */
     void updateModeAndState(PortletMode portletMode, WindowState windowState) {
-        PortletMode oldMode = this.portletMode;
-        this.portletMode = portletMode;
-        WindowState oldState = this.windowState;
-        this.windowState = windowState;
+        PortletMode oldMode = getPortletMode();
+        this.portletMode = portletMode.toString();
+        WindowState oldState = getWindowState();
+        this.windowState = windowState.toString();
         /*
          * Note: mode update events must be sent to handlers before window state
          * update events.

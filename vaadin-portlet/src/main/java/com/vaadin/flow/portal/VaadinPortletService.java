@@ -68,8 +68,7 @@ public class VaadinPortletService extends VaadinService {
     private final VaadinPortlet portlet;
 
     public VaadinPortletService(VaadinPortlet portlet,
-            DeploymentConfiguration deploymentConfiguration)
-            throws ServiceException {
+            DeploymentConfiguration deploymentConfiguration) {
         super(deploymentConfiguration);
         this.portlet = portlet;
         verifyLicense(deploymentConfiguration.isProductionMode());

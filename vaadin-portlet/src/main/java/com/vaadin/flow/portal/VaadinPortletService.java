@@ -15,13 +15,6 @@
  */
 package com.vaadin.flow.portal;
 
-import javax.portlet.EventRequest;
-import javax.portlet.PortletContext;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
-import javax.portlet.PortletSession;
-import javax.portlet.RenderRequest;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -29,6 +22,13 @@ import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+
+import javax.portlet.EventRequest;
+import javax.portlet.PortletContext;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
+import javax.portlet.PortletSession;
+import javax.portlet.RenderRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,23 +115,6 @@ public class VaadinPortletService extends VaadinService {
         return portlet;
     }
 
-    private String getParameter(VaadinRequest request, String name,
-            String defaultValue) {
-        VaadinPortletRequest portletRequest = (VaadinPortletRequest) request;
-
-        String preference = portletRequest.getPortletPreference(name);
-        if (preference != null) {
-            return preference;
-        }
-
-        String portalProperty = portletRequest.getPortalProperty(name);
-        if (portalProperty != null) {
-            return portalProperty;
-        }
-
-        return defaultValue;
-    }
-
     private PortletContext getPortletContext() {
         return getPortlet().getPortletContext();
     }
@@ -163,27 +146,6 @@ public class VaadinPortletService extends VaadinService {
         }
         return false;
     }
-
-    // /**
-    // * Gets the request type for the request.
-    // *
-    // * @param request
-    // * the request to get a request type for
-    // * @return the request type
-    // * @deprecated As of 7.0. Will likely change or be removed in a future
-    // * version
-    // */
-    // @Deprecated
-    // protected RequestType getRequestType(VaadinRequest request) {
-    // RequestType type = (RequestType) request
-    // .getAttribute(RequestType.class.getName());
-    // if (type == null) {
-    // // type = getPortlet().getRequestType((VaadinPortletRequest)
-    // // request);
-    // // request.setAttribute(RequestType.class.getName(), type);
-    // }
-    // return type;
-    // }
 
     /**
      * Gets the currently processed portlet request. The current portlet request
@@ -351,7 +313,7 @@ public class VaadinPortletService extends VaadinService {
             AbstractTheme theme) {
         getLogger().debug(
                 "Theme is present in the bundle. No theme resolution is done for portlets.");
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -381,8 +343,8 @@ public class VaadinPortletService extends VaadinService {
         return properties;
     }
 
-    private Logger getLogger() {
-        return LoggerFactory.getLogger(getClass());
+    private static Logger getLogger() {
+        return LoggerFactory.getLogger(VaadinPortletService.class);
     }
 
 }

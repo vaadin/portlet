@@ -18,6 +18,7 @@
     <modules>
         <module>vaadin-portlet</module>
         <module>vaadin-portlet-integration-tests</module>
+        <module>vaadin-portlet-cdi</module>
     </modules>
 
     <organization>

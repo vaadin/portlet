@@ -104,8 +104,7 @@ class PortletViewContextImpl<C extends Component>
 
     @Override
     public void fireEvent(String eventName, Map<String, String> parameters) {
-        String eventScript = getFireEventScript(eventName, parameters);
-        executeJS(eventScript);
+        executeJS(getFireEventScript(eventName, parameters));
     }
 
     @Override
@@ -419,8 +418,7 @@ class PortletViewContextImpl<C extends Component>
      * @return portlet reload polling script
      */
     private static String getReloadPollingScript() {
-        return ""
-                + "const poller = () => {"
+        return "const poller = function () {"
                 + "  if(hub.isInProgress()) {"
                 + "    setTimeout(poller, 10);"
                 + "  } else {"

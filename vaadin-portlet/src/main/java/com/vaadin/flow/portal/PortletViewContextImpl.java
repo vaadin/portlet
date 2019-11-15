@@ -418,7 +418,7 @@ class PortletViewContextImpl<C extends Component>
      * @return portlet reload polling script
      */
     private static String getReloadPollingScript() {
-        return "const poller = function () {"
+        return "var poller = function () {"
                 + "  if(hub.isInProgress()) {"
                 + "    setTimeout(poller, 10);"
                 + "  } else {"

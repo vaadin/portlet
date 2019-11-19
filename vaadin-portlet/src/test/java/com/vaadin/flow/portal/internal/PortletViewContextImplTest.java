@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal;
+package com.vaadin.flow.portal.internal;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -33,12 +33,17 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.internal.PendingJavaScriptInvocation;
 import com.vaadin.flow.internal.CurrentInstance;
+import com.vaadin.flow.portal.VaadinPortletRequest;
+import com.vaadin.flow.portal.VaadinPortletResponse;
+import com.vaadin.flow.portal.VaadinPortletService;
+import com.vaadin.flow.portal.VaadinPortletSession;
 import com.vaadin.flow.portal.handler.EventHandler;
 import com.vaadin.flow.portal.handler.PortletEvent;
 import com.vaadin.flow.portal.handler.PortletModeEvent;
 import com.vaadin.flow.portal.handler.PortletModeHandler;
 import com.vaadin.flow.portal.handler.WindowStateEvent;
 import com.vaadin.flow.portal.handler.WindowStateHandler;
+import com.vaadin.flow.portal.internal.PortletViewContextImpl;
 import com.vaadin.flow.server.SessionExpiredException;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinResponse;
@@ -368,7 +373,7 @@ public class PortletViewContextImplTest {
 
         String uid = assertJsHubRegistration("bar");
 
-        context.init();
+        context.initialize();
 
         Assert.assertEquals(uid, assertJsHubRegistration("bar"));
     }

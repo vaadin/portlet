@@ -13,9 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal.handler;
+package com.vaadin.flow.portal;
 
 import java.io.Serializable;
+
+import com.vaadin.flow.portal.PortletViewContext;
 
 /**
  * Provides a context to for portlet instance's related actions (like fire an

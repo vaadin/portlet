@@ -51,7 +51,7 @@ import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.function.SerializableRunnable;
 import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.portal.handler.PortletEvent;
-import com.vaadin.flow.portal.handler.PortletView;
+import com.vaadin.flow.portal.internal.PortletViewContextImpl;
 import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.server.Command;
 import com.vaadin.flow.server.DeploymentConfigurationFactory;
@@ -178,7 +178,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         String namespace = VaadinPortletResponse.getCurrentPortletResponse()
                 .getNamespace();
         VaadinSession session = ui.getSession();
-        PortletViewContextImpl<C> context;
+        PortletViewContext<C> context;
         try {
             context = getViewContext(session, namespace, windowName);
         } catch (PortletException exception) {
@@ -194,7 +194,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                     request.getPortletMode(), request.getWindowState());
             setViewContext(session, namespace, windowName, context);
         }
-        context.init();
+        context.initialize();
         context.updateModeAndState(request.getPortletMode(),
                 request.getWindowState());
         if (needViewInit && component instanceof PortletView) {
@@ -319,7 +319,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                 return;
             }
 
-            PortletViewContextImpl<C> viewContext = getViewContext(session,
+            PortletViewContext<C> viewContext = getViewContext(session,
                     response.getNamespace(), windowName);
             if (viewContext != null) {
                 session.access(() -> viewContext.firePortletEvent(uid,
@@ -462,9 +462,9 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         }
     }
 
-    private PortletViewContextImpl<C> getViewContext(VaadinSession session,
+    private PortletViewContext<C> getViewContext(VaadinSession session,
             String namespace, String windowName) throws PortletException {
-        Map<String, PortletViewContextImpl<C>> viewContexts = (Map<String, PortletViewContextImpl<C>>) session
+        Map<String, PortletViewContext<C>> viewContexts = (Map<String, PortletViewContext<C>>) session
                 .getAttribute(getSessionWindowAttributeKey(windowName,
                         VIEW_CONTEXT_SESSION_SUBKEY));
         if (viewContexts != null) {
@@ -479,7 +479,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     }
 
     private void setViewContext(VaadinSession session, String namespace,
-            String windowName, PortletViewContextImpl<C> context) {
+            String windowName, PortletViewContext<C> context) {
         setSessionAttribute(session, namespace,
                 windowName + "-" + VIEW_CONTEXT_SESSION_SUBKEY, context);
     }

@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal.handler;
+package com.vaadin.flow.portal;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -23,7 +23,14 @@ import javax.portlet.WindowState;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.vaadin.flow.portal.VaadinPortlet;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.portal.handler.EventHandler;
+import com.vaadin.flow.portal.handler.PortletEvent;
+import com.vaadin.flow.portal.handler.PortletEventListener;
+import com.vaadin.flow.portal.handler.PortletModeHandler;
+import com.vaadin.flow.portal.handler.PortletModeListener;
+import com.vaadin.flow.portal.handler.WindowStateHandler;
+import com.vaadin.flow.portal.handler.WindowStateListener;
 import com.vaadin.flow.shared.Registration;
 
 /**
@@ -35,7 +42,12 @@ import com.vaadin.flow.shared.Registration;
  * @see PortletView#onPortletViewContextInit(PortletViewContext)
  *
  */
-public interface PortletViewContext extends Serializable {
+public interface PortletViewContext<C extends Component> extends Serializable {
+
+    /**
+     * Initialize or re-initialize this PortletViewContext.
+     */
+    void initialize();
 
     /**
      * Fires an event with the given {@code parameters} and {@code eventName}.
@@ -55,6 +67,16 @@ public interface PortletViewContext extends Serializable {
      *            parameters to add to event action
      */
     void fireEvent(String eventName, Map<String, String> parameters);
+
+    /**
+     * Fires a portlet IPC event.
+     *
+     * @param event
+     *         a portlet IPC event
+     * @param uid
+     *         the uid of listener which should be notified
+     */
+    void firePortletEvent(String uid, PortletEvent event);
 
     /**
      * Adds a listener which will receive any {@link PortletEvent}.
@@ -141,4 +163,13 @@ public interface PortletViewContext extends Serializable {
      */
     void setPortletMode(PortletMode newPortletMode);
 
+    /**
+     * Updates portlet mode and window state values.
+     *
+     * @param portletMode
+     *         a portlet mode value
+     * @param windowState
+     *         a window state value
+     */
+    void updateModeAndState(PortletMode portletMode, WindowState windowState);
 }

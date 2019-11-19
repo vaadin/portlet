@@ -1,7 +1,6 @@
 package com.vaadin.flow.portal;
 
 import javax.portlet.PortletMode;
-import javax.portlet.PortletRequest;
 import javax.portlet.WindowState;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -10,13 +9,12 @@ import java.util.stream.Stream;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.portal.handler.WindowStateEvent;
 import com.vaadin.flow.portal.handler.WindowStateHandler;
-import com.vaadin.flow.portal.handler.WindowStateListener;
+import com.vaadin.flow.portal.internal.PortletViewContextImpl;
 import com.vaadin.flow.testutil.ClassesSerializableTest;
 
 public class PortletClassesSerializableTest extends ClassesSerializableTest {

@@ -17,6 +17,8 @@ package com.vaadin.flow.portal.handler;
 
 import java.io.Serializable;
 
+import com.vaadin.flow.portal.PortletViewContext;
+
 /**
  * A listener portlet mode change events.
  *

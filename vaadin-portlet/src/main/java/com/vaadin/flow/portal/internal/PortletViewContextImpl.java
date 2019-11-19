@@ -13,16 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal;
-
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
+package com.vaadin.flow.portal.internal;
 
 import javax.portlet.ActionURL;
 import javax.portlet.MimeResponse;
@@ -31,19 +22,34 @@ import javax.portlet.PortletModeException;
 import javax.portlet.PortletResponse;
 import javax.portlet.WindowState;
 import javax.portlet.WindowStateException;
+import java.io.IOException;
+import java.io.Serializable;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.internal.Pair;
+import com.vaadin.flow.portal.PortletViewContext;
+import com.vaadin.flow.portal.VaadinPortlet;
+import com.vaadin.flow.portal.VaadinPortletResponse;
+import com.vaadin.flow.portal.VaadinPortletService;
 import com.vaadin.flow.portal.handler.EventHandler;
 import com.vaadin.flow.portal.handler.PortletEvent;
 import com.vaadin.flow.portal.handler.PortletEventListener;
 import com.vaadin.flow.portal.handler.PortletModeEvent;
 import com.vaadin.flow.portal.handler.PortletModeHandler;
 import com.vaadin.flow.portal.handler.PortletModeListener;
-import com.vaadin.flow.portal.handler.PortletViewContext;
 import com.vaadin.flow.portal.handler.WindowStateEvent;
 import com.vaadin.flow.portal.handler.WindowStateHandler;
 import com.vaadin.flow.portal.handler.WindowStateListener;
@@ -54,8 +60,8 @@ import com.vaadin.flow.shared.Registration;
  *
  * @param <C>
  */
-class PortletViewContextImpl<C extends Component>
-        implements PortletViewContext {
+public class PortletViewContextImpl<C extends Component>
+        implements PortletViewContext<C> {
 
     private final C view;
 
@@ -73,7 +79,7 @@ class PortletViewContextImpl<C extends Component>
 
     private String windowState;
 
-    PortletViewContextImpl(C view, AtomicBoolean portlet3,
+    public PortletViewContextImpl(C view, AtomicBoolean portlet3,
             PortletMode portletMode, WindowState windowState) {
         this.view = view;
         isPortlet3 = portlet3;
@@ -94,12 +100,11 @@ class PortletViewContextImpl<C extends Component>
         }
     }
 
-    /**
-     * (Re)initializes the context.
-     */
-    void init() {
-        eventListeners.forEach((uid, pair) -> registerEventChangeListener(uid,
-                pair.getFirst(), pair.getSecond()));
+    @Override
+    public void initialize() {
+        eventListeners.forEach(
+                (uid, pair) -> registerEventChangeListener(uid, pair.getFirst(),
+                        pair.getSecond()));
     }
 
     @Override
@@ -154,7 +159,7 @@ class PortletViewContextImpl<C extends Component>
      * Set a new window state for this portlet
      *
      * @param newWindowState
-     *            window state to set
+     *         window state to set
      */
     @Override
     public void setWindowState(WindowState newWindowState) {
@@ -176,7 +181,7 @@ class PortletViewContextImpl<C extends Component>
      * Set a new portlet mode for this portlet.
      *
      * @param newPortletMode
-     *            portlet mode to set
+     *         portlet mode to set
      */
     @Override
     public void setPortletMode(PortletMode newPortletMode) {
@@ -204,7 +209,7 @@ class PortletViewContextImpl<C extends Component>
      * Fires a window state change event.
      *
      * @param event
-     *            a window state change event.
+     *         a window state change event.
      */
     void fireWindowStateEvent(WindowStateEvent event) {
         windowStateListeners
@@ -215,43 +220,29 @@ class PortletViewContextImpl<C extends Component>
      * Fires a portlet mode change event.
      *
      * @param event
-     *            a portlet mode change event
+     *         a portlet mode change event
      */
     void firePortletModeEvent(PortletModeEvent event) {
         portletModeListeners
                 .forEach(listener -> listener.portletModeChange(event));
     }
 
-    /**
-     * Fires a portlet IPC event.
-     *
-     * @param event
-     *            a portlet IPC event
-     * @param uid
-     *            the uid of listener which should be notified
-     */
-    void firePortletEvent(String uid, PortletEvent event) {
+    @Override
+    public void firePortletEvent(String uid, PortletEvent event) {
         assert view.getElement().getNode().isAttached();
         Pair<String, PortletEventListener> pair = eventListeners.get(uid);
         if (pair == null) {
-            LoggerFactory.getLogger(VaadinPortlet.class).error(
-                    "{} is not found for the uid='{}', event '{}' is not delivered",
-                    PortletEventListener.class.getSimpleName(), uid,
-                    event.getEventName());
+            LoggerFactory.getLogger(VaadinPortlet.class)
+                    .error("{} is not found for the uid='{}', event '{}' is not delivered",
+                            PortletEventListener.class.getSimpleName(), uid,
+                            event.getEventName());
         } else {
             pair.getSecond().onPortletEvent(event);
         }
     }
 
-    /**
-     * Updates portlet mode and window state values.
-     *
-     * @param portletMode
-     *            a portlet mode value
-     * @param windowState
-     *            a window state value
-     */
-    void updateModeAndState(PortletMode portletMode, WindowState windowState) {
+    @Override
+    public void updateModeAndState(PortletMode portletMode, WindowState windowState) {
         PortletMode oldMode = getPortletMode();
         this.portletMode = portletMode.toString();
         WindowState oldState = getWindowState();
@@ -299,7 +290,7 @@ class PortletViewContextImpl<C extends Component>
             PortletEventListener listener) {
         return doAddEventChangeListener(".*", listener);
     }
-    
+
     private void stateChangeAction(WindowState state, PortletMode mode) {
         PortletResponse response = VaadinPortletResponse
                 .getCurrentPortletResponse();
@@ -308,17 +299,17 @@ class PortletViewContextImpl<C extends Component>
             try {
                 actionURL.setPortletMode(mode);
             } catch (PortletModeException e) {
-                getLogger().error("unable to create portlet mode action URL",
-                        e);
+                getLogger()
+                        .error("unable to create portlet mode action URL", e);
             }
             try {
                 actionURL.setWindowState(state);
             } catch (WindowStateException e) {
-                getLogger().error("unable to create window state action URL",
-                        e);
+                getLogger()
+                        .error("unable to create window state action URL", e);
             }
-            String stateChangeScript = String.format("location.href = '%s'",
-                    actionURL);
+            String stateChangeScript = String
+                    .format("location.href = '%s'", actionURL);
             executeJS(stateChangeScript);
         }
     }
@@ -339,13 +330,13 @@ class PortletViewContextImpl<C extends Component>
      * Executes JavaScript only if the {@code view} is attached. Normally
      * JavaScript executions are queued to wait for attach event but we don't
      * want that - the portlet is either present or it is not.
-     * 
+     *
      * @param script
-     *            JavaScript string
+     *         JavaScript string
      * @param params
-     *            Parameters
+     *         Parameters
      * @see com.vaadin.flow.dom.Element#executeJs(String,
-     *      java.io.Serializable...) for more information
+     * java.io.Serializable...) for more information
      */
     private void executeJS(String script, Serializable... params) {
         if (view != null && view.getElement().getNode().isAttached()
@@ -357,13 +348,13 @@ class PortletViewContextImpl<C extends Component>
     private static String escape(String str) {
         return str.replaceAll("([\\\\'])", "\\\\$1");
     }
-    
+
     /**
      * Get JavaScript string for getting the portlet hub registration object.
      *
      * @return registration object stored as 'hub'
      */
-    private static String getPortletHubRegistrationScript() {
+    private String getPortletHubRegistrationScript() {
         String portletRegistryName = VaadinPortletService.getCurrentResponse()
                 .getPortletResponse().getNamespace();
         return String.format("var hub = window.Vaadin.Flow.Portlets['%s'].hub;",
@@ -371,34 +362,32 @@ class PortletViewContextImpl<C extends Component>
     }
 
     /**
-     * Get the script to update the portlet state with the given windowState 
+     * Get the script to update the portlet state with the given windowState
      * and portletMode.
      *
      * @param windowState
-     *            window state to send
+     *         window state to send
      * @param portletMode
-     *            portlet mode to send
+     *         portlet mode to send
      */
-    private static String getUpdatePortletStateScript(String windowState,
+    private String getUpdatePortletStateScript(String windowState,
             String portletMode) {
-        return getPortletHubRegistrationScript() 
-                + "var state = hub.newState();"
+        return getPortletHubRegistrationScript() + "var state = hub.newState();"
                 + String.format("state.windowState = '%s';", windowState)
                 + String.format("state.portletMode = '%s';", portletMode)
-                + "hub.setRenderState(state);" 
-                + getReloadPollingScript();
+                + "hub.setRenderState(state);" + getReloadPollingScript();
     }
 
     /**
      * Get the script to fire a Portlet Hub event
-     * 
+     *
      * @param eventName
-     *            Event name
+     *         Event name
      * @param parameters
-     *            Event parameters
+     *         Event parameters
      * @return event firing script
      */
-    private static String getFireEventScript(String eventName,
+    private String getFireEventScript(String eventName,
             Map<String, String> parameters) {
         StringBuilder eventBuilder = new StringBuilder();
         eventBuilder.append(getPortletHubRegistrationScript());
@@ -406,8 +395,9 @@ class PortletViewContextImpl<C extends Component>
         eventBuilder.append("params['action'] = ['send'];");
         parameters.forEach((key, value) -> eventBuilder.append(String
                 .format("params['%s'] = ['%s'];", escape(key), escape(value))));
-        eventBuilder.append(String.format(
-                "hub.dispatchClientEvent('%s', params);", escape(eventName)));
+        eventBuilder.append(String
+                .format("hub.dispatchClientEvent('%s', params);",
+                        escape(eventName)));
 
         return eventBuilder.toString();
     }

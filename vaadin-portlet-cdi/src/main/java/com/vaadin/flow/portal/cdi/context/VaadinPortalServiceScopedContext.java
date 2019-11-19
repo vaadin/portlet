@@ -14,22 +14,22 @@
  * the License.
  */
 
-package com.vaadin.cdi.context;
+package com.vaadin.flow.portal.cdi.context;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.BeanManager;
-import java.lang.annotation.Annotation;
 
 import org.apache.deltaspike.core.api.provider.BeanProvider;
-import org.apache.deltaspike.core.util.context.AbstractContext;
 import org.apache.deltaspike.core.util.context.ContextualStorage;
 
-import com.vaadin.cdi.CdiVaadinPortlet;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
+import com.vaadin.cdi.context.AbstractContextualStorageManager;
+import com.vaadin.cdi.context.VaadinServiceScopedContext;
 import com.vaadin.flow.portal.VaadinPortlet;
 import com.vaadin.flow.portal.VaadinPortletService;
+import com.vaadin.flow.portal.cdi.CdiVaadinPortlet;
 import com.vaadin.flow.server.ServiceDestroyEvent;
 
 import static javax.enterprise.event.Reception.IF_EXISTS;
@@ -37,17 +37,16 @@ import static javax.enterprise.event.Reception.IF_EXISTS;
 /**
  * Context for {@link VaadinServiceScoped @VaadinServiceScoped} beans.
  */
-public class VaadinServiceScopedContext extends AbstractContext {
+public class VaadinPortalServiceScopedContext extends VaadinServiceScopedContext {
 
-    private ContextualStorageManager contextManager;
-
-    public VaadinServiceScopedContext(BeanManager beanManager) {
+    public VaadinPortalServiceScopedContext(BeanManager beanManager) {
         super(beanManager);
     }
 
     public void init(BeanManager beanManager) {
-        contextManager = BeanProvider.getContextualReference(beanManager,
-                ContextualStorageManager.class, false);
+        setContextManager(BeanProvider.getContextualReference(beanManager,
+                VaadinServiceScopedContext.ContextualStorageManager.class,
+                false));
     }
 
     @Override
@@ -61,13 +60,8 @@ public class VaadinServiceScopedContext extends AbstractContext {
         } else {
             portletName = CdiVaadinPortlet.getCurrentPortletName();
         }
-        return contextManager.getContextualStorage(portletName,
+        return getContextManager().getContextualStorage(portletName,
                 createIfNotExist);
-    }
-
-    @Override
-    public Class<? extends Annotation> getScope() {
-        return VaadinServiceScoped.class;
     }
 
     @Override

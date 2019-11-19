@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.vaadin.cdi;
+package com.vaadin.flow.portal.cdi;
 
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;

@@ -28,6 +28,7 @@
     <artifactId>vaadin-portlet-cdi</artifactId>
 
     <properties>
+        <flow.cdi.version>11.2-SNAPSHOT</flow.cdi.version>
         <deltaspike.version>1.8.1</deltaspike.version>
     </properties>
     <dependencyManagement>
@@ -46,13 +47,22 @@
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
+            <scope>provided</scope>
             <version>1.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-cdi</artifactId>
+            <version>${flow.cdi.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-portlet</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>javax.portlet</groupId>
             <artifactId>portlet-api</artifactId>

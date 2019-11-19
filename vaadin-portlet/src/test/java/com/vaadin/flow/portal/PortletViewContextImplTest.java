@@ -125,7 +125,7 @@ public class PortletViewContextImplTest {
     public void registerEventHandlerInCtor_handlerIsCalledOnEvent() {
         TestComponent component = new TestComponent();
         ui.add(component);
-        PortletViewContextImpl<TestComponent> context = new PortletViewContextImpl<TestComponent>(
+        PortletViewContext<TestComponent> context = new PortletViewContext<TestComponent>(
                 component, new AtomicBoolean(), PortletMode.VIEW,
                 WindowState.NORMAL);
 
@@ -141,7 +141,7 @@ public class PortletViewContextImplTest {
     public void registerPortletModeHandlerInCtor_handlerIsCalledOnEvent() {
         TestComponent component = new TestComponent();
         ui.add(component);
-        PortletViewContextImpl<TestComponent> context = new PortletViewContextImpl<TestComponent>(
+        PortletViewContext<TestComponent> context = new PortletViewContext<TestComponent>(
                 component, new AtomicBoolean(), PortletMode.VIEW,
                 WindowState.NORMAL);
 
@@ -155,7 +155,7 @@ public class PortletViewContextImplTest {
     public void registerWindowStateHandlerInCtor_handlerIsCalledOnEvent() {
         TestComponent component = new TestComponent();
         ui.add(component);
-        PortletViewContextImpl<TestComponent> context = new PortletViewContextImpl<TestComponent>(
+        PortletViewContext<TestComponent> context = new PortletViewContext<TestComponent>(
                 component, new AtomicBoolean(), PortletMode.VIEW,
                 WindowState.NORMAL);
 
@@ -169,7 +169,7 @@ public class PortletViewContextImplTest {
     public void addPortletModeListener_listenerIsCalledOnEvent() {
         Div component = new Div();
         ui.add(component);
-        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+        PortletViewContext<Div> context = new PortletViewContext<Div>(
                 component, new AtomicBoolean(), PortletMode.VIEW,
                 WindowState.NORMAL);
 
@@ -187,7 +187,7 @@ public class PortletViewContextImplTest {
     public void addWindowStateListener_listenerIsCalledOnEvent() {
         Div component = new Div();
         ui.add(component);
-        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+        PortletViewContext<Div> context = new PortletViewContext<Div>(
                 component, new AtomicBoolean(), PortletMode.VIEW,
                 WindowState.NORMAL);
 
@@ -206,7 +206,7 @@ public class PortletViewContextImplTest {
         Div component = new Div();
         ui.add(component);
 
-        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+        PortletViewContext<Div> context = new PortletViewContext<Div>(
                 component, new AtomicBoolean(), PortletMode.EDIT,
                 WindowState.NORMAL);
 
@@ -236,7 +236,7 @@ public class PortletViewContextImplTest {
         Div component = new Div();
         ui.add(component);
 
-        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+        PortletViewContext<Div> context = new PortletViewContext<Div>(
                 component, new AtomicBoolean(), PortletMode.VIEW,
                 WindowState.MAXIMIZED);
 
@@ -279,7 +279,7 @@ public class PortletViewContextImplTest {
     public void addRemovePortletModeListener_listenerIsNotCalledAfterRemoval() {
         Div component = new Div();
         ui.add(component);
-        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+        PortletViewContext<Div> context = new PortletViewContext<Div>(
                 component, new AtomicBoolean(), PortletMode.VIEW,
                 WindowState.NORMAL);
 
@@ -298,7 +298,7 @@ public class PortletViewContextImplTest {
     public void addRemoveWindowStateListener_listenerIsNotCalledAfterRemoval() {
         Div component = new Div();
         ui.add(component);
-        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+        PortletViewContext<Div> context = new PortletViewContext<Div>(
                 component, new AtomicBoolean(), PortletMode.VIEW,
                 WindowState.NORMAL);
 
@@ -317,7 +317,7 @@ public class PortletViewContextImplTest {
     public void addPortletEventListener_listenerIsCalledOnEvent() {
         Div component = new Div();
         ui.add(component);
-        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+        PortletViewContext<Div> context = new PortletViewContext<Div>(
                 component, new AtomicBoolean(), PortletMode.VIEW,
                 WindowState.NORMAL);
 
@@ -337,7 +337,7 @@ public class PortletViewContextImplTest {
     public void addRemovePortletEventListener_listenerIsNotCalledAfterRemoval() {
         Div component = new Div();
         ui.add(component);
-        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+        PortletViewContext<Div> context = new PortletViewContext<Div>(
                 component, new AtomicBoolean(), PortletMode.VIEW,
                 WindowState.NORMAL);
 
@@ -359,7 +359,7 @@ public class PortletViewContextImplTest {
     public void reinitAfteraddPortletEventListener_jsRegistrationIsRedone() {
         Div component = new Div();
         ui.add(component);
-        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+        PortletViewContext<Div> context = new PortletViewContext<Div>(
                 component, new AtomicBoolean(), PortletMode.VIEW,
                 WindowState.NORMAL);
 
@@ -379,7 +379,7 @@ public class PortletViewContextImplTest {
         ui.add(component);
 
         Mockito.when(request.getWindowState()).thenReturn(WindowState.NORMAL);
-        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+        PortletViewContext<Div> context = new PortletViewContext<Div>(
                 component, new AtomicBoolean(), PortletMode.VIEW,
                 WindowState.NORMAL);
 
@@ -392,7 +392,7 @@ public class PortletViewContextImplTest {
         ui.add(component);
 
         Mockito.when(request.getWindowState()).thenReturn(WindowState.NORMAL);
-        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+        PortletViewContext<Div> context = new PortletViewContext<Div>(
                 component, new AtomicBoolean(), PortletMode.VIEW,
                 WindowState.NORMAL);
 
@@ -406,7 +406,7 @@ public class PortletViewContextImplTest {
         Div component = new Div();
         ui.add(component);
 
-        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+        PortletViewContext<Div> context = new PortletViewContext<Div>(
                 component, new AtomicBoolean(), PortletMode.VIEW,
                 WindowState.NORMAL);
 
@@ -419,7 +419,7 @@ public class PortletViewContextImplTest {
         ui.add(component);
 
         Mockito.when(request.getPortletMode()).thenReturn(PortletMode.EDIT);
-        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+        PortletViewContext<Div> context = new PortletViewContext<Div>(
                 component, new AtomicBoolean(), PortletMode.VIEW,
                 WindowState.NORMAL);
 
@@ -451,7 +451,7 @@ public class PortletViewContextImplTest {
 
         Div component = new Div();
         ui.add(component);
-        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+        PortletViewContext<Div> context = new PortletViewContext<Div>(
                 component, new AtomicBoolean(portlet3), PortletMode.VIEW,
                 WindowState.NORMAL);
 
@@ -470,7 +470,7 @@ public class PortletViewContextImplTest {
 
         Div component = new Div();
         ui.add(component);
-        PortletViewContextImpl<Div> context = new PortletViewContextImpl<Div>(
+        PortletViewContext<Div> context = new PortletViewContext<Div>(
                 component, new AtomicBoolean(portlet3), PortletMode.VIEW,
                 WindowState.NORMAL);
 

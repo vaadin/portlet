@@ -25,8 +25,6 @@ import com.vaadin.flow.component.page.ExtendedClientDetails;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.portal.handler.PortletModeEvent;
-import com.vaadin.flow.portal.handler.PortletView;
-import com.vaadin.flow.portal.handler.PortletViewContext;
 import com.vaadin.flow.portal.handler.WindowStateEvent;
 import com.vaadin.flow.server.SessionExpiredException;
 import com.vaadin.flow.server.VaadinRequest;

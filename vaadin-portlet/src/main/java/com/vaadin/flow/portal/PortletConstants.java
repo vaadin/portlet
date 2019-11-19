@@ -25,7 +25,7 @@ package com.vaadin.flow.portal;
 public class PortletConstants {
 
     /**
-     * String parameter for specifying static rsources mapping used for
+     * String parameter for specifying static resources mapping used for
      * portlets.
      */
     public static final String PORTLET_PARAMETER_STATIC_RESOURCES_MAPPING = "portlet.static.resources.mapping";

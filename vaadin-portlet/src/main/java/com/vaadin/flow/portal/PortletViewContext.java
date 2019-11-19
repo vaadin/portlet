@@ -37,15 +37,15 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.internal.Pair;
-import com.vaadin.flow.portal.handler.EventHandler;
-import com.vaadin.flow.portal.handler.PortletEvent;
-import com.vaadin.flow.portal.handler.PortletEventListener;
-import com.vaadin.flow.portal.handler.PortletModeEvent;
-import com.vaadin.flow.portal.handler.PortletModeHandler;
-import com.vaadin.flow.portal.handler.PortletModeListener;
-import com.vaadin.flow.portal.handler.WindowStateEvent;
-import com.vaadin.flow.portal.handler.WindowStateHandler;
-import com.vaadin.flow.portal.handler.WindowStateListener;
+import com.vaadin.flow.portal.lifecycle.EventHandler;
+import com.vaadin.flow.portal.lifecycle.PortletEvent;
+import com.vaadin.flow.portal.lifecycle.PortletEventListener;
+import com.vaadin.flow.portal.lifecycle.PortletModeEvent;
+import com.vaadin.flow.portal.lifecycle.PortletModeHandler;
+import com.vaadin.flow.portal.lifecycle.PortletModeListener;
+import com.vaadin.flow.portal.lifecycle.WindowStateEvent;
+import com.vaadin.flow.portal.lifecycle.WindowStateHandler;
+import com.vaadin.flow.portal.lifecycle.WindowStateListener;
 import com.vaadin.flow.shared.Registration;
 
 /**

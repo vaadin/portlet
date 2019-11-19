@@ -18,7 +18,7 @@ package com.vaadin.flow.portal.events;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.portal.PortletViewContext;
-import com.vaadin.flow.portal.handler.PortletEvent;
+import com.vaadin.flow.portal.lifecycle.PortletEvent;
 import com.vaadin.flow.portal.PortletView;
 import com.vaadin.flow.shared.Registration;
 

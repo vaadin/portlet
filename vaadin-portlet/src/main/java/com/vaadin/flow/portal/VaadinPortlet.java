@@ -50,7 +50,7 @@ import com.vaadin.flow.component.webcomponent.WebComponent;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.function.SerializableRunnable;
 import com.vaadin.flow.internal.CurrentInstance;
-import com.vaadin.flow.portal.handler.PortletEvent;
+import com.vaadin.flow.portal.lifecycle.PortletEvent;
 import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.server.Command;
 import com.vaadin.flow.server.DeploymentConfigurationFactory;

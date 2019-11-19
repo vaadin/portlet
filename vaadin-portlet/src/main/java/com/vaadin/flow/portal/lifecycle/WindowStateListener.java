@@ -13,25 +13,27 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal.handler;
+package com.vaadin.flow.portal.lifecycle;
 
 import java.io.Serializable;
 
 /**
- * A listener portlet mode change events.
+ * A listener for window state change events.
  *
  * @see PortletViewContext
- * @see PortletModeHandler
+ * @see WindowStateHandler
+ *
  * @author Vaadin Ltd
  *
  */
-public interface PortletModeListener extends Serializable {
+@FunctionalInterface
+public interface WindowStateListener extends Serializable {
 
     /**
-     * Invoked when the portlet mode changes.
+     * Invoked when the window state changes.
      *
      * @param event
      *            the event object
      */
-    void portletModeChange(PortletModeEvent event);
+    void windowStateChange(WindowStateEvent event);
 }

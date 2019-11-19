@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2000-2019 Vaadin Ltd.
  *
@@ -14,26 +13,25 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal.handler;
+package com.vaadin.flow.portal.lifecycle;
 
 import java.io.Serializable;
 
 /**
- * Add this interface to a {@link com.vaadin.flow.portal.VaadinPortlet} view
- * (the {@link com.vaadin.flow.component.Component} subclass passed for the type
- * parameter {@code C}) to handle changes in {@link javax.portlet.PortletMode}.
+ * A listener for portlet events.
  *
- * @see PortletModeListener
+ * @see PortletViewContext
+ *
+ * @author Vaadin Ltd
+ *
  */
 @FunctionalInterface
-public interface PortletModeHandler extends Serializable {
+public interface PortletEventListener extends Serializable {
 
     /**
-     * Invoked when the portlet mode changes.
+     * This method gets called when an IPC event is received.
      *
      * @param event
-     *            the wevent object
      */
-    void portletModeChange(PortletModeEvent event);
-
+    void onPortletEvent(PortletEvent event);
 }

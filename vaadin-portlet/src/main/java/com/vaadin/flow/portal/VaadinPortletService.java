@@ -88,7 +88,10 @@ public class VaadinPortletService extends VaadinService {
                 .getProperty(PORTLET_VERSION_PROPERTY);
         if (portletVersion == null || portletVersion.isEmpty()) {
             throw new IllegalStateException(String.format(
-                    "Unable to determine Portlet version: had successfully loaded the resource file '%s' but failed to find property '%s' in it. Double check jar package integrity.",
+                    "Unable to determine Portlet version: had successfully "
+                            + "loaded the resource file '%s' but failed to "
+                            + "find property '%s' in it. Double check jar "
+                            + "package integrity.",
                     VERSION_PROPERTIES_NAME, PORTLET_VERSION_PROPERTY));
         }
         return portletVersion;

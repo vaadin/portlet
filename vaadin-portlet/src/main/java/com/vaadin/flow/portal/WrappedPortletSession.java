@@ -31,7 +31,7 @@ import com.vaadin.flow.server.WrappedSession;
  * @see WrappedSession
  * @since 7.0.0
  */
-public class WrappedPortletSession implements WrappedSession {
+class WrappedPortletSession implements WrappedSession {
 
     private transient final PortletSession session;
 

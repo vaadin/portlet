@@ -24,6 +24,8 @@ package com.vaadin.flow.portal;
  */
 public class PortletConstants {
 
+    private PortletConstants() {}
+
     /**
      * String parameter for specifying static resources mapping used for
      * portlets.

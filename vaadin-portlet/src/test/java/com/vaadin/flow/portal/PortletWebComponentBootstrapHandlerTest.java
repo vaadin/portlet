@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal.internal;
+package com.vaadin.flow.portal;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -23,8 +23,6 @@ import org.mockito.Mockito;
 
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.CurrentInstance;
-import com.vaadin.flow.portal.PortletConstants;
-import com.vaadin.flow.portal.VaadinPortletService;
 import com.vaadin.flow.server.VaadinService;
 
 public class PortletWebComponentBootstrapHandlerTest {
@@ -33,8 +31,6 @@ public class PortletWebComponentBootstrapHandlerTest {
 
     private DeploymentConfiguration configuration = Mockito
             .mock(DeploymentConfiguration.class);
-
-    private VaadinPortletService service;
 
     @Before
     public void setUp() {

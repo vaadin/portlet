@@ -20,7 +20,6 @@ import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
 
 import com.vaadin.flow.internal.CurrentInstance;
-import com.vaadin.flow.portal.internal.PortletStreamResourceRegistry;
 import com.vaadin.flow.server.StreamResourceRegistry;
 import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.server.VaadinSession;

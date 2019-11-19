@@ -403,42 +403,42 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         }
     }
 
-    public void setWebComponentProviderURL(VaadinSession session,
+    void setWebComponentProviderURL(VaadinSession session,
             String namespace, String url) {
         session.checkHasLock();
         setSessionAttribute(session, namespace,
                 WEB_COMPONENT_PROVIDER_URL_SUBKEY, url);
     }
 
-    public String getWebComponentProviderURL(VaadinSession session,
+    String getWebComponentProviderURL(VaadinSession session,
             String namespace) {
         session.checkHasLock();
         return getSessionAttribute(session, namespace,
                 WEB_COMPONENT_PROVIDER_URL_SUBKEY);
     }
 
-    public void setWebComponentBootstrapHandlerURL(VaadinSession session,
+    void setWebComponentBootstrapHandlerURL(VaadinSession session,
             String namespace, String url) {
         session.checkHasLock();
         setSessionAttribute(session, namespace,
                 WEB_COMPONENT_BOOTSTRAP_HANDLER_URL_SUBKEY, url);
     }
 
-    public String getWebComponentBootstrapHandlerURL(VaadinSession session,
+    String getWebComponentBootstrapHandlerURL(VaadinSession session,
             String namespace) {
         session.checkHasLock();
         return getSessionAttribute(session, namespace,
                 WEB_COMPONENT_BOOTSTRAP_HANDLER_URL_SUBKEY);
     }
 
-    public void setWebComponentUIDLRequestHandlerURL(VaadinSession session,
+    void setWebComponentUIDLRequestHandlerURL(VaadinSession session,
             String namespace, String url) {
         session.checkHasLock();
         setSessionAttribute(session, namespace,
                 WEB_COMPONENT_UIDL_REQUEST_HANDLER_URL_SUBKEY, url);
     }
 
-    public String getWebComponentUIDLRequestHandlerURL(VaadinSession session,
+    String getWebComponentUIDLRequestHandlerURL(VaadinSession session,
             String namespace) {
         session.checkHasLock();
         return getSessionAttribute(session, namespace,

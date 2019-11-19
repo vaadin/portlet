@@ -22,7 +22,6 @@ public class PortletClassesSerializableTest extends ClassesSerializableTest {
     protected Stream<String> getExcludedPatterns() {
         return Stream.of(
                 "com\\.vaadin\\.flow\\.portal\\.PortletConstants",
-                "com\\.vaadin\\.flow\\.portal\\.internal\\.PortletHubUtil",
                 // these 2 can be made serializable, if we introduce a
                 // serializable wrapper for the wrapped portlet request and
                 // response
@@ -30,7 +29,7 @@ public class PortletClassesSerializableTest extends ClassesSerializableTest {
                 "com\\.vaadin\\.flow\\.portal\\.VaadinPortletResponse",
                 // this can be made serializable once VaadinPortletRequest is
                 // serializable
-                "com\\.vaadin\\.flow\\.portal\\.internal\\." +
+                "com\\.vaadin\\.flow\\.portal\\." +
                         "PortletStreamReceiverHandler\\$StreamRequestContext"
 
         );

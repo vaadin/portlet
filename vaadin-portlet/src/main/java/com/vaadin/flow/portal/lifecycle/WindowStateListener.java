@@ -20,11 +20,12 @@ import java.io.Serializable;
 /**
  * A listener for window state change events.
  *
- * @see PortletViewContext
- * @see WindowStateHandler
+ * @see com.vaadin.flow.portal.PortletViewContext
+ * @see com.vaadin.flow.portal.lifecycle.WindowStateHandler
  *
  * @author Vaadin Ltd
- *
+ * @since
+ * 
  */
 @FunctionalInterface
 public interface WindowStateListener extends Serializable {

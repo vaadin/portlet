@@ -20,10 +20,10 @@ import java.io.Serializable;
 /**
  * A listener portlet mode change events.
  *
- * @see PortletViewContext
- * @see PortletModeHandler
+ * @see com.vaadin.flow.portal.PortletViewContext
+ * @see com.vaadin.flow.portal.lifecycle.PortletModeHandler
  * @author Vaadin Ltd
- *
+ * @since
  */
 public interface PortletModeListener extends Serializable {
 

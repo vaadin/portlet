@@ -20,9 +20,11 @@ import java.io.Serializable;
 /**
  * A listener for portlet events.
  *
- * @see PortletViewContext
+ * @see com.vaadin.flow.portal.PortletViewContext
+ * @see com.vaadin.flow.portal.lifecycle.EventHandler
  *
  * @author Vaadin Ltd
+ * @since
  *
  */
 @FunctionalInterface

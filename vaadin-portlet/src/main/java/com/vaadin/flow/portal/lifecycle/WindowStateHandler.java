@@ -13,17 +13,25 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal.internal;
+package com.vaadin.flow.portal.lifecycle;
 
-import com.vaadin.flow.server.communication.StreamRequestHandler;
+import java.io.Serializable;
 
 /**
- * Request handler for portlet uploads.
+ * Add this interface to a {@link com.vaadin.flow.portal.VaadinPortlet} view
+ * (the {@link com.vaadin.flow.component.Component} subclass passed for the type
+ * parameter {@code C}) to handle changes in {@link javax.portlet.WindowState}.
  *
- * For internal use only.
+ * @see WindowStateListener
  */
-public class PortletStreamRequestHandler extends StreamRequestHandler {
-    public PortletStreamRequestHandler() {
-        super(new PortletStreamReceiverHandler());
-    }
+@FunctionalInterface
+public interface WindowStateHandler extends Serializable {
+
+    /**
+     * Invoked when the window state changes.
+     *
+     * @param event
+     *            the event object
+     */
+    void windowStateChange(WindowStateEvent event);
 }

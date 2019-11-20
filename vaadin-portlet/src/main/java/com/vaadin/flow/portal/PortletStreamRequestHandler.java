@@ -13,9 +13,17 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal.handler;
+package com.vaadin.flow.portal;
 
-import com.vaadin.flow.portal.VaadinPortlet;
+import com.vaadin.flow.server.communication.StreamRequestHandler;
 
-public class EventHandlerPortlet extends VaadinPortlet<EventHandlerContent> {
+/**
+ * Request handler for portlet uploads.
+ *
+ * For internal use only.
+ */
+class PortletStreamRequestHandler extends StreamRequestHandler {
+    public PortletStreamRequestHandler() {
+        super(new PortletStreamReceiverHandler());
+    }
 }

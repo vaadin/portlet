@@ -21,8 +21,8 @@ import javax.portlet.WindowState;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.portal.handler.PortletView;
-import com.vaadin.flow.portal.handler.PortletViewContext;
+import com.vaadin.flow.portal.PortletView;
+import com.vaadin.flow.portal.PortletViewContext;
 
 public class RenderView extends VerticalLayout implements PortletView {
 

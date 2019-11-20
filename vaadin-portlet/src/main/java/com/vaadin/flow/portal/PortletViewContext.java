@@ -37,16 +37,15 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.internal.Pair;
-import com.vaadin.flow.portal.handler.EventHandler;
-import com.vaadin.flow.portal.handler.PortletEvent;
-import com.vaadin.flow.portal.handler.PortletEventListener;
-import com.vaadin.flow.portal.handler.PortletModeEvent;
-import com.vaadin.flow.portal.handler.PortletModeHandler;
-import com.vaadin.flow.portal.handler.PortletModeListener;
-import com.vaadin.flow.portal.handler.PortletViewContext;
-import com.vaadin.flow.portal.handler.WindowStateEvent;
-import com.vaadin.flow.portal.handler.WindowStateHandler;
-import com.vaadin.flow.portal.handler.WindowStateListener;
+import com.vaadin.flow.portal.lifecycle.EventHandler;
+import com.vaadin.flow.portal.lifecycle.PortletEvent;
+import com.vaadin.flow.portal.lifecycle.PortletEventListener;
+import com.vaadin.flow.portal.lifecycle.PortletModeEvent;
+import com.vaadin.flow.portal.lifecycle.PortletModeHandler;
+import com.vaadin.flow.portal.lifecycle.PortletModeListener;
+import com.vaadin.flow.portal.lifecycle.WindowStateEvent;
+import com.vaadin.flow.portal.lifecycle.WindowStateHandler;
+import com.vaadin.flow.portal.lifecycle.WindowStateListener;
 import com.vaadin.flow.shared.Registration;
 
 /**
@@ -54,8 +53,7 @@ import com.vaadin.flow.shared.Registration;
  *
  * @param <C>
  */
-class PortletViewContextImpl<C extends Component>
-        implements PortletViewContext {
+public final class PortletViewContext<C extends Component> implements Serializable {
 
     private final C view;
 
@@ -73,8 +71,10 @@ class PortletViewContextImpl<C extends Component>
 
     private String windowState;
 
-    PortletViewContextImpl(C view, AtomicBoolean portlet3,
-            PortletMode portletMode, WindowState windowState) {
+
+    PortletViewContext(C view, AtomicBoolean portlet3,
+                       PortletMode portletMode, WindowState windowState) {
+
         this.view = view;
         isPortlet3 = portlet3;
         this.portletMode = portletMode.toString();
@@ -102,61 +102,115 @@ class PortletViewContextImpl<C extends Component>
                 pair.getFirst(), pair.getSecond()));
     }
 
-    @Override
+    /**
+     * Fires an event with the given {@code parameters} and {@code eventName}.
+     * <p>
+     * Any such event will be sent to the server as an action event for any
+     * {@link VaadinPortlet}. Such event will be handled by the
+     * {@link VaadinPortlet#processAction(javax.portlet.ActionRequest, javax.portlet.ActionResponse)}
+     * method.
+     * <p>
+     * By default {@link VaadinPortlet} calls
+     * {@link EventHandler#handleEvent(PortletEvent)} method on portlet
+     * component if it implements {@link EventHandler} interface.
+     *
+     * @param eventName
+     *            an event name
+     * @param parameters
+     *            parameters to add to event action
+     */
     public void fireEvent(String eventName, Map<String, String> parameters) {
         executeJS(getFireEventScript(eventName, parameters));
     }
 
-    @Override
+    /**
+     * Adds a listener which will receive any {@link PortletEvent}.
+     *
+     * @see #addEventChangeListener(String, PortletEventListener)
+     * @see EventHandler
+     *
+     * @param listener
+     *            a portlet event listener, not {@code null}
+     * @return an event registration handle for removing the listener
+     */
     public Registration addGenericEventListener(PortletEventListener listener) {
         return doAddEventChangeListener(".*", listener);
     }
 
-    @Override
+    /**
+     * Adds a listener which will receive only events with the given
+     * {@code eventType}.
+     * <p>
+     * {@code eventType} can be a regular expression, e.g.
+     * {@code "^myCompany\..*"}. registers a listener for all event types
+     * beginning with {@code "myCompany."}.
+     *
+     * @see #addGenericEventListener(PortletEventListener)
+     *
+     * @param eventType
+     *            an event type to listen
+     * @param listener
+     *            a portlet event listener, not {@code null}
+     * @return an event registration handle for removing the listener
+     */
     public Registration addEventChangeListener(String eventType,
             PortletEventListener listener) {
         return doAddEventChangeListener(eventType, listener);
     }
 
-    @Override
+    /**
+     * Adds a window state listener.
+     *
+     * @see WindowStateHandler
+     *
+     * @param listener
+     *            a window state listener, not {@code null}
+     * @return a registration handle for removing the listener
+     */
     public Registration addWindowStateChangeListener(
             WindowStateListener listener) {
         return doAddWindowStateChangeListener(listener);
     }
 
-    @Override
+    /**
+     * Adds a portlet mode listener.
+     *
+     * @see PortletModeHandler
+     *
+     * @param listener
+     *            a portlet mode listener, not {@code null}
+     * @return a registration handle for removing the listener
+     */
     public Registration addPortletModeChangeListener(
             PortletModeListener listener) {
         return doAddPortletModeChangeListener(listener);
     }
 
     /**
-     * Get the window state for this portlet.
+     * Get the window state for the portlet instance represented by the context.
      *
      * @return window state
      */
-    @Override
     public WindowState getWindowState() {
         return new WindowState(windowState);
     }
 
     /**
-     * Get the portlet mode for this portlet.
+     * Get the portlet mode for the portlet instance represented by the context.
      *
      * @return portlet mode
      */
-    @Override
     public PortletMode getPortletMode() {
         return new PortletMode(portletMode);
     }
 
     /**
-     * Set a new window state for this portlet
+     * Set a new window state for the portlet instance represented by the
+     * context.
      *
      * @param newWindowState
      *            window state to set
      */
-    @Override
     public void setWindowState(WindowState newWindowState) {
         if (isPortlet3.get()) {
             updatePortletState(newWindowState.toString(),
@@ -173,12 +227,12 @@ class PortletViewContextImpl<C extends Component>
     }
 
     /**
-     * Set a new portlet mode for this portlet.
+     * Set a new portlet mode for the portlet instance represented by the
+     * context.
      *
      * @param newPortletMode
      *            portlet mode to set
      */
-    @Override
     public void setPortletMode(PortletMode newPortletMode) {
         if (isPortlet3.get()) {
             updatePortletState(getWindowState().toString(),
@@ -234,7 +288,7 @@ class PortletViewContextImpl<C extends Component>
         assert view.getElement().getNode().isAttached();
         Pair<String, PortletEventListener> pair = eventListeners.get(uid);
         if (pair == null) {
-            LoggerFactory.getLogger(VaadinPortlet.class).error(
+            getLogger().error(
                     "{} is not found for the uid='{}', event '{}' is not delivered",
                     PortletEventListener.class.getSimpleName(), uid,
                     event.getEventName());
@@ -428,8 +482,8 @@ class PortletViewContextImpl<C extends Component>
                 + "poller();";
     }
 
-    private Logger getLogger() {
-        return LoggerFactory.getLogger(PortletViewContextImpl.class);
+    private static Logger getLogger() {
+        return LoggerFactory.getLogger(PortletViewContext.class);
     }
 
 }

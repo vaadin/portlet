@@ -13,16 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal.internal;
+package com.vaadin.flow.portal;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletResponse;
 import javax.portlet.ResourceURL;
-import java.net.URI;
-import java.net.URISyntaxException;
 
-import com.vaadin.flow.portal.VaadinPortletService;
-import com.vaadin.flow.portal.VaadinPortletSession;
 import com.vaadin.flow.server.AbstractStreamResource;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.StreamResourceRegistry;
@@ -34,7 +33,7 @@ import com.vaadin.flow.server.StreamResourceRegistry;
  *
  * For internal use only.
  */
-public class PortletStreamResourceRegistry extends StreamResourceRegistry {
+class PortletStreamResourceRegistry extends StreamResourceRegistry {
 
     /**
      * Creates stream resource registry for provided {@code session}.

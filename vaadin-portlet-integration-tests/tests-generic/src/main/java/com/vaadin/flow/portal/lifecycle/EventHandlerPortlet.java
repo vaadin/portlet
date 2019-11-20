@@ -13,24 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal.handler;
+package com.vaadin.flow.portal.lifecycle;
 
-import java.io.Serializable;
+import com.vaadin.flow.portal.VaadinPortlet;
 
-/**
- * A component which implements this interface will receive events which are
- * sent via IPC.
- *
- * @author Vaadin Ltd
- *
- */
-@FunctionalInterface
-public interface EventHandler extends Serializable {
-
-    /**
-     * This method gets called when an IPC event is received.
-     *
-     * @param event
-     */
-    void handleEvent(PortletEvent event);
+public class EventHandlerPortlet extends VaadinPortlet<EventHandlerContent> {
 }

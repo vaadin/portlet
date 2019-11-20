@@ -51,11 +51,10 @@ import com.vaadin.flow.shared.Registration;
 /**
  * For internal use only.
  *
- * @param <C>
  */
-public final class PortletViewContext<C extends Component> implements Serializable {
+public final class PortletViewContext implements Serializable {
 
-    private final C view;
+    private final Component view;
 
     private final AtomicBoolean isPortlet3;
 
@@ -72,7 +71,7 @@ public final class PortletViewContext<C extends Component> implements Serializab
     private String windowState;
 
 
-    PortletViewContext(C view, AtomicBoolean portlet3,
+    PortletViewContext(Component view, AtomicBoolean portlet3,
                        PortletMode portletMode, WindowState windowState) {
 
         this.view = view;

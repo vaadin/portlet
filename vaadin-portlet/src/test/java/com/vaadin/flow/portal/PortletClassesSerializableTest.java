@@ -53,10 +53,10 @@ public class PortletClassesSerializableTest extends ClassesSerializableTest {
 
         ComponentParameter view = new ComponentParameter();
         AtomicBoolean atomicBoolean = new AtomicBoolean(true);
-        PortletViewContext<ComponentParameter> original = new PortletViewContext<>(
+        PortletViewContext original = new PortletViewContext(
                 view, atomicBoolean, portletMode, windowState);
 
-        PortletViewContext<ComponentParameter> deserialized = serializeAndDeserialize(
+        PortletViewContext deserialized = serializeAndDeserialize(
                 original);
 
         Assert.assertEquals(portletMode, deserialized.getPortletMode());

@@ -44,7 +44,7 @@ import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.shared.Registration;
 
-public class PortletViewContextImplTest {
+public class PortletViewContextTest {
 
     public static class TestComponent extends Div
             implements EventHandler, PortletModeHandler, WindowStateHandler {

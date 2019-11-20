@@ -288,7 +288,7 @@ public final class PortletViewContext<C extends Component> implements Serializab
         assert view.getElement().getNode().isAttached();
         Pair<String, PortletEventListener> pair = eventListeners.get(uid);
         if (pair == null) {
-            LoggerFactory.getLogger(VaadinPortlet.class).error(
+            getLogger().error(
                     "{} is not found for the uid='{}', event '{}' is not delivered",
                     PortletEventListener.class.getSimpleName(), uid,
                     event.getEventName());

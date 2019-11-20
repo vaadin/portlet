@@ -15,6 +15,13 @@
  */
 package com.vaadin.flow.portal;
 
+import javax.portlet.ActionURL;
+import javax.portlet.MimeResponse;
+import javax.portlet.PortletMode;
+import javax.portlet.PortletModeException;
+import javax.portlet.PortletResponse;
+import javax.portlet.WindowState;
+import javax.portlet.WindowStateException;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,14 +30,6 @@ import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
-
-import javax.portlet.ActionURL;
-import javax.portlet.MimeResponse;
-import javax.portlet.PortletMode;
-import javax.portlet.PortletModeException;
-import javax.portlet.PortletResponse;
-import javax.portlet.WindowState;
-import javax.portlet.WindowStateException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -357,18 +356,6 @@ class PortletViewContextImpl<C extends Component>
     private static String escape(String str) {
         return str.replaceAll("([\\\\'])", "\\\\$1");
     }
-    
-    /**
-     * Get JavaScript string for getting the portlet hub registration object.
-     *
-     * @return registration object stored as 'hub'
-     */
-    private static String getPortletHubRegistrationScript() {
-        String portletRegistryName = VaadinPortletService.getCurrentResponse()
-                .getPortletResponse().getNamespace();
-        return String.format("var hub = window.Vaadin.Flow.Portlets['%s'].hub;",
-                portletRegistryName);
-    }
 
     /**
      * Get the script to update the portlet state with the given windowState 
@@ -381,12 +368,11 @@ class PortletViewContextImpl<C extends Component>
      */
     private static String getUpdatePortletStateScript(String windowState,
             String portletMode) {
-        return getPortletHubRegistrationScript() 
-                + "var state = hub.newState();"
-                + String.format("state.windowState = '%s';", windowState)
-                + String.format("state.portletMode = '%s';", portletMode)
-                + "hub.setRenderState(state);" 
-                + getReloadPollingScript();
+        String portletRegistryName = VaadinPortletService.getCurrentResponse()
+                .getPortletResponse().getNamespace();
+        return String
+                .format("window.Vaadin.Flow.Portlets.setPortletState('%s', '%s', '%s');",
+                        portletRegistryName, windowState, portletMode);
     }
 
     /**
@@ -400,32 +386,21 @@ class PortletViewContextImpl<C extends Component>
      */
     private static String getFireEventScript(String eventName,
             Map<String, String> parameters) {
-        StringBuilder eventBuilder = new StringBuilder();
-        eventBuilder.append(getPortletHubRegistrationScript());
-        eventBuilder.append("var params = hub.newParameters();");
-        eventBuilder.append("params['action'] = ['send'];");
-        parameters.forEach((key, value) -> eventBuilder.append(String
-                .format("params['%s'] = ['%s'];", escape(key), escape(value))));
-        eventBuilder.append(String.format(
-                "hub.dispatchClientEvent('%s', params);", escape(eventName)));
+        String portletRegistryName = VaadinPortletService.getCurrentResponse()
+                .getPortletResponse().getNamespace();
 
-        return eventBuilder.toString();
-    }
+        // Create parameter object
+        StringBuilder params = new StringBuilder();
+        params.append("{");
+        params.append("action: ['send']");
+        parameters.forEach((key, value) -> params.append(", ").append(String
+                .format("%s: ['%s']", escape(key), escape(value))));
+        params.append("}");
 
-    /**
-     * Script that will handle page reload for page when hub has completed.
-     *
-     * @return portlet reload polling script
-     */
-    private static String getReloadPollingScript() {
-        return "var poller = function () {"
-                + "  if(hub.isInProgress()) {"
-                + "    setTimeout(poller, 10);"
-                + "  } else {"
-                + "    location.reload();"
-                + "  }"
-                + "};"
-                + "poller();";
+        return String
+                .format("window.Vaadin.Flow.Portlets.fireEvent('%s', '%s', %s)",
+                        portletRegistryName, escape(eventName),
+                        params.toString());
     }
 
     private Logger getLogger() {

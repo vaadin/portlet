@@ -19,8 +19,8 @@ import java.util.Collections;
 
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.NativeButton;
-import com.vaadin.flow.portal.handler.PortletView;
-import com.vaadin.flow.portal.handler.PortletViewContext;
+import com.vaadin.flow.portal.PortletView;
+import com.vaadin.flow.portal.PortletViewContext;
 
 public class EventSourceView extends Div implements PortletView {
 

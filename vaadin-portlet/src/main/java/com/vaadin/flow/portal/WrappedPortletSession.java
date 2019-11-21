@@ -31,9 +31,9 @@ import com.vaadin.flow.server.WrappedSession;
  * @see WrappedSession
  * @since 7.0.0
  */
-public class WrappedPortletSession implements WrappedSession {
+class WrappedPortletSession implements WrappedSession {
 
-    private transient final PortletSession session;
+    private final transient PortletSession session;
 
     /**
      * Creates a new wrapped portlet session.
@@ -41,7 +41,7 @@ public class WrappedPortletSession implements WrappedSession {
      * @param session
      *         the portlet session to wrap.
      */
-    public WrappedPortletSession(PortletSession session) {
+    WrappedPortletSession(PortletSession session) {
         this.session = session;
     }
 

@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2000-2019 Vaadin Ltd.
  *
@@ -13,18 +14,26 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal.internal;
+package com.vaadin.flow.portal.lifecycle;
 
-import com.vaadin.flow.server.VaadinRequest;
-import com.vaadin.flow.server.communication.UidlRequestHandler;
+import java.io.Serializable;
 
 /**
- * For internal use only.
+ * Add this interface to a {@link com.vaadin.flow.portal.VaadinPortlet} view
+ * (the {@link com.vaadin.flow.component.Component} subclass passed for the type
+ * parameter {@code C}) to handle changes in {@link javax.portlet.PortletMode}.
+ *
+ * @see PortletModeListener
  */
-public class PortletUidlRequestHandler extends UidlRequestHandler {
+@FunctionalInterface
+public interface PortletModeHandler extends Serializable {
 
-    @Override
-    protected boolean canHandleRequest(VaadinRequest request) {
-        return "/uidl".equals(request.getPathInfo());
-    }
+    /**
+     * Invoked when the portlet mode changes.
+     *
+     * @param event
+     *            the wevent object
+     */
+    void portletModeChange(PortletModeEvent event);
+
 }

@@ -35,11 +35,6 @@ import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.UsageStatistics;
-import com.vaadin.flow.portal.internal.PortletBootstrapHandler;
-import com.vaadin.flow.portal.internal.PortletStreamRequestHandler;
-import com.vaadin.flow.portal.internal.PortletUidlRequestHandler;
-import com.vaadin.flow.portal.internal.PortletWebComponentBootstrapHandler;
-import com.vaadin.flow.portal.internal.PortletWebComponentProvider;
 import com.vaadin.flow.server.PwaRegistry;
 import com.vaadin.flow.server.RequestHandler;
 import com.vaadin.flow.server.RouteRegistry;
@@ -56,7 +51,7 @@ import com.vaadin.flow.server.startup.ApplicationRouteRegistry;
 import com.vaadin.flow.theme.AbstractTheme;
 
 public class VaadinPortletService extends VaadinService {
-    public static final String PROJECT_NAME = "vaadin-portlet";
+    static final String PROJECT_NAME = "vaadin-portlet";
 
     private static final String VERSION_PROPERTIES_NAME = "version.properties";
     private static final String PORTLET_VERSION_PROPERTY = "portlet.version";
@@ -83,12 +78,15 @@ public class VaadinPortletService extends VaadinService {
         }
     }
 
-    public static String getPortletVersion() {
+    static String getPortletVersion() {
         String portletVersion = PROPERTIES_FILE
                 .getProperty(PORTLET_VERSION_PROPERTY);
         if (portletVersion == null || portletVersion.isEmpty()) {
             throw new IllegalStateException(String.format(
-                    "Unable to determine Portlet version: had successfully loaded the resource file '%s' but failed to find property '%s' in it. Double check jar package integrity.",
+                    "Unable to determine Portlet version: had successfully "
+                            + "loaded the resource file '%s' but failed to "
+                            + "find property '%s' in it. Double check jar "
+                            + "package integrity.",
                     VERSION_PROPERTIES_NAME, PORTLET_VERSION_PROPERTY));
         }
         return portletVersion;

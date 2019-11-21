@@ -13,21 +13,18 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal.internal;
+package com.vaadin.flow.portal;
+
+import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.portlet.PortletContext;
 import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceURL;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 import com.vaadin.flow.function.DeploymentConfiguration;
-import com.vaadin.flow.portal.VaadinPortlet;
-import com.vaadin.flow.portal.VaadinPortletRequest;
-import com.vaadin.flow.portal.VaadinPortletResponse;
-import com.vaadin.flow.portal.VaadinPortletService;
 import com.vaadin.flow.server.SynchronizedRequestHandler;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinResponse;
@@ -42,7 +39,7 @@ import com.vaadin.pro.licensechecker.LicenseChecker;
  *
  * @since
  */
-public class PortletBootstrapHandler extends SynchronizedRequestHandler {
+class PortletBootstrapHandler extends SynchronizedRequestHandler {
 
     @Override
     protected boolean canHandleRequest(VaadinRequest request) {

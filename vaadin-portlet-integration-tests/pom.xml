@@ -30,6 +30,7 @@
     <modules>
         <module>portlet30</module>
         <module>tests-generic</module>
+        <module>cdi</module>
     </modules>
 
     <dependencyManagement>
@@ -37,6 +38,12 @@
             <dependency>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-portlet</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-portlet-cdi</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -78,6 +85,15 @@
                 <version>3.1.0</version>
                 <scope>provided</scope>
             </dependency>
+
+            <!-- CDI API -->
+            <dependency>
+                <groupId>javax.enterprise</groupId>
+                <artifactId>cdi-api</artifactId>
+                <version>1.2</version>
+                <scope>provided</scope>
+            </dependency>
+
             <dependency>
                 <groupId>com.vaadin</groupId>
                 <artifactId>flow-server-production-mode</artifactId>

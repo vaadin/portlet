@@ -25,11 +25,10 @@ import org.apache.deltaspike.core.api.provider.BeanProvider;
 import org.apache.deltaspike.core.util.context.ContextualStorage;
 
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
-import com.vaadin.cdi.context.internal.AbstractContextualStorageManager;
 import com.vaadin.cdi.context.VaadinServiceScopedContext;
+import com.vaadin.cdi.context.internal.AbstractContextualStorageManager;
 import com.vaadin.flow.portal.VaadinPortlet;
 import com.vaadin.flow.portal.VaadinPortletService;
-import com.vaadin.flow.portal.cdi.CdiVaadinPortlet;
 import com.vaadin.flow.server.ServiceDestroyEvent;
 
 import static javax.enterprise.event.Reception.IF_EXISTS;

@@ -39,6 +39,7 @@ public class VaadinIPCView extends Div implements PortletView {
         Button button = new Button("Send event to non-Vaadin portlet",
                 event -> context.fireEvent("vaadin-portlet",
                         Collections.singletonMap("bar", "baz")));
+        button.setId("send-to-plain");
         add(button);
     }
 

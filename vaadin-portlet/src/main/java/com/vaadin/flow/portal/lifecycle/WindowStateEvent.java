@@ -21,6 +21,9 @@ import java.io.Serializable;
 /**
  * An event of this class is fired when the {@link WindowState} of the portlet
  * is updated to a state different from its current state.
+ *
+ * @author Vaadin Ltd
+ * @since
  */
 public class WindowStateEvent implements Serializable {
 

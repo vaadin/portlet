@@ -34,9 +34,10 @@ import com.vaadin.pro.licensechecker.LicenseChecker;
 
 /**
  * Bootstrap handler for portlet bootstrapping.
- *
+ * <p>
  * For internal use only.
  *
+ * @author Vaadin Ltd
  * @since
  */
 class PortletBootstrapHandler extends SynchronizedRequestHandler {

@@ -49,7 +49,15 @@ import com.vaadin.flow.portal.lifecycle.WindowStateListener;
 import com.vaadin.flow.shared.Registration;
 
 /**
- * For internal use only.
+ * A portlet event context object allows to fire and send portlet events via
+ * Portlet Hub, receive portlet mode and window state updates, and set the
+ * portlet mode and window state of the portlet.
+ *
+ * @author Vaadin Ltd
+ * @since
+ *
+ * @see PortletView implement this interface to receive a
+ *      {@code PortletViewContext} instance
  *
  */
 public final class PortletViewContext implements Serializable {
@@ -102,16 +110,19 @@ public final class PortletViewContext implements Serializable {
     }
 
     /**
-     * Fires an event with the given {@code parameters} and {@code eventName}.
+     * Fires an event with the given {@code eventName} and {@code parameters}
+     * using the Portlet Hub.
      * <p>
-     * Any such event will be sent to the server as an action event for any
-     * {@link VaadinPortlet}. Such event will be handled by the
+     * The event will be sent to the server as an action event for any
+     * {@link VaadinPortlet}. The event is handled by the
      * {@link VaadinPortlet#processAction(javax.portlet.ActionRequest, javax.portlet.ActionResponse)}
      * method.
      * <p>
      * By default {@link VaadinPortlet} calls
      * {@link EventHandler#handleEvent(PortletEvent)} method on portlet
-     * component if it implements {@link EventHandler} interface.
+     * component if it implements {@link EventHandler} interface, and registered
+     * {@link com.vaadin.flow.portal.lifecycle.PortletEventListener}
+     * implementations that are registered for the event name.
      *
      * @param eventName
      *            an event name
@@ -123,10 +134,13 @@ public final class PortletViewContext implements Serializable {
     }
 
     /**
-     * Adds a listener which will receive any {@link PortletEvent}.
+     * Adds a listener which will receive any {@link PortletEvent} delivered via
+     * Portlet Hub.
      *
-     * @see #addEventChangeListener(String, PortletEventListener)
-     * @see EventHandler
+     * @see #addEventChangeListener(String, PortletEventListener) to register
+     *      for specific events
+     * @see EventHandler implementing this interface is the same as registering
+     *      a generic event listener
      *
      * @param listener
      *            a portlet event listener, not {@code null}
@@ -138,13 +152,14 @@ public final class PortletViewContext implements Serializable {
 
     /**
      * Adds a listener which will receive only events with the given
-     * {@code eventType}.
+     * {@code eventType} delivered via Portlet Hub.
      * <p>
      * {@code eventType} can be a regular expression, e.g.
      * {@code "^myCompany\..*"}. registers a listener for all event types
      * beginning with {@code "myCompany."}.
      *
-     * @see #addGenericEventListener(PortletEventListener)
+     * @see #addGenericEventListener(PortletEventListener) to receive all events
+     *      delivered via Portlet Hub
      *
      * @param eventType
      *            an event type to listen

@@ -37,7 +37,7 @@ import com.vaadin.flow.server.VaadinResponse;
  * @author Vaadin Ltd.
  * @see VaadinResponse
  * @see VaadinPortletRequest
- * @since 7.0
+ * @since
  */
 public class VaadinPortletResponse implements VaadinResponse {
     static final DateFormat HTTP_DATE_FORMAT = new SimpleDateFormat(

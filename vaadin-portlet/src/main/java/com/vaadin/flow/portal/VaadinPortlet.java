@@ -461,8 +461,9 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         }
     }
 
+    @SuppressWarnings("unchecked")
     private PortletViewContext getViewContext(VaadinSession session,
-                                                 String namespace, String windowName) throws PortletException {
+            String namespace, String windowName) throws PortletException {
         Map<String, PortletViewContext> viewContexts = (Map<String, PortletViewContext>) session
                 .getAttribute(getSessionWindowAttributeKey(windowName,
                         VIEW_CONTEXT_SESSION_SUBKEY));

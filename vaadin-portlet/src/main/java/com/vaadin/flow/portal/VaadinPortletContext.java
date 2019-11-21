@@ -26,6 +26,7 @@ import com.vaadin.flow.server.VaadinServletService;
 /**
  * {@link VaadinContext} that goes with {@link VaadinServletService}.
  *
+ * @author Vaadin Ltd
  * @since
  */
 public class VaadinPortletContext implements VaadinContext {

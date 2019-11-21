@@ -50,6 +50,13 @@ import com.vaadin.flow.server.WrappedSession;
 import com.vaadin.flow.server.startup.ApplicationRouteRegistry;
 import com.vaadin.flow.theme.AbstractTheme;
 
+/**
+ * An implementation of {@link com.vaadin.flow.server.VaadinService} for JSR-362
+ * portlet environments.
+ *
+ * @author Vaadin Ltd
+ * @since
+ */
 public class VaadinPortletService extends VaadinService {
     static final String PROJECT_NAME = "vaadin-portlet";
 

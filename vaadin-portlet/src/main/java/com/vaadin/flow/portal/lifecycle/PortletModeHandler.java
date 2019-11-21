@@ -24,6 +24,8 @@ import java.io.Serializable;
  * parameter {@code C}) to handle changes in {@link javax.portlet.PortletMode}.
  *
  * @see PortletModeListener
+ * @author Vaadin Ltd
+ * @since
  */
 @FunctionalInterface
 public interface PortletModeHandler extends Serializable {

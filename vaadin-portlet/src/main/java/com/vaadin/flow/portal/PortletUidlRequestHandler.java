@@ -20,6 +20,9 @@ import com.vaadin.flow.server.communication.UidlRequestHandler;
 
 /**
  * For internal use only.
+ *
+ * @author Vaadin Ltd
+ * @since
  */
 class PortletUidlRequestHandler extends UidlRequestHandler {
 

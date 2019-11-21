@@ -27,9 +27,9 @@ import com.vaadin.flow.server.WrappedSession;
 /**
  * Wrapper for {@link PortletSession}.
  *
- * @author Vaadin Ltd
  * @see WrappedSession
- * @since 7.0.0
+ * @author Vaadin Ltd
+ * @since
  */
 class WrappedPortletSession implements WrappedSession {
 

@@ -33,6 +33,9 @@ import com.vaadin.pro.licensechecker.LicenseChecker;
 
 /**
  * For internal use only.
+ *
+ * @author Vaadin Ltd
+ * @since
  */
 class PortletWebComponentBootstrapHandler
         extends WebComponentBootstrapHandler {

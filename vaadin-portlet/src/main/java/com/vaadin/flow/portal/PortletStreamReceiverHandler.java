@@ -36,8 +36,11 @@ import com.vaadin.flow.server.communication.StreamReceiverHandler;
  * Extends {@link StreamReceiverHandler} to handle upload
  * {@link VaadinRequest}s where the underlying request is of type
  * {@link ClientDataRequest} instead of {@link HttpServletRequest}.
- *
+ * <p>
  * For internal use only.
+ *
+ * @author Vaadin Ltd
+ * @since
  */
 class PortletStreamReceiverHandler extends StreamReceiverHandler {
 

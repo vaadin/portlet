@@ -36,7 +36,7 @@ import com.vaadin.flow.server.WrappedSession;
  * @author Vaadin Ltd.
  * @see VaadinRequest
  * @see VaadinPortletResponse
- * @since 7.0
+ * @since
  */
 public class VaadinPortletRequest extends PortletRequestWrapper
         implements VaadinRequest {

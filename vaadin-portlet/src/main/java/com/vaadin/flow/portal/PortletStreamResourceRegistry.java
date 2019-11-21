@@ -30,8 +30,11 @@ import com.vaadin.flow.server.StreamResourceRegistry;
  * Portlet-specific registry for {@link StreamResource} instances. Creates the
  * target URL with an additional suffix to direct the upload to the correct
  * portlet.
- *
+ * <p>
  * For internal use only.
+ *
+ * @author Vaadin Ltd
+ * @since
  */
 class PortletStreamResourceRegistry extends StreamResourceRegistry {
 

@@ -26,17 +26,12 @@ import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.WrappedSession;
 
 /**
- * An implementation of {@link VaadinSession} for JSR-286 portlet environments.
+ * An implementation of {@link VaadinSession} for JSR-362 portlet environments.
  *
  * Only the documented parts of this class should be considered as stable public
  * API.
  *
- * Note also that some methods and/or nested interfaces might move to
- * {@link VaadinPortletService} in future minor or major versions of Vaadin. In
- * these cases, a deprecated redirection for backwards compatibility will be
- * used in VaadinPortletSession for a transition period.
- *
- * @since 7.0
+ * @since
  */
 @SuppressWarnings("serial")
 public class VaadinPortletSession extends VaadinSession {

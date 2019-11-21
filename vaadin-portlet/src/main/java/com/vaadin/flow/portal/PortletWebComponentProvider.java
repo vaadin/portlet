@@ -21,6 +21,9 @@ import com.vaadin.flow.server.communication.WebComponentProvider;
 
 /**
  * For internal use only.
+ *
+ * @author Vaadin Ltd
+ * @since
  */
 class PortletWebComponentProvider extends WebComponentProvider {
 

@@ -19,8 +19,11 @@ import com.vaadin.flow.server.communication.StreamRequestHandler;
 
 /**
  * Request handler for portlet uploads.
- *
+ * <p>
  * For internal use only.
+ *
+ * @author Vaadin Ltd
+ * @since
  */
 class PortletStreamRequestHandler extends StreamRequestHandler {
     public PortletStreamRequestHandler() {

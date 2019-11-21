@@ -24,6 +24,7 @@ import java.util.Map;
  * A generic IPC event.
  *
  * @author Vaadin Ltd
+ * @since
  *
  */
 public class PortletEvent implements Serializable {

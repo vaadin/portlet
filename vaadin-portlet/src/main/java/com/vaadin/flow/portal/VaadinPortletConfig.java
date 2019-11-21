@@ -17,6 +17,7 @@ import com.vaadin.flow.server.VaadinService;
 /**
  * {@link VaadinConfig} for deployment configuration.
  *
+ * @author Vaadin Ltd
  * @since
  */
 public class VaadinPortletConfig implements VaadinConfig {

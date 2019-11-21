@@ -18,11 +18,13 @@ package com.vaadin.flow.portal.lifecycle;
 import java.io.Serializable;
 
 /**
- * A component which implements this interface will receive events which are
- * sent via IPC.
+ * Component that implements this interface and is the view given as type
+ * parameter for {@link com.vaadin.flow.portal.VaadinPortlet} will receive
+ * <i>all</i> events sent using the Portlet Hub, including events sent via
+ * {@link com.vaadin.flow.portal.PortletViewContext#fireEvent(String, java.util.Map)}.
  *
  * @author Vaadin Ltd
- *
+ * @since
  */
 @FunctionalInterface
 public interface EventHandler extends Serializable {

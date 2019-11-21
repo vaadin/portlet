@@ -21,6 +21,9 @@ import java.io.Serializable;
 /**
  * An event of this class is fired when the {@link PortletMode} of the portlet
  * is updated to a mode different from its current mode.
+ *
+ * @author Vaadin Ltd
+ * @since
  */
 public class PortletModeEvent implements Serializable {
     private final String portletMode;

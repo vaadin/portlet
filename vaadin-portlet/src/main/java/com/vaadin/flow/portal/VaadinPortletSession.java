@@ -57,16 +57,18 @@ public class VaadinPortletSession extends VaadinSession {
                     .getCurrent();
             if (response != null) {
                 try {
+                    Throwable cause = event.getThrowable().getCause();
+                    String causeString = cause == null ? "N/A" :
+                            cause.getMessage();
                     getService().writeUncachedStringResponse(response,
                             JsonConstants.JSON_CONTENT_TYPE,
                             VaadinService.createCriticalNotificationJSON(
                                     event.getThrowable().getClass()
                                             .getSimpleName(),
                                     event.getThrowable().getMessage(),
-                                    "Caused by: " + event.getThrowable()
-                                            .getCause().getMessage(),
+                                    "Caused by: " + causeString,
                                     null));
-                } catch (IOException e) {
+                } catch (Exception e) {
                     LoggerFactory.getLogger(VaadinPortletSession.class).error("Failed to send critical notification!", e);
                 }
             }

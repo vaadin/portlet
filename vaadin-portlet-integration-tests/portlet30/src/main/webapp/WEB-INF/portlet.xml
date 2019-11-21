@@ -68,5 +68,21 @@
             <keywords></keywords>
         </portlet-info>
     </portlet>
+    
+    <portlet>
+        <portlet-name>vaadin-ipc-portlet</portlet-name>
+        <display-name>Vaadin IPC Portlet</display-name>
+        <portlet-class>com.vaadin.flow.portal.events.VaadinIpcPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>Vaadin IPC Portlet</title>
+            <short-title>vaadin-ipc-portlet</short-title>
+            <keywords></keywords>
+        </portlet-info>
+    </portlet>
 
 </portlet-app>

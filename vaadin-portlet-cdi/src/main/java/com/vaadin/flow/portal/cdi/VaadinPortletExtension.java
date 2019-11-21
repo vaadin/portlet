@@ -16,20 +16,53 @@
 
 package com.vaadin.flow.portal.cdi;
 
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.AfterBeanDiscovery;
+import javax.enterprise.inject.spi.AfterDeploymentValidation;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.Extension;
+import java.lang.annotation.Annotation;
 
-import com.vaadin.cdi.VaadinExtension;
-import com.vaadin.flow.portal.cdi.context.VaadinPortalServiceScopedContext;
+import org.apache.deltaspike.core.util.context.AbstractContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.vaadin.cdi.context.ContextWrapper;
+import com.vaadin.cdi.context.VaadinServiceScopedContext;
 
 /**
  * Portlet specialization of CDI Extension.
  */
-public class VaadinPortletExtension extends VaadinExtension {
+public class VaadinPortletExtension implements Extension {
 
-    @Override
-    protected com.vaadin.cdi.context.VaadinServiceScopedContext createVaadinServiceScopedContext(
+    private VaadinServiceScopedContext serviceScopedContext;
+
+    private void addContexts(@Observes AfterBeanDiscovery afterBeanDiscovery,
             BeanManager beanManager) {
-        return new VaadinPortalServiceScopedContext(beanManager);
+        serviceScopedContext = new VaadinPortletlServiceScopedContext(
+                beanManager);
+        addContext(afterBeanDiscovery, serviceScopedContext, null);
     }
 
+    private void initializeContexts(@Observes AfterDeploymentValidation adv,
+            BeanManager beanManager) {
+        serviceScopedContext.init(beanManager);
+    }
+
+    private void addContext(AfterBeanDiscovery afterBeanDiscovery,
+            AbstractContext context,
+            Class<? extends Annotation> additionalScope) {
+        afterBeanDiscovery
+                .addContext(new ContextWrapper(context, context.getScope()));
+        if (additionalScope != null) {
+            afterBeanDiscovery
+                    .addContext(new ContextWrapper(context, additionalScope));
+        }
+        getLogger().info("{} registered for Vaadin Portlet CDI",
+                context.getClass().getSimpleName());
+    }
+
+    private static Logger getLogger() {
+        return LoggerFactory.getLogger(VaadinPortletExtension.class);
+    }
 }

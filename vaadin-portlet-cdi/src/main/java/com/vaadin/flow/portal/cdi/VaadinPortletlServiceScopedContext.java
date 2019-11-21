@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.vaadin.flow.portal.cdi.context;
+package com.vaadin.flow.portal.cdi;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.spi.Contextual;
@@ -25,7 +25,7 @@ import org.apache.deltaspike.core.api.provider.BeanProvider;
 import org.apache.deltaspike.core.util.context.ContextualStorage;
 
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
-import com.vaadin.cdi.context.AbstractContextualStorageManager;
+import com.vaadin.cdi.context.internal.AbstractContextualStorageManager;
 import com.vaadin.cdi.context.VaadinServiceScopedContext;
 import com.vaadin.flow.portal.VaadinPortlet;
 import com.vaadin.flow.portal.VaadinPortletService;
@@ -37,9 +37,9 @@ import static javax.enterprise.event.Reception.IF_EXISTS;
 /**
  * Context for {@link VaadinServiceScoped @VaadinServiceScoped} beans.
  */
-public class VaadinPortalServiceScopedContext extends VaadinServiceScopedContext {
+class VaadinPortletlServiceScopedContext extends VaadinServiceScopedContext {
 
-    public VaadinPortalServiceScopedContext(BeanManager beanManager) {
+    public VaadinPortletlServiceScopedContext(BeanManager beanManager) {
         super(beanManager);
     }
 

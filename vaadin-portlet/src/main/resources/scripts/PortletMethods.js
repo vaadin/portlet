@@ -42,6 +42,21 @@ if (!window.Vaadin.Flow.Portlets) {
         hub.dispatchClientEvent(event, params);
     }
 
+    window.Vaadin.Flow.Portlets.registerElement = function (tag, portletRegistryName) {
+        customElements.whenDefined(tag).then(function () {
+            var elem = document.querySelector(tag);
+            elem.constructor._getClientStrategy = function (portletComponent) {
+                var clients = elem.constructor._getClients();
+                if (!clients) {
+                    return undefined;
+                }
+                var portlet = window.Vaadin.Flow.Portlets[portletComponent.getAttribute('data-portlet-id')];
+                return clients[portlet.appId];
+            };
+            window.Vaadin.Flow.Portlets.registerHub(tag, portletRegistryName, elem);
+        });
+    }
+
     window.Vaadin.Flow.Portlets.registerHub = function (tag, portletRegistryName, elem) {
         var targetElem;
         var allPortletElems = document.querySelectorAll(tag);

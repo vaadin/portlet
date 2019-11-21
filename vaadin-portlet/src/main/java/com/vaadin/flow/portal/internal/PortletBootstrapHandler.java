@@ -83,7 +83,6 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
         }
         String namespace = resp.getNamespace();
         writer.write("<script src='" + scriptUrl + "'></script>");
-        StringBuilder initScript = new StringBuilder();
 
         try {
             DeploymentConfiguration config = request.getService()
@@ -96,22 +95,11 @@ public class PortletBootstrapHandler extends SynchronizedRequestHandler {
                 LicenseChecker.checkLicense(VaadinPortletService.PROJECT_NAME,
                         VaadinPortletService.getPortletVersion());
             }
+            String initScript = String
+                    .format("<script>window.Vaadin.Flow.Portlets.registerElement('%s','%s');</script>",
+                            tag, namespace);
 
-            initScript.append("<script>customElements.whenDefined('")
-                    .append(tag)
-                    .append("').then(function(){ var elem = document.querySelector('")
-                    .append(tag)
-                    .append("'); elem.constructor._getClientStrategy = ")
-                    .append("function(portletComponent){ ")
-                    .append("   var clients = elem.constructor._getClients();")
-                    .append("   if (!clients){ return undefined;  }")
-                    .append("   var portlet = window.Vaadin.Flow.Portlets[portletComponent.getAttribute('data-portlet-id')];")
-                    .append("   return clients[portlet.appId]; };")
-                    .append("window.Vaadin.Flow.Portlets.registerHub('")
-                    .append(tag).append("','").append(namespace)
-                    .append("',elem);").append("});</script>");
-
-            writer.write(initScript.toString());
+            writer.write(initScript);
             writer.write("<" + tag + " data-portlet-id='" + namespace + "'></"
                     + tag + ">");
         } catch (Exception exception) {

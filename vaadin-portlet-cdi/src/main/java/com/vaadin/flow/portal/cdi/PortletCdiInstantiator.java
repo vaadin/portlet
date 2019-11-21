@@ -21,16 +21,13 @@ import javax.enterprise.inject.Specializes;
 import com.vaadin.cdi.CdiInstantiator;
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.cdi.annotation.VaadinServiceScoped;
-import com.vaadin.flow.di.Instantiator;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.server.VaadinService;
 
 /**
- * Default CDI instantiator.
- * <p>
- * Can be overridden by a @{@link VaadinServiceEnabled} CDI
- * Alternative/Specializes, or can be customized with a Decorator.
+ * Specialization of default Vaadin CDI instantiator.
  *
- * @see Instantiator
+ * @see CdiInstantiator
  */
 @VaadinServiceScoped
 @VaadinServiceEnabled
@@ -40,5 +37,10 @@ public class PortletCdiInstantiator extends CdiInstantiator {
     @Override
     protected Class<? extends VaadinService> getServiceClass() {
         return CdiVaadinPortletService.class;
+    }
+
+    @Override
+    public <T extends Component> T createComponent(Class<T> componentClass) {
+        return getOrCreate(componentClass);
     }
 }

@@ -13,17 +13,27 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal.internal;
+package com.vaadin.flow.portal.lifecycle;
 
-import com.vaadin.flow.server.communication.StreamRequestHandler;
+import java.io.Serializable;
 
 /**
- * Request handler for portlet uploads.
+ * A listener for portlet events.
  *
- * For internal use only.
+ * @see com.vaadin.flow.portal.PortletViewContext
+ * @see com.vaadin.flow.portal.lifecycle.EventHandler
+ *
+ * @author Vaadin Ltd
+ * @since
+ *
  */
-public class PortletStreamRequestHandler extends StreamRequestHandler {
-    public PortletStreamRequestHandler() {
-        super(new PortletStreamReceiverHandler());
-    }
+@FunctionalInterface
+public interface PortletEventListener extends Serializable {
+
+    /**
+     * This method gets called when an IPC event is received.
+     *
+     * @param event
+     */
+    void onPortletEvent(PortletEvent event);
 }

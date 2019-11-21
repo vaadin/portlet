@@ -13,17 +13,17 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal.handler;
+package com.vaadin.flow.portal.lifecycle;
 
 import java.io.Serializable;
 
 /**
  * A listener portlet mode change events.
  *
- * @see PortletViewContext
- * @see PortletModeHandler
+ * @see com.vaadin.flow.portal.PortletViewContext
+ * @see com.vaadin.flow.portal.lifecycle.PortletModeHandler
  * @author Vaadin Ltd
- *
+ * @since
  */
 public interface PortletModeListener extends Serializable {
 

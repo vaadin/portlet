@@ -29,7 +29,7 @@
     <portlet>
         <portlet-name>eventhandler</portlet-name>
         <display-name>Flow Portlet with Mode and Window State Change Handler</display-name>
-        <portlet-class>com.vaadin.flow.portal.handler.EventHandlerPortlet</portlet-class>
+        <portlet-class>com.vaadin.flow.portal.lifecycle.EventHandlerPortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>

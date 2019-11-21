@@ -1,7 +1,6 @@
 package com.vaadin.flow.portal;
 
 import javax.portlet.PortletMode;
-import javax.portlet.PortletRequest;
 import javax.portlet.WindowState;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -10,13 +9,11 @@ import java.util.stream.Stream;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.portal.handler.WindowStateEvent;
-import com.vaadin.flow.portal.handler.WindowStateHandler;
-import com.vaadin.flow.portal.handler.WindowStateListener;
+import com.vaadin.flow.portal.lifecycle.WindowStateEvent;
+import com.vaadin.flow.portal.lifecycle.WindowStateHandler;
 import com.vaadin.flow.testutil.ClassesSerializableTest;
 
 public class PortletClassesSerializableTest extends ClassesSerializableTest {
@@ -25,7 +22,6 @@ public class PortletClassesSerializableTest extends ClassesSerializableTest {
     protected Stream<String> getExcludedPatterns() {
         return Stream.of(
                 "com\\.vaadin\\.flow\\.portal\\.PortletConstants",
-                "com\\.vaadin\\.flow\\.portal\\.internal\\.PortletHubUtil",
                 // these 2 can be made serializable, if we introduce a
                 // serializable wrapper for the wrapped portlet request and
                 // response
@@ -33,7 +29,7 @@ public class PortletClassesSerializableTest extends ClassesSerializableTest {
                 "com\\.vaadin\\.flow\\.portal\\.VaadinPortletResponse",
                 // this can be made serializable once VaadinPortletRequest is
                 // serializable
-                "com\\.vaadin\\.flow\\.portal\\.internal\\." +
+                "com\\.vaadin\\.flow\\.portal\\." +
                         "PortletStreamReceiverHandler\\$StreamRequestContext"
 
         );
@@ -57,10 +53,10 @@ public class PortletClassesSerializableTest extends ClassesSerializableTest {
 
         ComponentParameter view = new ComponentParameter();
         AtomicBoolean atomicBoolean = new AtomicBoolean(true);
-        PortletViewContextImpl<ComponentParameter> original = new PortletViewContextImpl<>(
+        PortletViewContext original = new PortletViewContext(
                 view, atomicBoolean, portletMode, windowState);
 
-        PortletViewContextImpl<ComponentParameter> deserialized = serializeAndDeserialize(
+        PortletViewContext deserialized = serializeAndDeserialize(
                 original);
 
         Assert.assertEquals(portletMode, deserialized.getPortletMode());

@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal.handler;
+package com.vaadin.flow.portal.lifecycle;
 
 import javax.portlet.PortletMode;
 import java.io.Serializable;
@@ -21,6 +21,9 @@ import java.io.Serializable;
 /**
  * An event of this class is fired when the {@link PortletMode} of the portlet
  * is updated to a mode different from its current mode.
+ *
+ * @author Vaadin Ltd
+ * @since
  */
 public class PortletModeEvent implements Serializable {
     private final String portletMode;

@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal.handler;
+package com.vaadin.flow.portal.lifecycle;
 
 import java.io.Serializable;
 
@@ -23,6 +23,9 @@ import java.io.Serializable;
  * parameter {@code C}) to handle changes in {@link javax.portlet.WindowState}.
  *
  * @see WindowStateListener
+ * @author Vaadin Ltd
+ * @since
+ *
  */
 @FunctionalInterface
 public interface WindowStateHandler extends Serializable {

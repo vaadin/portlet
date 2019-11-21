@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal.handler;
+package com.vaadin.flow.portal.lifecycle;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -24,6 +24,7 @@ import java.util.Map;
  * A generic IPC event.
  *
  * @author Vaadin Ltd
+ * @since
  *
  */
 public class PortletEvent implements Serializable {

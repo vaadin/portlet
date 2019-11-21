@@ -15,12 +15,6 @@
  */
 package com.vaadin.flow.portal;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.EventRequest;
@@ -38,7 +32,15 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.portlet.WindowState;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,8 +52,7 @@ import com.vaadin.flow.component.webcomponent.WebComponent;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.function.SerializableRunnable;
 import com.vaadin.flow.internal.CurrentInstance;
-import com.vaadin.flow.portal.handler.PortletEvent;
-import com.vaadin.flow.portal.handler.PortletView;
+import com.vaadin.flow.portal.lifecycle.PortletEvent;
 import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.server.Command;
 import com.vaadin.flow.server.DeploymentConfigurationFactory;
@@ -79,6 +80,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private static final String DEV_MODE_ERROR_MESSAGE = "<h2>⚠️Vaadin Portlet does not work in development mode running webpack-dev-server</h2>"
             + "<p>To run a portlet in development mode, you need to activate both <code>prepare-frontend</code> and <code>build-frontend</code> goals of <code>vaadin-maven-plugin</code>. "
             + "To run a portlet in production mode see <a href='https://vaadin.com/docs/v14/flow/production/tutorial-production-mode-basic.html' target='_blank'>this</a>.</p>";
+    public static final String PORTLET_SCRIPTS = "general-methods";
 
     private VaadinPortletService vaadinService;
 
@@ -178,7 +180,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         String namespace = VaadinPortletResponse.getCurrentPortletResponse()
                 .getNamespace();
         VaadinSession session = ui.getSession();
-        PortletViewContextImpl<C> context;
+        PortletViewContext context;
         try {
             context = getViewContext(session, namespace, windowName);
         } catch (PortletException exception) {
@@ -190,7 +192,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         boolean needViewInit = false;
         if (context == null) {
             needViewInit = true;
-            context = new PortletViewContextImpl<>(component, isPortlet3,
+            context = new PortletViewContext(component, isPortlet3,
                     request.getPortletMode(), request.getWindowState());
             setViewContext(session, namespace, windowName, context);
         }
@@ -236,6 +238,37 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         // This is only called for portlet 3.0 portlets.
         isPortlet3.set(true);
         response.addDependency("PortletHub", "javax.portlet", "3.0.0");
+
+        // How do we get this to only exec once for multiple portlets on same
+        // page, but still every time the page refreshes?
+        String initScript = (String) request.getPortletContext()
+                .getAttribute(PORTLET_SCRIPTS);
+        if (initScript == null) {
+            initScript = "<script type=\"text/javascript\">" + loadFile(
+                    "scripts/PortletMethods.js") + "</script>";
+            request.getPortletContext()
+                    .setAttribute(PORTLET_SCRIPTS, initScript);
+        }
+        response.getWriter().println(initScript);
+    }
+
+    private String loadFile(String fileName) {
+        String fileContent = "";
+        InputStream inputStream = getClass().getClassLoader()
+                .getResourceAsStream(fileName);
+        if (inputStream == null) {
+            LoggerFactory.getLogger(getClass())
+                    .warn("No resource file found for '{}'", fileName);
+            return fileContent;
+        }
+
+        try {
+            fileContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            LoggerFactory.getLogger(getClass())
+                    .error("Failed to load file '{}'", fileName, e);
+        }
+        return fileContent;
     }
 
     @Override
@@ -319,7 +352,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                 return;
             }
 
-            PortletViewContextImpl<C> viewContext = getViewContext(session,
+            PortletViewContext viewContext = getViewContext(session,
                     response.getNamespace(), windowName);
             if (viewContext != null) {
                 session.access(() -> viewContext.firePortletEvent(uid,
@@ -404,42 +437,42 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         }
     }
 
-    public void setWebComponentProviderURL(VaadinSession session,
+    void setWebComponentProviderURL(VaadinSession session,
             String namespace, String url) {
         session.checkHasLock();
         setSessionAttribute(session, namespace,
                 WEB_COMPONENT_PROVIDER_URL_SUBKEY, url);
     }
 
-    public String getWebComponentProviderURL(VaadinSession session,
+    String getWebComponentProviderURL(VaadinSession session,
             String namespace) {
         session.checkHasLock();
         return getSessionAttribute(session, namespace,
                 WEB_COMPONENT_PROVIDER_URL_SUBKEY);
     }
 
-    public void setWebComponentBootstrapHandlerURL(VaadinSession session,
+    void setWebComponentBootstrapHandlerURL(VaadinSession session,
             String namespace, String url) {
         session.checkHasLock();
         setSessionAttribute(session, namespace,
                 WEB_COMPONENT_BOOTSTRAP_HANDLER_URL_SUBKEY, url);
     }
 
-    public String getWebComponentBootstrapHandlerURL(VaadinSession session,
+    String getWebComponentBootstrapHandlerURL(VaadinSession session,
             String namespace) {
         session.checkHasLock();
         return getSessionAttribute(session, namespace,
                 WEB_COMPONENT_BOOTSTRAP_HANDLER_URL_SUBKEY);
     }
 
-    public void setWebComponentUIDLRequestHandlerURL(VaadinSession session,
+    void setWebComponentUIDLRequestHandlerURL(VaadinSession session,
             String namespace, String url) {
         session.checkHasLock();
         setSessionAttribute(session, namespace,
                 WEB_COMPONENT_UIDL_REQUEST_HANDLER_URL_SUBKEY, url);
     }
 
-    public String getWebComponentUIDLRequestHandlerURL(VaadinSession session,
+    String getWebComponentUIDLRequestHandlerURL(VaadinSession session,
             String namespace) {
         session.checkHasLock();
         return getSessionAttribute(session, namespace,
@@ -462,9 +495,10 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         }
     }
 
-    private PortletViewContextImpl<C> getViewContext(VaadinSession session,
+    @SuppressWarnings("unchecked")
+    private PortletViewContext getViewContext(VaadinSession session,
             String namespace, String windowName) throws PortletException {
-        Map<String, PortletViewContextImpl<C>> viewContexts = (Map<String, PortletViewContextImpl<C>>) session
+        Map<String, PortletViewContext> viewContexts = (Map<String, PortletViewContext>) session
                 .getAttribute(getSessionWindowAttributeKey(windowName,
                         VIEW_CONTEXT_SESSION_SUBKEY));
         if (viewContexts != null) {
@@ -479,7 +513,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     }
 
     private void setViewContext(VaadinSession session, String namespace,
-            String windowName, PortletViewContextImpl<C> context) {
+            String windowName, PortletViewContext context) {
         setSessionAttribute(session, namespace,
                 windowName + "-" + VIEW_CONTEXT_SESSION_SUBKEY, context);
     }

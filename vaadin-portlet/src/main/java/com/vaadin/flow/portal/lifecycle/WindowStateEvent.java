@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.flow.portal.handler;
+package com.vaadin.flow.portal.lifecycle;
 
 import javax.portlet.WindowState;
 import java.io.Serializable;
@@ -21,6 +21,9 @@ import java.io.Serializable;
 /**
  * An event of this class is fired when the {@link WindowState} of the portlet
  * is updated to a state different from its current state.
+ *
+ * @author Vaadin Ltd
+ * @since
  */
 public class WindowStateEvent implements Serializable {
 

@@ -5,14 +5,25 @@
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/portlet http://xmlns.jcp.org/xml/ns/portlet/portlet-app_3_0.xsd"
              version="3.0">
     <portlet>
-        <portlet-name>requestbeans</portlet-name>
-        <display-name>Flow Portlet with PortletRequestScoped Beans </display-name>
-        <portlet-class>com.vaadin.flow.portal.cdi.RequestBeansPortlet</portlet-class>
+        <portlet-name>portletscopes</portlet-name>
+        <display-name>Flow Portlet with Portlet Scoped Beans</display-name>
+        <portlet-class>com.vaadin.flow.portal.cdi.PortletScopesPortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
             <portlet-mode>EDIT</portlet-mode>
+        </supports>
+    </portlet>
+
+    <portlet>
+        <portlet-name>injectedcomponent</portlet-name>
+        <display-name>Flow Portlet with Injected Components</display-name>
+        <portlet-class>com.vaadin.flow.portal.cdi.InjectedComponentPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
         </supports>
     </portlet>
 

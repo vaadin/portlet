@@ -18,7 +18,7 @@ package com.vaadin.flow.portal.cdi;
 import javax.enterprise.inject.spi.BeanManager;
 import java.util.Optional;
 
-import com.vaadin.cdi.CdiVaadinServiceDelegate;
+import com.vaadin.cdi.CdiVaadinServletService.CdiVaadinServiceDelegate;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.di.Instantiator;
 import com.vaadin.flow.function.DeploymentConfiguration;
@@ -33,7 +33,7 @@ public class CdiVaadinPortletService extends VaadinPortletService {
             DeploymentConfiguration configuration, BeanManager beanManager)
             throws ServiceException {
         super(portlet, configuration);
-        this.delegate = new CdiVaadinServiceDelegate(beanManager, this);
+        this.delegate = new CdiVaadinServiceDelegate(this, beanManager);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class CdiVaadinPortletService extends VaadinPortletService {
 
     @Override
     public void fireUIInitListeners(UI ui) {
-        delegate.fireUIInitListeners(ui);
+        delegate.addUIListeners(ui);
         super.fireUIInitListeners(ui);
     }
 

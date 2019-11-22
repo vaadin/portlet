@@ -15,22 +15,15 @@
  */
 package com.vaadin.flow.portal;
 
-import java.io.IOException;
-
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
 
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.flow.internal.CurrentInstance;
-import com.vaadin.flow.server.ErrorHandler;
 import com.vaadin.flow.server.StreamResourceRegistry;
 import com.vaadin.flow.server.VaadinResponse;
-import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.WrappedSession;
-import com.vaadin.flow.shared.JsonConstants;
 
 /**
  * An implementation of {@link VaadinSession} for JSR-362 portlet environments.
@@ -52,27 +45,7 @@ public class VaadinPortletSession extends VaadinSession {
     public VaadinPortletSession(VaadinPortletService service) {
         super(service);
 
-        setErrorHandler((ErrorHandler) event -> {
-            VaadinPortletResponse response = VaadinPortletResponse
-                    .getCurrent();
-            if (response != null) {
-                try {
-                    Throwable cause = event.getThrowable().getCause();
-                    String causeString = cause == null ? "N/A" :
-                            cause.getMessage();
-                    getService().writeUncachedStringResponse(response,
-                            JsonConstants.JSON_CONTENT_TYPE,
-                            VaadinService.createCriticalNotificationJSON(
-                                    event.getThrowable().getClass()
-                                            .getSimpleName(),
-                                    event.getThrowable().getMessage(),
-                                    "Caused by: " + causeString,
-                                    null));
-                } catch (Exception e) {
-                    LoggerFactory.getLogger(VaadinPortletSession.class).error("Failed to send critical notification!", e);
-                }
-            }
-        });
+        setErrorHandler(new DefaultPortletErrorHandler(service));
     }
 
     @Override

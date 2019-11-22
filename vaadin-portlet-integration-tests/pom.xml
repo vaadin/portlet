@@ -86,14 +86,6 @@
                 <scope>provided</scope>
             </dependency>
 
-            <!-- CDI API -->
-            <dependency>
-                <groupId>javax.enterprise</groupId>
-                <artifactId>cdi-api</artifactId>
-                <version>1.2</version>
-                <scope>provided</scope>
-            </dependency>
-
             <dependency>
                 <groupId>com.vaadin</groupId>
                 <artifactId>flow-server-production-mode</artifactId>

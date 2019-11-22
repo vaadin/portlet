@@ -25,12 +25,6 @@
             <artifactId>vaadin-portlet-cdi</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-cdi</artifactId>
-            <version>${flow.cdi.version}</version>
-        </dependency>
-
         <!-- Test dependency from components -->
         <dependency>
             <groupId>com.vaadin</groupId>
@@ -78,13 +72,6 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- CDI API -->
-        <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
             <scope>provided</scope>
         </dependency>
 

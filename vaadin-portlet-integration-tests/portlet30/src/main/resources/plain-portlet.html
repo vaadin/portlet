@@ -1,29 +1,39 @@
 <div>
-	<script type="text/javascript">
-    portlet.register('%ns%').then(function (hub) {
-        window.portletHub = hub;
-        var update = function(type, state){
-            if (state.parameters.param && state.parameters.param.length >0){
-                document.querySelector('#response-from-vaadin').innerHTML=state.parameters.param[0];
-            }
-            else{
-                document.querySelector('#response-from-vaadin').innerHTML="";
-            } 
-        };
-        hub.addEventListener("portlet.onStateChange", update);
-        hub.addEventListener("vaadin-portlet", function(type, payload){
-            params = hub.newParameters();
-            Object.getOwnPropertyNames(payload).forEach(function(prop){ params[prop] = payload[prop]; });
-            hub.action(params);
-        });
-   });
-    
-   function sendEvent(){
-       var params = window.portletHub.newParameters();
-       params['data'] = ["foo"];
-       window.portletHub.dispatchClientEvent('plain-portlet', params);
-   }
-  </script>
-	<button onclick="sendEvent()" id='send-to-vaadin'>Send event</button>
-	<div id='response-from-vaadin'>%param%</div>
+ <script type="text/javascript">
+        portlet
+                .register('%ns%')
+                .then(
+                        function(hub) {
+                            window.portletHub = hub;
+                            var update = function(type, state) {
+                                if (state.parameters.param
+                                        && state.parameters.param.length > 0) {
+                                    document
+                                            .querySelector('#response-from-vaadin').innerHTML = state.parameters.param[0];
+                                } else {
+                                    document
+                                            .querySelector('#response-from-vaadin').innerHTML = "";
+                                }
+                            };
+                            hub.addEventListener("portlet.onStateChange",
+                                    update);
+                            hub.addEventListener("vaadin-portlet", function(
+                                    type, payload) {
+                                params = hub.newParameters();
+                                Object.getOwnPropertyNames(payload).forEach(
+                                        function(prop) {
+                                            params[prop] = payload[prop];
+                                        });
+                                hub.action(params);
+                            });
+                        });
+
+        function sendEvent() {
+            var params = window.portletHub.newParameters();
+            params['data'] = [ "foo" ];
+            window.portletHub.dispatchClientEvent('plain-portlet', params);
+        }
+    </script>
+ <button onclick="sendEvent()" id='send-to-vaadin'>Send event</button>
+ <div id='response-from-vaadin'>%param%</div>
 </div>

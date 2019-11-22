@@ -27,4 +27,15 @@
         </supports>
     </portlet>
 
+    <portlet>
+        <portlet-name>eventobserver</portlet-name>
+        <display-name>Flow Portlet with Injected Event Observer</display-name>
+        <portlet-class>com.vaadin.flow.portal.cdi.EventObserverPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+    </portlet>
+
 </portlet-app>

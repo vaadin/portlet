@@ -15,5 +15,5 @@
  */
 package com.vaadin.flow.portal.cdi;
 
-public class InjectedComponentPortlet extends CdiVaadinPortlet<InjectedComponentView> {
+public class EventObserverPortlet extends CdiVaadinPortlet<EventObserverView> {
 }

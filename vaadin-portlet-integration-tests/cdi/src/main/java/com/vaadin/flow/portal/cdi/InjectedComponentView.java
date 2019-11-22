@@ -17,7 +17,6 @@ package com.vaadin.flow.portal.cdi;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-
 import java.util.Random;
 
 import com.vaadin.flow.component.html.Div;
@@ -27,6 +26,12 @@ import com.vaadin.flow.component.html.Label;
  * Inject a Vaadin component and add it in @PostConstruct-annotated method.
  */
 public class InjectedComponentView extends Div {
+
+    public static class Portlet extends CdiVaadinPortlet<InjectedComponentView> {
+        public String getTag() {
+            return "injected-component-portlet";
+        }
+    }
 
     public static class InjectedLabel extends Label {
 
@@ -43,7 +48,6 @@ public class InjectedComponentView extends Div {
     @PostConstruct
     private void init() {
         injectedLabel.addClassName(INJECTED_LABEL_CLASS);
-
         add(injectedLabel);
     }
 }

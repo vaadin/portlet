@@ -29,7 +29,7 @@ import com.vaadin.flow.server.UIInitEvent;
 public class EventObserverIT extends AbstractPlutoPortalTest {
 
     public EventObserverIT() {
-        super("eventobserver");
+        super("event-observer");
     }
 
     @Test

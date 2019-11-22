@@ -33,6 +33,12 @@ import com.vaadin.flow.server.UIInitEvent;
 
 public class EventObserverView extends Div {
 
+    public static class Portlet extends CdiVaadinPortlet<EventObserverView> {
+        public String getTag() {
+            return "event-observer-portlet";
+        }
+    }
+
     @PortletSessionScoped
     public static class EventObserver implements Serializable {
         private List<EventObject> eventsObserved = new ArrayList<>();

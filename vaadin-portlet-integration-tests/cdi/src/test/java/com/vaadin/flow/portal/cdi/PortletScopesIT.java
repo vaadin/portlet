@@ -27,7 +27,7 @@ import com.vaadin.testbench.TestBenchElement;
 public class PortletScopesIT extends AbstractPlutoPortalTest {
 
     public PortletScopesIT() {
-        super("portletscopes");
+        super("portlet-scopes");
     }
 
     @Test

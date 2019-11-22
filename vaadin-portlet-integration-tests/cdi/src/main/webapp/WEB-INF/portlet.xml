@@ -5,9 +5,9 @@
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/portlet http://xmlns.jcp.org/xml/ns/portlet/portlet-app_3_0.xsd"
              version="3.0">
     <portlet>
-        <portlet-name>portletscopes</portlet-name>
+        <portlet-name>portlet-scopes</portlet-name>
         <display-name>Flow Portlet with Portlet Scoped Beans</display-name>
-        <portlet-class>com.vaadin.flow.portal.cdi.PortletScopesPortlet</portlet-class>
+        <portlet-class>com.vaadin.flow.portal.cdi.PortletScopesView$Portlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
@@ -17,9 +17,9 @@
     </portlet>
 
     <portlet>
-        <portlet-name>injectedcomponent</portlet-name>
+        <portlet-name>injected-component</portlet-name>
         <display-name>Flow Portlet with Injected Components</display-name>
-        <portlet-class>com.vaadin.flow.portal.cdi.InjectedComponentPortlet</portlet-class>
+        <portlet-class>com.vaadin.flow.portal.cdi.InjectedComponentView$Portlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
@@ -28,9 +28,20 @@
     </portlet>
 
     <portlet>
-        <portlet-name>eventobserver</portlet-name>
+        <portlet-name>event-observer</portlet-name>
         <display-name>Flow Portlet with Injected Event Observer</display-name>
-        <portlet-class>com.vaadin.flow.portal.cdi.EventObserverPortlet</portlet-class>
+        <portlet-class>com.vaadin.flow.portal.cdi.EventObserverView$Portlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+    </portlet>
+
+    <portlet>
+        <portlet-name>i18n-bean</portlet-name>
+        <display-name>Flow Portlet with I18NProvider Bean</display-name>
+        <portlet-class>com.vaadin.flow.portal.cdi.I18NBeanView$Portlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>

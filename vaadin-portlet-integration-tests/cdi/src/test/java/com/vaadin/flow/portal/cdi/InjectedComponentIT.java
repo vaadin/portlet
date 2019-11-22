@@ -25,7 +25,7 @@ import com.vaadin.flow.component.html.testbench.LabelElement;
 public class InjectedComponentIT extends AbstractPlutoPortalTest {
 
     public InjectedComponentIT() {
-        super("injectedcomponent");
+        super("injected-component");
     }
 
     @Test

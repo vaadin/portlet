@@ -7,6 +7,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -58,6 +59,22 @@ public class VaadinPortletTest {
             this.context = context;
             initCounts++;
         }
+
+    }
+
+    private static class TestMYPortlet extends VaadinPortlet<Div> {
+
+    }
+
+    private static class Wrapper {
+
+        private static class TestMYPortlet extends VaadinPortlet<Div> {
+
+        }
+
+    }
+
+    private static class Special$Character extends VaadinPortlet<Div> {
 
     }
 
@@ -297,5 +314,27 @@ public class VaadinPortletTest {
         Assert.assertEquals(
                 "When dev server is enabled, DEV_MODE_ERROR_MESSAGE should be shown in the portlet.",
                 expectedDevModeErrorMessage, stringWriter.toString().trim());
+    }
+
+    @Test
+    public void getTag_tagNameDoNoContainUpperCaseLetters() {
+        TestMYPortlet portlet = new TestMYPortlet();
+        String tag = portlet.getTag();
+        Assert.assertFalse(tag.chars().anyMatch(Character::isUpperCase));
+    }
+
+    @Test
+    public void getTag_sameSimpleClassNamesDoNotCollide() {
+        TestMYPortlet portlet = new TestMYPortlet();
+        String tag = portlet.getTag();
+        Assert.assertNotEquals(tag, new Wrapper.TestMYPortlet().getTag());
+    }
+
+    @Test
+    public void getTag_tagNameDoNoContainUpperCaseLettersAndDollarSign() {
+        Special$Character portlet = new Special$Character();
+        String tag = portlet.getTag();
+        Assert.assertFalse(tag.chars().anyMatch(Character::isUpperCase));
+        Assert.assertFalse(tag.chars().anyMatch(ch -> ch == '$'));
     }
 }

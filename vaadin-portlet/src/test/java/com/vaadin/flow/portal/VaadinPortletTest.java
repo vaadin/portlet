@@ -74,6 +74,10 @@ public class VaadinPortletTest {
 
     }
 
+    private static class Special$Character extends VaadinPortlet<Div> {
+
+    }
+
     private String namespace = "namespace-foo";
 
     private TestComponent component;
@@ -324,5 +328,13 @@ public class VaadinPortletTest {
         TestMYPortlet portlet = new TestMYPortlet();
         String tag = portlet.getTag();
         Assert.assertNotEquals(tag, new Wrapper.TestMYPortlet().getTag());
+    }
+
+    @Test
+    public void getTag_tagNameDoNoContainUpperCaseLettersAndDollarSign() {
+        Special$Character portlet = new Special$Character();
+        String tag = portlet.getTag();
+        Assert.assertFalse(tag.chars().anyMatch(Character::isUpperCase));
+        Assert.assertFalse(tag.chars().anyMatch(ch -> ch == '$'));
     }
 }

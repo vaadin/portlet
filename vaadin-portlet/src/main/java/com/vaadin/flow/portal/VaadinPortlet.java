@@ -433,6 +433,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             }
             candidate = candidate.replace(".-", "-");
             candidate = candidate.replace('.', '-');
+            candidate = candidate.replace('$', '-');
             return candidate;
         }
     }

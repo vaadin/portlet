@@ -23,7 +23,6 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -84,11 +83,6 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         addPortlet();
     }
 
-    @After
-    public void tearDown() {
-        removePortletPage();
-    }
-
     protected void loginToPortal() {
         if (!findElements(By.id("j_login")).isEmpty()) {
             final WebElement username = findElement(By.id("j_username"));
@@ -137,11 +131,10 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
 
     protected String openInAnotherWindow() {
         final String firstWin = getDriver().getWindowHandle();
-        ((JavascriptExecutor) getDriver()).executeScript(
-                "window.open('" + getURL(route + "/" + testPage) + "','_blank');");
+        ((JavascriptExecutor) getDriver()).executeScript("window.open('"
+                + getURL(route + "/" + testPage) + "','_blank');");
         final String secondWin = driver.getWindowHandles().stream()
-                .filter(windowId -> !windowId.equals(firstWin))
-                .findFirst()
+                .filter(windowId -> !windowId.equals(firstWin)).findFirst()
                 .get();
         driver.switchTo().window(secondWin);
         return secondWin;

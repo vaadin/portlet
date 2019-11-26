@@ -353,14 +353,17 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                 return;
             }
 
-            PortletViewContext viewContext = getViewContext(session,
-                    response.getNamespace(), windowName);
-            if (viewContext != null) {
-                session.access(() -> viewContext.firePortletEvent(uid,
-                        new PortletEvent(event, map)));
-            } else {
-                getLogger().debug("Unable to retrieve view context, cannot "
-                        + "fire event '{}'", event);
+            PortletException[] exception = new PortletException[1];
+            session.accessSynchronously(() -> {
+                try {
+                    firePortletEvent(session, response, event, map, windowName,
+                            uid);
+                } catch (PortletException exc) {
+                    exception[0] = exc;
+                }
+            });
+            if (exception[0] != null) {
+                throw exception[0];
             }
         }
     }
@@ -552,6 +555,19 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private String getSessionWindowAttributeKey(String windowName,
             String subKey) {
         return getSessionAttributeKey(windowName + "-" + subKey);
+    }
+
+    private void firePortletEvent(VaadinPortletSession session,
+            ActionResponse response, String event, Map<String, String[]> map,
+            String windowName, String uid) throws PortletException {
+        PortletViewContext viewContext = getViewContext(session,
+                response.getNamespace(), windowName);
+        if (viewContext != null) {
+            viewContext.firePortletEvent(uid, new PortletEvent(event, map));
+        } else {
+            getLogger().debug("Unable to retrieve view context, cannot "
+                    + "fire event '{}'", event);
+        }
     }
 
     private Logger getLogger() {

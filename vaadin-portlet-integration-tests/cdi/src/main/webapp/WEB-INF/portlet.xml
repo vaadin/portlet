@@ -39,9 +39,9 @@
     </portlet>
 
     <portlet>
-        <portlet-name>i18n-bean</portlet-name>
+        <portlet-name>i18n-provider</portlet-name>
         <display-name>Flow Portlet with I18NProvider Bean</display-name>
-        <portlet-class>com.vaadin.flow.portal.cdi.I18NBeanView$Portlet</portlet-class>
+        <portlet-class>com.vaadin.flow.portal.cdi.I18NProviderView$Portlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>

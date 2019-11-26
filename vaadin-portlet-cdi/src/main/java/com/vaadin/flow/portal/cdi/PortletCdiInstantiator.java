@@ -15,31 +15,37 @@
  */
 package com.vaadin.flow.portal.cdi;
 
-import javax.enterprise.inject.Specializes;
+import javax.enterprise.inject.spi.BeanManager;
 
-import com.vaadin.cdi.CdiInstantiator;
-import com.vaadin.cdi.annotation.VaadinServiceEnabled;
-import com.vaadin.cdi.annotation.VaadinServiceScoped;
+import com.vaadin.cdi.AbstractCdiInstantiator;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.server.VaadinService;
 
 /**
- * Specialization of default Vaadin CDI instantiator.
+ * Instantiator for CDI-enabled Vaadin Portlets.
  *
- * @see CdiInstantiator
+ * @see AbstractCdiInstantiator
  */
-@VaadinServiceScoped
-@VaadinServiceEnabled
-@Specializes
-public class PortletCdiInstantiator extends CdiInstantiator {
+public class PortletCdiInstantiator extends AbstractCdiInstantiator {
+
+    private BeanManager beanManager;
+
+    public PortletCdiInstantiator(BeanManager beanManager) {
+        this.beanManager = beanManager;
+    }
 
     @Override
-    protected Class<? extends VaadinService> getServiceClass() {
-        return CdiVaadinPortletService.class;
+    public BeanManager getBeanManager() {
+        return beanManager;
     }
 
     @Override
     public <T extends Component> T createComponent(Class<T> componentClass) {
         return getOrCreate(componentClass);
+    }
+
+    @Override
+    public Class<? extends VaadinService> getServiceClass() {
+        return CdiVaadinPortletService.class;
     }
 }

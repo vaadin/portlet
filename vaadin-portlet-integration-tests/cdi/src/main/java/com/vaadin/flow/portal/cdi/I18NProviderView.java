@@ -16,9 +16,12 @@
 package com.vaadin.flow.portal.cdi;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.vaadin.cdi.annotation.VaadinServiceEnabled;
 import com.vaadin.flow.component.html.Div;
@@ -27,20 +30,30 @@ import com.vaadin.flow.i18n.I18NProvider;
 
 import static java.util.Locale.ENGLISH;
 
-public class I18NBeanView extends Div {
+public class I18NProviderView extends Div {
 
-    public static class Portlet extends CdiVaadinPortlet<I18NBeanView> {
+    public static class Portlet extends CdiVaadinPortlet<I18NProviderView> {
+        public static AtomicInteger counter = new AtomicInteger(0);
+
         public String getTag() {
             return "i18n-portlet";
         }
     }
 
-    // TODO: Cannot use @VaadinServiceScoped, as this context is currently not
-    // active in the BeanManager provided by Pluto. This needs to be fixed (and
-    // tested), as the I18NProvider is now unnecessarily often instantiated.
-    // @VaadinServiceScoped
     @VaadinServiceEnabled
+    @ApplicationScoped
     public static class I18N implements I18NProvider {
+
+        public I18N() {
+            System.out.println(
+                    "Constructing the I18NProvider, class is " + getClass());
+        }
+
+        @PostConstruct
+        public void init() {
+            Portlet.counter.incrementAndGet();
+        }
+
         @Override
         public List<Locale> getProvidedLocales() {
             return Arrays.asList(ENGLISH);
@@ -53,13 +66,29 @@ public class I18NBeanView extends Div {
         }
     }
 
-    public static final String TRANSLATED_LABEL_ID = "translatedLabel1";
+    public static final String TRANSLATED_LABEL1_ID = "translatedLabel1";
+    public static final String TRANSLATED_LABEL2_ID = "translatedLabel2";
+    public static final String COUNTER_LABEL_ID = "counterLabel";
+
+    @VaadinServiceEnabled
+    @Inject
+    I18NProvider i18nProvider;
 
     @PostConstruct
     private void init() {
         final Span label1 = new Span(getTranslation("test_key", ENGLISH));
-        label1.setId(TRANSLATED_LABEL_ID);
+        label1.setId(TRANSLATED_LABEL1_ID);
         add(label1);
+
+        final Span label2 = new Span(
+                i18nProvider.getTranslation("test_key", ENGLISH));
+        label2.setId(TRANSLATED_LABEL2_ID);
+        add(label2);
+
+        final Span instanceCounter = new Span(
+                Integer.toString(Portlet.counter.get()));
+        instanceCounter.setId(COUNTER_LABEL_ID);
+        add(instanceCounter);
     }
 
 }

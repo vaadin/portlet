@@ -28,12 +28,14 @@ import com.vaadin.flow.server.ServiceException;
 public class CdiVaadinPortletService extends VaadinPortletService {
 
     private final CdiVaadinServiceDelegate delegate;
+    private final BeanManager beanManager;
 
     public CdiVaadinPortletService(CdiVaadinPortlet portlet,
             DeploymentConfiguration configuration, BeanManager beanManager)
             throws ServiceException {
         super(portlet, configuration);
         this.delegate = new CdiVaadinServiceDelegate(this, beanManager);
+        this.beanManager = beanManager;
     }
 
     @Override
@@ -54,8 +56,9 @@ public class CdiVaadinPortletService extends VaadinPortletService {
     }
 
     @Override
-    protected Optional<Instantiator> loadInstantiators()
-            throws ServiceException {
-        return delegate.loadInstantiators();
+    public Optional<Instantiator> loadInstantiators() throws ServiceException {
+        final PortletCdiInstantiator instantiator = new PortletCdiInstantiator(beanManager);
+        instantiator.init(this);
+        return Optional.of(instantiator);
     }
 }

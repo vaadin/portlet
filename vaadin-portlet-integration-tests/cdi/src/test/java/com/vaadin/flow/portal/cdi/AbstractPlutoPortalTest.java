@@ -89,11 +89,6 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         addPortlet(portletName, null);
     }
 
-    @After
-    public void tearDown() {
-        removePortletPage();
-    }
-
     protected void loginToPortal() {
         if (!findElements(By.id("j_login")).isEmpty()) {
             final WebElement username = findElement(By.id("j_username"));

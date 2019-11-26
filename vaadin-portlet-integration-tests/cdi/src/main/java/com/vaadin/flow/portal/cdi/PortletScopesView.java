@@ -33,9 +33,6 @@ import com.vaadin.flow.component.html.Span;
 public class PortletScopesView extends Div {
 
     public static class Portlet extends CdiVaadinPortlet<PortletScopesView> {
-        public String getTag() {
-            return "portlet-scopes-portlet";
-        }
     }
 
     @PortletRequestScoped

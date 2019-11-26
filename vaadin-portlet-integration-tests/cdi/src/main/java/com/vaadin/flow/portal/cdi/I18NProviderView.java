@@ -33,12 +33,9 @@ import static java.util.Locale.ENGLISH;
 public class I18NProviderView extends Div {
 
     public static class Portlet extends CdiVaadinPortlet<I18NProviderView> {
-        public static AtomicInteger counter = new AtomicInteger(0);
-
-        public String getTag() {
-            return "i18n-portlet";
-        }
     }
+
+    public static AtomicInteger counter = new AtomicInteger(0);
 
     @VaadinServiceEnabled
     @ApplicationScoped
@@ -51,7 +48,7 @@ public class I18NProviderView extends Div {
 
         @PostConstruct
         public void init() {
-            Portlet.counter.incrementAndGet();
+            counter.incrementAndGet();
         }
 
         @Override
@@ -85,8 +82,7 @@ public class I18NProviderView extends Div {
         label2.setId(TRANSLATED_LABEL2_ID);
         add(label2);
 
-        final Span instanceCounter = new Span(
-                Integer.toString(Portlet.counter.get()));
+        final Span instanceCounter = new Span(Integer.toString(counter.get()));
         instanceCounter.setId(COUNTER_LABEL_ID);
         add(instanceCounter);
     }

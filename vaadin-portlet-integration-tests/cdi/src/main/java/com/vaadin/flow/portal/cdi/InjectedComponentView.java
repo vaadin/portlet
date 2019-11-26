@@ -28,9 +28,6 @@ import com.vaadin.flow.component.html.Label;
 public class InjectedComponentView extends Div {
 
     public static class Portlet extends CdiVaadinPortlet<InjectedComponentView> {
-        public String getTag() {
-            return "injected-component-portlet";
-        }
     }
 
     public static class InjectedLabel extends Label {

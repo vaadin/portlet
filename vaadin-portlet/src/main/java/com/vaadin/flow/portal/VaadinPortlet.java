@@ -32,6 +32,7 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.portlet.WindowState;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -244,10 +245,10 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         String initScript = (String) request.getPortletContext()
                 .getAttribute(PORTLET_SCRIPTS);
         if (initScript == null) {
-            initScript = "<script type=\"text/javascript\">" + loadFile(
-                    "scripts/PortletMethods.js") + "</script>";
-            request.getPortletContext()
-                    .setAttribute(PORTLET_SCRIPTS, initScript);
+            initScript = "<script type=\"text/javascript\">"
+                    + loadFile("scripts/PortletMethods.js") + "</script>";
+            request.getPortletContext().setAttribute(PORTLET_SCRIPTS,
+                    initScript);
         }
         response.getWriter().println(initScript);
     }
@@ -347,19 +348,22 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
             VaadinPortletSession session = getSession(request, response);
             if (session == null) {
-                getLogger().debug("Unable to retrieve session, cannot " +
-                        "fire event '{}'", event);
+                getLogger().debug("Unable to retrieve session, cannot "
+                        + "fire event '{}'", event);
                 return;
             }
 
-            PortletViewContext viewContext = getViewContext(session,
-                    response.getNamespace(), windowName);
-            if (viewContext != null) {
-                session.access(() -> viewContext.firePortletEvent(uid,
-                        new PortletEvent(event, map)));
-            } else {
-                getLogger().debug("Unable to retrieve view context, cannot " +
-                        "fire event '{}'", event);
+            PortletException[] exception = new PortletException[1];
+            session.accessSynchronously(() -> {
+                try {
+                    firePortletEvent(session, response, event, map, windowName,
+                            uid);
+                } catch (PortletException exc) {
+                    exception[0] = exc;
+                }
+            });
+            if (exception[0] != null) {
+                throw exception[0];
             }
         }
     }
@@ -426,26 +430,34 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             Tag tag = getClass().getAnnotation(Tag.class);
             return tag.value();
         } else {
-            String candidate = SharedUtil
-                    .camelCaseToDashSeparated(getClass().getSimpleName())
-                    .replaceFirst("^-", "");
-            if (!candidate.contains("-")) {
-                candidate = candidate + "-portlet";
-
+            String candidate = deriveTagName(getClass().getCanonicalName());
+            while (candidate.chars().anyMatch(Character::isUpperCase)) {
+                candidate = deriveTagName(candidate);
             }
+            candidate = candidate.replace(".-", "-");
+            candidate = candidate.replace('.', '-');
+            candidate = candidate.replace('$', '-');
             return candidate;
         }
     }
 
-    void setWebComponentProviderURL(VaadinSession session,
-            String namespace, String url) {
+    private String deriveTagName(String candidate) {
+        String result = SharedUtil.camelCaseToDashSeparated(candidate)
+                .replaceFirst("^-", "");
+        if (!result.contains("-")) {
+            result = result + "-portlet";
+        }
+        return result;
+    }
+
+    void setWebComponentProviderURL(VaadinSession session, String namespace,
+            String url) {
         session.checkHasLock();
         setSessionAttribute(session, namespace,
                 WEB_COMPONENT_PROVIDER_URL_SUBKEY, url);
     }
 
-    String getWebComponentProviderURL(VaadinSession session,
-            String namespace) {
+    String getWebComponentProviderURL(VaadinSession session, String namespace) {
         session.checkHasLock();
         return getSessionAttribute(session, namespace,
                 WEB_COMPONENT_PROVIDER_URL_SUBKEY);
@@ -543,6 +555,19 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private String getSessionWindowAttributeKey(String windowName,
             String subKey) {
         return getSessionAttributeKey(windowName + "-" + subKey);
+    }
+
+    private void firePortletEvent(VaadinPortletSession session,
+            ActionResponse response, String event, Map<String, String[]> map,
+            String windowName, String uid) throws PortletException {
+        PortletViewContext viewContext = getViewContext(session,
+                response.getNamespace(), windowName);
+        if (viewContext != null) {
+            viewContext.firePortletEvent(uid, new PortletEvent(event, map));
+        } else {
+            getLogger().debug("Unable to retrieve view context, cannot "
+                    + "fire event '{}'", event);
+        }
     }
 
     private Logger getLogger() {

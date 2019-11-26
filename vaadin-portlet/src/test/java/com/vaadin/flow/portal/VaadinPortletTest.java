@@ -1,5 +1,8 @@
 package com.vaadin.flow.portal;
 
+import javax.portlet.ActionParameters;
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.ActionURL;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
@@ -7,11 +10,18 @@ import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -21,9 +31,11 @@ import org.mockito.Mockito;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.internal.PendingJavaScriptInvocation;
 import com.vaadin.flow.component.page.ExtendedClientDetails;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.CurrentInstance;
+import com.vaadin.flow.portal.lifecycle.PortletEvent;
 import com.vaadin.flow.portal.lifecycle.PortletModeEvent;
 import com.vaadin.flow.portal.lifecycle.WindowStateEvent;
 import com.vaadin.flow.server.SessionExpiredException;
@@ -58,6 +70,22 @@ public class VaadinPortletTest {
             this.context = context;
             initCounts++;
         }
+
+    }
+
+    private static class TestMYPortlet extends VaadinPortlet<Div> {
+
+    }
+
+    private static class Wrapper {
+
+        private static class TestMYPortlet extends VaadinPortlet<Div> {
+
+        }
+
+    }
+
+    private static class Special$Character extends VaadinPortlet<Div> {
 
     }
 
@@ -297,5 +325,100 @@ public class VaadinPortletTest {
         Assert.assertEquals(
                 "When dev server is enabled, DEV_MODE_ERROR_MESSAGE should be shown in the portlet.",
                 expectedDevModeErrorMessage, stringWriter.toString().trim());
+    }
+
+    @Test
+    public void getTag_tagNameDoNoContainUpperCaseLetters() {
+        TestMYPortlet portlet = new TestMYPortlet();
+        String tag = portlet.getTag();
+        Assert.assertFalse(tag.chars().anyMatch(Character::isUpperCase));
+    }
+
+    @Test
+    public void getTag_sameSimpleClassNamesDoNotCollide() {
+        TestMYPortlet portlet = new TestMYPortlet();
+        String tag = portlet.getTag();
+        Assert.assertNotEquals(tag, new Wrapper.TestMYPortlet().getTag());
+    }
+
+    @Test
+    public void getTag_tagNameDoNoContainUpperCaseLettersAndDollarSign() {
+        Special$Character portlet = new Special$Character();
+        String tag = portlet.getTag();
+        Assert.assertFalse(tag.chars().anyMatch(Character::isUpperCase));
+        Assert.assertFalse(tag.chars().anyMatch(ch -> ch == '$'));
+    }
+
+    @Test
+    public void processAction_eventIsFiredAndNoExceptions()
+            throws PortletException, SessionExpiredException {
+        VaadinSession.setCurrent(null);
+        ReentrantLock lock = new ReentrantLock();
+        VaadinPortletSession session = new VaadinPortletSession(service) {
+
+            @Override
+            public Object getAttribute(String name) {
+                return super.getAttribute(name);
+            }
+
+            @Override
+            public Lock getLockInstance() {
+                return lock;
+            };
+        };
+
+        Map<String, PortletViewContext> viewContexts = new HashMap<>();
+
+        Div div = new Div();
+        ui.add(div);
+        PortletViewContext context = new PortletViewContext(div,
+                new AtomicBoolean(true), PortletMode.UNDEFINED,
+                WindowState.UNDEFINED);
+        viewContexts.put(namespace, context);
+
+        AtomicReference<PortletEvent> listener = new AtomicReference<>();
+        context.addEventChangeListener("foo",
+                event -> Assert.assertNull(listener.getAndSet(event)));
+        ui.getInternals().setSession(session);
+
+        ActionParameters params = Mockito.mock(ActionParameters.class);
+
+        session.accessSynchronously(() -> {
+            session.setAttribute(
+                    "com.vaadin.flow.portal.VaadinPortletTest$1-bar-viewContext",
+                    viewContexts);
+            Mockito.when(params.getValue("vaadin.uid"))
+                    .thenReturn(getListenerUid());
+        });
+
+        VaadinSession.setCurrent(session);
+        Mockito.when(service.findVaadinSession(Mockito.any()))
+                .thenReturn(session);
+
+        ActionRequest request = Mockito.mock(ActionRequest.class);
+        ActionResponse response = Mockito.mock(ActionResponse.class);
+
+        Mockito.when(response.getNamespace()).thenReturn(namespace);
+
+        Mockito.when(request.getActionParameters()).thenReturn(params);
+
+        Mockito.when(params.getNames())
+                .thenReturn(Collections.singleton("vaadin.ev"));
+
+        Mockito.when(params.getValue("vaadin.ev")).thenReturn("foo");
+        Mockito.when(params.getValue("vaadin.wn")).thenReturn("bar");
+        portlet.processAction(request, response);
+
+        Assert.assertNotNull(listener.get());
+    }
+
+    private String getListenerUid() {
+        ui.getInternals().getStateTree().runExecutionsBeforeClientResponse();
+
+        PendingJavaScriptInvocation invocation = ui.getInternals()
+                .dumpPendingJavaScriptInvocations().get(0);
+        String uid = invocation.getInvocation().getParameters().get(2)
+                .toString();
+        return uid;
     }
 }

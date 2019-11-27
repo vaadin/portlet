@@ -8,6 +8,10 @@ import com.vaadin.flow.server.ErrorHandler;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.shared.JsonConstants;
 
+/**
+ * {@link ErrorHandler} implementation which places raises exceptions to the
+ * client-side, displaying the errors on the portlet which caused the exception.
+ */
 public class DefaultPortletErrorHandler implements ErrorHandler {
     private static final Logger logger = LoggerFactory
             .getLogger(DefaultPortletErrorHandler.class);
@@ -38,6 +42,17 @@ public class DefaultPortletErrorHandler implements ErrorHandler {
         }
     }
 
+    /**
+     * Define the {@code querySelector} for finding the element under which the
+     * error box should be added. If the element found by the
+     * {@code querySelector} has a shadow root, the error will be added into the
+     * shadow instead.
+     * 
+     * @param response
+     *            the portlet response used to write the error to the
+     *            client-side
+     * @return {@code querySelector}
+     */
     protected String getQuerySelector(VaadinPortletResponse response) {
         String nameSpace = response.getPortletResponse().getNamespace();
         return "[data-portlet-id='" + nameSpace + "']";

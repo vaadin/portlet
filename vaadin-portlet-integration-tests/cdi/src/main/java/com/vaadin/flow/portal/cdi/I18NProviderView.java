@@ -41,11 +41,6 @@ public class I18NProviderView extends Div {
     @ApplicationScoped
     public static class I18N implements I18NProvider {
 
-        public I18N() {
-            System.out.println(
-                    "Constructing the I18NProvider, class is " + getClass());
-        }
-
         @PostConstruct
         public void init() {
             counter.incrementAndGet();
@@ -59,13 +54,14 @@ public class I18NProviderView extends Div {
         @Override
         public String getTranslation(String key, Locale locale,
                 Object... params) {
-            return "test_key".equals(key) ? "translation" : null;
+            return I18N_TEST_KEY.equals(key) ? "translation" : null;
         }
     }
 
     public static final String TRANSLATED_LABEL1_ID = "translatedLabel1";
     public static final String TRANSLATED_LABEL2_ID = "translatedLabel2";
     public static final String COUNTER_LABEL_ID = "counterLabel";
+    private static final String I18N_TEST_KEY = "test_key";
 
     @VaadinServiceEnabled
     @Inject
@@ -73,12 +69,12 @@ public class I18NProviderView extends Div {
 
     @PostConstruct
     private void init() {
-        final Span label1 = new Span(getTranslation("test_key", ENGLISH));
+        final Span label1 = new Span(getTranslation(I18N_TEST_KEY, ENGLISH));
         label1.setId(TRANSLATED_LABEL1_ID);
         add(label1);
 
         final Span label2 = new Span(
-                i18nProvider.getTranslation("test_key", ENGLISH));
+                i18nProvider.getTranslation(I18N_TEST_KEY, ENGLISH));
         label2.setId(TRANSLATED_LABEL2_ID);
         add(label2);
 

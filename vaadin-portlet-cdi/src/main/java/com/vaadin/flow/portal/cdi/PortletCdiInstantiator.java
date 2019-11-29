@@ -18,6 +18,7 @@ package com.vaadin.flow.portal.cdi;
 import javax.enterprise.inject.spi.BeanManager;
 
 import com.vaadin.cdi.AbstractCdiInstantiator;
+import com.vaadin.cdi.CdiVaadinServletService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.server.VaadinService;
 
@@ -28,15 +29,15 @@ import com.vaadin.flow.server.VaadinService;
  */
 public class PortletCdiInstantiator extends AbstractCdiInstantiator {
 
-    private BeanManager beanManager;
+    private final CdiVaadinServletService.CdiVaadinServiceDelegate delegate;
 
-    public PortletCdiInstantiator(BeanManager beanManager) {
-        this.beanManager = beanManager;
+    public PortletCdiInstantiator(CdiVaadinServletService.CdiVaadinServiceDelegate delegate) {
+        this.delegate = delegate;
     }
 
     @Override
     public BeanManager getBeanManager() {
-        return beanManager;
+        return delegate.getBeanManager();
     }
 
     @Override

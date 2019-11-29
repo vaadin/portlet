@@ -18,6 +18,7 @@
     <modules>
         <module>vaadin-portlet</module>
         <module>vaadin-portlet-integration-tests</module>
+        <module>vaadin-portlet-cdi</module>
     </modules>
 
     <organization>
@@ -70,6 +71,7 @@
 
         <testbench.version>6.2.0</testbench.version>
         <flow.version>2.2-SNAPSHOT</flow.version>
+        <flow.cdi.version>11.2-SNAPSHOT</flow.cdi.version>
         <jetty.version>9.4.9.v20180320</jetty.version>
 
         <maven.test.skip>false</maven.test.skip>

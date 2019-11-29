@@ -50,6 +50,9 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.internal.ExportsWebComponent;
 import com.vaadin.flow.component.webcomponent.WebComponent;
+import com.vaadin.flow.dom.Element;
+import com.vaadin.flow.dom.Node;
+import com.vaadin.flow.dom.ShadowRoot;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.function.SerializableRunnable;
 import com.vaadin.flow.internal.CurrentInstance;
@@ -176,6 +179,8 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                 "Unable to initialize component, UI instance not available from "
                         + component.getClass().getName()));
 
+        maximizeHostWidth(component);
+
         String windowName = ui.getInternals().getExtendedClientDetails()
                 .getWindowName();
         String namespace = VaadinPortletResponse.getCurrentPortletResponse()
@@ -204,6 +209,16 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             PortletView view = (PortletView) component;
             view.onPortletViewContextInit(context);
         }
+    }
+
+    private void maximizeHostWidth(C component) {
+        // set the width of the host to 100% to use the full portlet space
+        Node<?> parentNode = component.getElement().getParentNode();
+        // check if our host has a shadow (it should)
+        if (parentNode instanceof ShadowRoot) {
+            parentNode = ((ShadowRoot) parentNode).getHost();
+        }
+        ((Element)parentNode).getStyle().set("width", "100%");
     }
 
     protected DeploymentConfiguration createDeploymentConfiguration(

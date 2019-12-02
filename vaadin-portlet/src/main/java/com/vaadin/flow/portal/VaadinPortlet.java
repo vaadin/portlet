@@ -48,7 +48,8 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.internal.ExportsWebComponent;
+import com.vaadin.flow.component.WebComponentExporter;
+import com.vaadin.flow.component.WebComponentExporterFactory;
 import com.vaadin.flow.component.webcomponent.WebComponent;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.dom.Node;
@@ -56,6 +57,7 @@ import com.vaadin.flow.dom.ShadowRoot;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.function.SerializableRunnable;
 import com.vaadin.flow.internal.CurrentInstance;
+import com.vaadin.flow.internal.ReflectTools;
 import com.vaadin.flow.portal.lifecycle.PortletEvent;
 import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.server.Command;
@@ -72,9 +74,8 @@ import com.vaadin.flow.shared.util.SharedUtil;
  *
  * @since
  */
-@PreserveOnRefresh
 public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
-        implements ExportsWebComponent<C> {
+        implements WebComponentExporterFactory<C> {
 
     private static final String VAADIN_EVENT = "vaadin.ev";
     private static final String VAADIN_UID = "vaadin.uid";
@@ -140,6 +141,103 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private static final String WEB_COMPONENT_BOOTSTRAP_HANDLER_URL_SUBKEY = "webComponentBootstrapHandlerURL";
     private static final String WEB_COMPONENT_UIDL_REQUEST_HANDLER_URL_SUBKEY = "webComponentUidlRequestHandlerURL";
 
+    /**
+     * Portlet component exporter.
+     * <p>
+     * The exporter is an internal implementation detail for portlets
+     * functionality. See {@link WebComponentExporter} and
+     * {@link WebComponentExporterFactory} for details.
+     *
+     */
+    @PreserveOnRefresh
+    protected class PortletWebComponentExporter extends WebComponentExporter<C> {
+        /**
+         * Creates a new exporter instance using a provided {@code tag}.
+         *
+         * @param tag
+         *            the main portlet component tag
+         */
+        protected PortletWebComponentExporter(String tag) {
+            super(tag);
+        }
+
+        @Override
+        protected void configureInstance(WebComponent<C> webComponent,
+                C component) {
+            assert VaadinSession.getCurrent().hasLock();
+
+            SerializableRunnable runnable = () -> initComponent(component);
+            if (component.getElement().getNode().isAttached()) {
+                runnable.run();
+            }
+            component.getElement().addAttachListener(event -> runnable.run());
+        }
+
+        @Override
+        protected Class<C> getComponentClass() {
+            return (Class<C>) ReflectTools.getGenericInterfaceType(
+                    VaadinPortlet.this.getClass(),
+                    WebComponentExporterFactory.class);
+        }
+
+        /**
+         * Initializes the portlet {@code component}.
+         *
+         * @param component
+         *            a portlet component
+         */
+        protected void initComponent(C component) {
+            // We rely on the component being attached and the window name
+            // having been retrieved here---this is due to the
+            // implementation of @PreserveOnRefresh
+            UI ui = component.getUI().orElseThrow(() -> new IllegalStateException(
+                    "Unable to initialize component, UI instance not available from "
+                            + component.getClass().getName()));
+
+            maximizeHostWidth(component);
+
+            String windowName = ui.getInternals().getExtendedClientDetails()
+                    .getWindowName();
+            String namespace = VaadinPortletResponse.getCurrentPortletResponse()
+                    .getNamespace();
+            VaadinSession session = ui.getSession();
+            PortletViewContext context;
+            try {
+                context = getViewContext(session, namespace, windowName);
+            } catch (PortletException exception) {
+                throw new RuntimeException("Unable to initialize component, "
+                        + "PortletException raised", exception);
+            }
+            PortletRequest request = VaadinPortletRequest
+                    .getCurrentPortletRequest();
+            boolean needViewInit = false;
+            if (context == null) {
+                needViewInit = true;
+                context = new PortletViewContext(component, isPortlet3,
+                        request.getPortletMode(), request.getWindowState());
+                setViewContext(session, namespace, windowName, context);
+            }
+            context.init();
+            context.updateModeAndState(request.getPortletMode(),
+                    request.getWindowState());
+            if (needViewInit && component instanceof PortletView) {
+                PortletView view = (PortletView) component;
+                view.onPortletViewContextInit(context);
+            }
+        }
+
+        private void maximizeHostWidth(C component) {
+            // set the width of the host to 100% to use the full portlet space
+            Node<?> parentNode = component.getElement().getParentNode();
+            // check if our host has a shadow (it should)
+            if (parentNode instanceof ShadowRoot) {
+                parentNode = ((ShadowRoot) parentNode).getHost();
+            }
+            ((Element)parentNode).getStyle().set("width", "100%");
+        }
+
+    }
+
     @Override
     public void init(PortletConfig config) throws PortletException {
         CurrentInstance.clearAll();
@@ -158,67 +256,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         portletInitialized();
 
         CurrentInstance.clearAll();
-    }
-
-    @Override
-    public void configure(WebComponent<C> webComponent, C component) {
-        assert VaadinSession.getCurrent().hasLock();
-
-        SerializableRunnable runnable = () -> initComponent(component);
-        if (component.getElement().getNode().isAttached()) {
-            runnable.run();
-        }
-        component.getElement().addAttachListener(event -> runnable.run());
-    }
-
-    private void initComponent(C component) {
-        // We rely on the component being attached and the window name
-        // having been retrieved here---this is due to the
-        // implementation of @PreserveOnRefresh
-        UI ui = component.getUI().orElseThrow(() -> new IllegalStateException(
-                "Unable to initialize component, UI instance not available from "
-                        + component.getClass().getName()));
-
-        maximizeHostWidth(component);
-
-        String windowName = ui.getInternals().getExtendedClientDetails()
-                .getWindowName();
-        String namespace = VaadinPortletResponse.getCurrentPortletResponse()
-                .getNamespace();
-        VaadinSession session = ui.getSession();
-        PortletViewContext context;
-        try {
-            context = getViewContext(session, namespace, windowName);
-        } catch (PortletException exception) {
-            throw new RuntimeException("Unable to initialize component, "
-                    + "PortletException raised", exception);
-        }
-        PortletRequest request = VaadinPortletRequest
-                .getCurrentPortletRequest();
-        boolean needViewInit = false;
-        if (context == null) {
-            needViewInit = true;
-            context = new PortletViewContext(component, isPortlet3,
-                    request.getPortletMode(), request.getWindowState());
-            setViewContext(session, namespace, windowName, context);
-        }
-        context.init();
-        context.updateModeAndState(request.getPortletMode(),
-                request.getWindowState());
-        if (needViewInit && component instanceof PortletView) {
-            PortletView view = (PortletView) component;
-            view.onPortletViewContextInit(context);
-        }
-    }
-
-    private void maximizeHostWidth(C component) {
-        // set the width of the host to 100% to use the full portlet space
-        Node<?> parentNode = component.getElement().getParentNode();
-        // check if our host has a shadow (it should)
-        if (parentNode instanceof ShadowRoot) {
-            parentNode = ((ShadowRoot) parentNode).getHost();
-        }
-        ((Element)parentNode).getStyle().set("width", "100%");
     }
 
     protected DeploymentConfiguration createDeploymentConfiguration(
@@ -432,6 +469,11 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         }
     }
 
+    @Override
+    public WebComponentExporter<C> create() {
+        return new PortletWebComponentExporter(getPortletTag());
+    }
+
     /**
      * Gets the tag for the main component in the portlet.
      * <p>
@@ -439,8 +481,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      *
      * @return the tag of the main component to use
      */
-    @Override
-    public String getTag() {
+    protected String getPortletTag() {
         if (getClass().isAnnotationPresent(Tag.class)) {
             Tag tag = getClass().getAnnotation(Tag.class);
             return tag.value();

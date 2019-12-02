@@ -21,6 +21,7 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+
 import java.io.IOException;
 
 import com.vaadin.flow.component.Component;
@@ -30,14 +31,16 @@ import com.vaadin.flow.portal.VaadinPortletService;
 import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.VaadinServlet;
 
-public class CdiVaadinPortlet<C extends Component> extends VaadinPortlet<C> {
+public abstract class CdiVaadinPortlet<C extends Component>
+        extends VaadinPortlet<C> {
     @Inject
     private BeanManager beanManager;
 
     private static final ThreadLocal<String> portletName = new ThreadLocal<>();
 
     @Override
-    public void init(PortletConfig config) throws javax.portlet.PortletException {
+    public void init(PortletConfig config)
+            throws javax.portlet.PortletException {
         try {
             portletName.set(config.getPortletName());
             super.init(config);
@@ -47,7 +50,8 @@ public class CdiVaadinPortlet<C extends Component> extends VaadinPortlet<C> {
     }
 
     @Override
-    protected void doDispatch(RenderRequest request, RenderResponse response) throws PortletException, IOException {
+    protected void doDispatch(RenderRequest request, RenderResponse response)
+            throws PortletException, IOException {
         try {
             portletName.set(getPortletName());
             super.doDispatch(request, response);
@@ -59,8 +63,8 @@ public class CdiVaadinPortlet<C extends Component> extends VaadinPortlet<C> {
     /**
      * Name of the Vaadin portlet for the current thread.
      * <p>
-     * Until VaadinService appears in CurrentInstance,
-     * it has to be used to get the portlet name.
+     * Until VaadinService appears in CurrentInstance, it has to be used to get
+     * the portlet name.
      * <p>
      * This method is meant for internal use only.
      *
@@ -72,7 +76,9 @@ public class CdiVaadinPortlet<C extends Component> extends VaadinPortlet<C> {
     }
 
     @Override
-    protected VaadinPortletService createPortletService(DeploymentConfiguration deploymentConfiguration) throws ServiceException {
+    protected VaadinPortletService createPortletService(
+            DeploymentConfiguration deploymentConfiguration)
+            throws ServiceException {
         CdiVaadinPortletService service = new CdiVaadinPortletService(this,
                 deploymentConfiguration, beanManager);
         service.init();

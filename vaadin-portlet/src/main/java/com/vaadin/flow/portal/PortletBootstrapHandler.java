@@ -15,14 +15,14 @@
  */
 package com.vaadin.flow.portal;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
 import javax.portlet.PortletContext;
 import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceURL;
+
+import java.io.IOException;
+import java.io.PrintWriter;
 
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.server.SynchronizedRequestHandler;
@@ -52,7 +52,7 @@ class PortletBootstrapHandler extends SynchronizedRequestHandler {
     public boolean synchronizedHandleRequest(VaadinSession session,
             VaadinRequest request, VaadinResponse response) throws IOException {
         VaadinPortlet<?> portlet = VaadinPortlet.getCurrent();
-        String tag = portlet.getTag();
+        String tag = portlet.getPortletTag();
         PrintWriter writer = response.getWriter();
 
         PortletResponse resp = ((VaadinPortletResponse) response)
@@ -93,9 +93,9 @@ class PortletBootstrapHandler extends SynchronizedRequestHandler {
                 LicenseChecker.checkLicense(VaadinPortletService.PROJECT_NAME,
                         VaadinPortletService.getPortletVersion());
             }
-            String initScript = String
-                    .format("<script>window.Vaadin.Flow.Portlets.registerElement('%s','%s');</script>",
-                            tag, namespace);
+            String initScript = String.format(
+                    "<script>window.Vaadin.Flow.Portlets.registerElement('%s','%s');</script>",
+                    tag, namespace);
 
             writer.write(initScript);
             writer.write("<" + tag + " data-portlet-id='" + namespace + "'></"

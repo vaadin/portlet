@@ -30,11 +30,14 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.WebComponentExporter;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.internal.PendingJavaScriptInvocation;
 import com.vaadin.flow.component.page.ExtendedClientDetails;
+import com.vaadin.flow.component.webcomponent.WebComponent;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.CurrentInstance;
+import com.vaadin.flow.portal.VaadinPortlet.PortletWebComponentExporter;
 import com.vaadin.flow.portal.lifecycle.PortletEvent;
 import com.vaadin.flow.portal.lifecycle.PortletModeEvent;
 import com.vaadin.flow.portal.lifecycle.WindowStateEvent;
@@ -46,7 +49,30 @@ import com.vaadin.flow.shared.Registration;
 
 public class VaadinPortletTest {
 
-    private VaadinPortlet<TestComponent> portlet = new VaadinPortlet<TestComponent>() {
+    private class TestVaadinPortlet extends VaadinPortlet<TestComponent> {
+
+        private class TestWebComponentExporter
+                extends PortletWebComponentExporter {
+
+            private TestWebComponentExporter(String tag) {
+                super(tag);
+            }
+
+            @Override
+            protected void configureInstance(
+                    WebComponent<TestComponent> webComponent,
+                    TestComponent component) {
+                super.configureInstance(webComponent, component);
+            }
+
+            @Override
+            protected Class<TestComponent> getComponentClass() {
+                return super.getComponentClass();
+            }
+
+        }
+
+        private TestWebComponentExporter exporter;
 
         @Override
         protected String getTitle(RenderRequest request) {
@@ -56,6 +82,12 @@ public class VaadinPortletTest {
         @Override
         protected VaadinPortletService getService() {
             return service;
+        }
+
+        @Override
+        public WebComponentExporter<TestComponent> create() {
+            exporter = new TestWebComponentExporter(getPortletTag());
+            return exporter;
         }
     };
 
@@ -91,12 +123,14 @@ public class VaadinPortletTest {
 
     private String namespace = "namespace-foo";
 
+    private TestVaadinPortlet portlet;
     private TestComponent component;
     private VaadinPortletService service;
     private UI ui;
 
     @Before
     public void setUp() throws SessionExpiredException {
+        portlet = new TestVaadinPortlet();
         service = Mockito.mock(VaadinPortletService.class);
 
         VaadinPortletSession session = new VaadinPortletSession(service) {
@@ -156,14 +190,31 @@ public class VaadinPortletTest {
         Mockito.when(request.getPortletMode()).thenReturn(PortletMode.VIEW);
         Mockito.when(request.getWindowState()).thenReturn(WindowState.NORMAL);
 
+        portlet.create();
         component = new TestComponent();
         ui.add(component);
-        portlet.configure(null, component);
+        portlet.exporter.configureInstance(null, component);
     }
 
     @After
     public void tearDown() {
         CurrentInstance.clearAll();
+    }
+
+    @Test
+    public void createExporter_getComponentClass_componentClassIsDetected() {
+        Assert.assertEquals(TestComponent.class,
+                portlet.exporter.getComponentClass());
+    }
+
+    @Test
+    @SuppressWarnings("rawtypes")
+    public void createExporter_exporterIsNotExtended_componentClassIsDetected() {
+        TestMYPortlet portlet = new TestMYPortlet();
+
+        PortletWebComponentExporter exporter = (PortletWebComponentExporter) portlet
+                .create();
+        Assert.assertEquals(Div.class, exporter.getComponentClass());
     }
 
     @Test
@@ -330,21 +381,22 @@ public class VaadinPortletTest {
     @Test
     public void getTag_tagNameDoNoContainUpperCaseLetters() {
         TestMYPortlet portlet = new TestMYPortlet();
-        String tag = portlet.getTag();
+        String tag = portlet.getPortletTag();
         Assert.assertFalse(tag.chars().anyMatch(Character::isUpperCase));
     }
 
     @Test
     public void getTag_sameSimpleClassNamesDoNotCollide() {
         TestMYPortlet portlet = new TestMYPortlet();
-        String tag = portlet.getTag();
-        Assert.assertNotEquals(tag, new Wrapper.TestMYPortlet().getTag());
+        String tag = portlet.getPortletTag();
+        Assert.assertNotEquals(tag,
+                new Wrapper.TestMYPortlet().getPortletTag());
     }
 
     @Test
     public void getTag_tagNameDoNoContainUpperCaseLettersAndDollarSign() {
         Special$Character portlet = new Special$Character();
-        String tag = portlet.getTag();
+        String tag = portlet.getPortletTag();
         Assert.assertFalse(tag.chars().anyMatch(Character::isUpperCase));
         Assert.assertFalse(tag.chars().anyMatch(ch -> ch == '$'));
     }
@@ -385,7 +437,7 @@ public class VaadinPortletTest {
 
         session.accessSynchronously(() -> {
             session.setAttribute(
-                    "com.vaadin.flow.portal.VaadinPortletTest$1-bar-viewContext",
+                    TestVaadinPortlet.class.getName() + "-bar-viewContext",
                     viewContexts);
             Mockito.when(params.getValue("vaadin.uid"))
                     .thenReturn(getListenerUid());

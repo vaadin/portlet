@@ -67,10 +67,11 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
 
     private static final String PORTLET_ID_ATTRIBUTE = "data-portlet-id";
 
-    private final String route = "pluto/portal";
+    private static final String PORTAL_ROUTE = "pluto/portal";
+    private static final String ADMIN_PAGE_FRAGMENT = "Pluto Admin";
+
     private final String warName;
     private String testPage;
-    private final String adminPage = "Pluto Admin";
     private final String portletName;
     private String firstPortletId = null;
 
@@ -91,7 +92,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         } else {
             setDriver(TestBench.createDriver(new ChromeDriver()));
         }
-        getDriver().get(getURL(route));
+        getDriver().get(getURL(PORTAL_ROUTE));
         loginToPortal();
         addVaadinPortlet(portletName);
     }
@@ -133,7 +134,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
                 .map(we -> we.getAttribute(PORTLET_ID_ATTRIBUTE))
                 .filter(id -> !portletIds.contains(id))
                 .collect(Collectors.toSet());
-        if (newPortletId.size() == 0) {
+        if (newPortletId.isEmpty()) {
             throw new AssertionError("no new portlet added");
         } else if (newPortletId.size() > 1) {
             throw new AssertionError("expected only one portal to be added");
@@ -157,7 +158,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         createTestPageIfNotExists();
 
         // Go to admin
-        getDriver().get(getURL(route + "/" + adminPage));
+        getDriver().get(getURL(PORTAL_ROUTE + "/" + ADMIN_PAGE_FRAGMENT));
 
         // Add the portlet
         Map<String, SelectElement> nameMap = $(SelectElement.class).all()
@@ -180,7 +181,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     protected void createTestPageIfNotExists() {
         if (testPage == null) {
             // Go to admin
-            getDriver().get(getURL(route + "/" + adminPage));
+            getDriver().get(getURL(PORTAL_ROUTE + "/" + ADMIN_PAGE_FRAGMENT));
 
             testPage = String.format("IT-%d",
                     new Random().nextInt(Integer.MAX_VALUE));
@@ -190,7 +191,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     }
 
     protected void removePortletPage() {
-        getDriver().get(getURL(route + "/" + adminPage));
+        getDriver().get(getURL(PORTAL_ROUTE + "/" + ADMIN_PAGE_FRAGMENT));
         Map<String, SelectElement> nameMap = $(SelectElement.class).all()
                 .stream()
                 .collect(Collectors.toMap(
@@ -203,7 +204,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     protected String openInAnotherWindow() {
         final String firstWin = getDriver().getWindowHandle();
         ((JavascriptExecutor) getDriver()).executeScript("window.open('"
-                + getURL(route + "/" + testPage) + "','_blank');");
+                + getURL(PORTAL_ROUTE + "/" + testPage) + "','_blank');");
         final String secondWin = driver.getWindowHandles().stream()
                 .filter(windowId -> !windowId.equals(firstWin)).findFirst()
                 .get();
@@ -296,7 +297,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
      * @return the portal route
      */
     protected String getPortalRoute() {
-        return route;
+        return PORTAL_ROUTE;
     }
 
     /**

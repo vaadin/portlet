@@ -14,11 +14,6 @@
             <portlet-mode>VIEW</portlet-mode>
             <portlet-mode>EDIT</portlet-mode>
         </supports>
-        <portlet-info>
-            <title>Mode Changes Portlet</title>
-            <short-title>modechanges</short-title>
-            <keywords></keywords>
-        </portlet-info>
     </portlet>
     
     <portlet>
@@ -30,11 +25,6 @@
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
         </supports>
-        <portlet-info>
-            <title>Event Source Portlet</title>
-            <short-title>event-source</short-title>
-            <keywords></keywords>
-        </portlet-info>
     </portlet>
     
     <portlet>
@@ -46,11 +36,6 @@
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
         </supports>
-        <portlet-info>
-            <title>Event Target Portlet</title>
-            <short-title>event-target</short-title>
-            <keywords></keywords>
-        </portlet-info>
     </portlet>
 
     <portlet>
@@ -62,11 +47,6 @@
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
         </supports>
-        <portlet-info>
-            <title>Other Event Target Portlet</title>
-            <short-title>other-event-target</short-title>
-            <keywords></keywords>
-        </portlet-info>
     </portlet>
     
     <portlet>
@@ -78,11 +58,6 @@
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
         </supports>
-        <portlet-info>
-            <title>Vaadin IPC Portlet</title>
-            <short-title>vaadin-ipc-portlet</short-title>
-            <keywords></keywords>
-        </portlet-info>
     </portlet>
 
 </portlet-app>

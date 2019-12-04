@@ -35,10 +35,10 @@ public class PortletScopesIT extends AbstractPlutoPortalTest {
     public void preDefinedRequestBeansReflectPortletState() {
         // initially expect normal window state and view mode
         waitUntil(driver -> WindowState.NORMAL.toString()
-                .equals(P().$(TestBenchElement.class)
+                .equals(getFirstPortlet().$(TestBenchElement.class)
                         .id(PortletScopesView.WINDOW_STATE_LABEL_ID).getText())
                 && PortletMode.VIEW.toString()
-                        .equals(P().$(TestBenchElement.class)
+                        .equals(getFirstPortlet().$(TestBenchElement.class)
                                 .id(PortletScopesView.PORTLET_MODE_LABEL_ID)
                                 .getText()));
 
@@ -48,10 +48,10 @@ public class PortletScopesIT extends AbstractPlutoPortalTest {
 
         // then expect maximized window state and edit mode
         waitUntil(driver -> WindowState.MAXIMIZED.toString()
-                .equals(P().$(TestBenchElement.class)
+                .equals(getFirstPortlet().$(TestBenchElement.class)
                         .id(PortletScopesView.WINDOW_STATE_LABEL_ID).getText())
                 && PortletMode.EDIT.toString()
-                        .equals(P().$(TestBenchElement.class)
+                        .equals(getFirstPortlet().$(TestBenchElement.class)
                                 .id(PortletScopesView.PORTLET_MODE_LABEL_ID)
                                 .getText()));
     }
@@ -75,11 +75,10 @@ public class PortletScopesIT extends AbstractPlutoPortalTest {
     }
 
     private int getAttachCounter() {
-        waitUntil(driver -> P().$(SpanElement.class)
+        return Integer.parseInt(getFirstPortlet().$(SpanElement.class)
                 .attribute("id", PortletScopesView.ATTACH_COUNTER_LABEL_ID)
-                .exists());
-        return Integer.parseInt(P().$(SpanElement.class)
-                .id(PortletScopesView.ATTACH_COUNTER_LABEL_ID).getText());
+                .waitForFirst()
+                .getText());
     }
 
 }

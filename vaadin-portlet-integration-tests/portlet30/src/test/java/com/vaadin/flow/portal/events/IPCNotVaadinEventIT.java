@@ -34,14 +34,11 @@ public class IPCNotVaadinEventIT extends AbstractPlutoPortalTest {
     public void sendEventFromNonVaadinToVaadin() throws InterruptedException {
         addPortlet("PlainPortlet");
 
-        waitUntil(driver -> !findElements(By.id("send-to-vaadin")).isEmpty());
+        $(NativeButtonElement.class).attribute("id", "send-to-vaadin")
+                .waitForFirst().click();
 
-        NativeButtonElement sendEvent = $(NativeButtonElement.class)
-                .id("send-to-vaadin");
-
-        sendEvent.click();
-
-        WebElement event = P().findElement(By.id("response-from-plain-portlet"));
+        WebElement event = getFirstPortlet()
+                .findElement(By.id("response-from-plain-portlet"));
         Assert.assertEquals("foo", event.getText());
     }
 
@@ -49,10 +46,8 @@ public class IPCNotVaadinEventIT extends AbstractPlutoPortalTest {
     public void sendEventFromVaadinToNonVaadin() throws InterruptedException {
         addPortlet("PlainPortlet");
 
-        waitUntil(driver -> !P().findElements(By.id("send-to-plain")).isEmpty());
-
-        ButtonElement sendEvent = P().$(ButtonElement.class).id("send-to-plain");
-        sendEvent.click();
+        getFirstPortlet().$(ButtonElement.class)
+                .attribute("id", "send-to-plain").waitForFirst().click();
 
         WebElement event = findElement(By.id("response-from-vaadin"));
         Assert.assertEquals("baz", event.getText());

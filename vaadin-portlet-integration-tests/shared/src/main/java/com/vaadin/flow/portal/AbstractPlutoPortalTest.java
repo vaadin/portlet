@@ -213,13 +213,13 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     }
 
     protected List<TestBenchElement> getVaadinPortletRootElements() {
-        return findElements(By.xpath("//*[@data-portlet-id]")).stream()
-                .map(we -> (TestBenchElement) we).collect(Collectors.toList());
+        return $(TestBenchElement.class).hasAttribute("data-portlet-id").all();
     }
 
-    protected Optional<TestBenchElement> getVaadinPortletRootElement(String id) {
-        return getVaadinPortletRootElements().stream()
-                .filter(tbe -> id.equals(tbe.getAttribute(PORTLET_ID_ATTRIBUTE)))
+    protected Optional<TestBenchElement> getVaadinPortletRootElement(
+            String id) {
+        return getVaadinPortletRootElements().stream().filter(
+                tbe -> id.equals(tbe.getAttribute(PORTLET_ID_ATTRIBUTE)))
                 .findFirst();
     }
 
@@ -233,7 +233,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     /**
      * Gets the shadow root of the Vaadin Portlet identified by id
      */
-    protected TestBenchElement P(String id) {
+    protected TestBenchElement getPortletById(String id) {
         return getVaadinPortletRootElement(id)
                 .map(tbe -> (TestBenchElement) getShadowRoot(tbe))
                 .orElseThrow(() -> new AssertionError(
@@ -243,11 +243,11 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     /**
      * Gets the shadow root of the first added portlet.
      */
-    protected TestBenchElement P() {
+    protected TestBenchElement getFirstPortlet() {
         if (firstPortletId == null) {
             throw new AssertionError("no Vaadin Portlet added");
         }
-        return P(firstPortletId);
+        return getPortletById(firstPortletId);
     }
 
     /**
@@ -267,12 +267,13 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         String buttonLabel = WindowState.MAXIMIZED.equals(windowState)
                 ? "Maximize"
                 : WindowState.NORMAL.equals(windowState) ? "Restore"
-                : WindowState.MINIMIZED.equals(windowState) ? "Minimize"
-                : null;
+                        : WindowState.MINIMIZED.equals(windowState) ? "Minimize"
+                                : null;
         AnchorElement anchor = $(AnchorElement.class)
                 .attribute("title", buttonLabel).first();
         anchor.click();
     }
+
     /**
      * Find the first {@link WebElement} using the given {@link By} selector.
      *

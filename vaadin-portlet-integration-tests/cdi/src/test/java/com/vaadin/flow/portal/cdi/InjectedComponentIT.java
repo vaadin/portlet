@@ -33,14 +33,14 @@ public class InjectedComponentIT extends AbstractPlutoPortalTest {
     public void injectedComponentIsAddedAndPreserved() {
         // wait for label to be added
         waitUntil(
-                driver -> P().$(LabelElement.class)
+                driver -> getFirstPortlet().$(LabelElement.class)
                         .attributeContains("class",
                                 InjectedComponentView.INJECTED_LABEL_CLASS)
                         .exists());
 
         // check that label contains a random integer
-        final List<LabelElement> labels = P().$(LabelElement.class)
-                .attributeContains("class",
+        final List<LabelElement> labels = getFirstPortlet()
+                .$(LabelElement.class).attributeContains("class",
                         InjectedComponentView.INJECTED_LABEL_CLASS)
                 .all();
         Assert.assertEquals(1, labels.size());
@@ -50,14 +50,14 @@ public class InjectedComponentIT extends AbstractPlutoPortalTest {
         driver.navigate().refresh();
 
         waitUntil(
-                driver -> P().$(LabelElement.class)
+                driver -> getFirstPortlet().$(LabelElement.class)
                         .attributeContains("class",
                                 InjectedComponentView.INJECTED_LABEL_CLASS)
                         .exists());
 
         // check that label contains the same random integer
-        final List<LabelElement> labelsAfterRefresh = P().$(LabelElement.class)
-                .attributeContains("class",
+        final List<LabelElement> labelsAfterRefresh = getFirstPortlet()
+                .$(LabelElement.class).attributeContains("class",
                         InjectedComponentView.INJECTED_LABEL_CLASS)
                 .all();
         Assert.assertEquals(1, labels.size());

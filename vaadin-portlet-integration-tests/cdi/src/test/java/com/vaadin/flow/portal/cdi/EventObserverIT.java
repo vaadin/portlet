@@ -36,18 +36,19 @@ public class EventObserverIT extends AbstractPlutoPortalTest {
     @Test
     public void receivesSessionAndUIInitEvents() {
         // ask to populate event list
-        P().$(ButtonElement.class).id(EventObserverView.POPULATE_EVENTS_BUTTON_ID)
-                .click();
+        getFirstPortlet().$(ButtonElement.class)
+                .id(EventObserverView.POPULATE_EVENTS_BUTTON_ID).click();
 
         // wait for event labels to be added
-        waitUntil(driver -> P().$(SpanElement.class)
+        waitUntil(driver -> getFirstPortlet().$(SpanElement.class)
                 .attributeContains("class", EventObserverView.EVENT_LABEL_CLASS)
                 .exists());
 
         // we should have received SessionInitEvent and UIInitEvent
-        List<String> events = P().$(SpanElement.class)
+        List<String> events = getFirstPortlet().$(SpanElement.class)
                 .attributeContains("class", EventObserverView.EVENT_LABEL_CLASS)
-                .all().stream().map(se -> se.getText()).collect(Collectors.toList());
+                .all().stream().map(se -> se.getText())
+                .collect(Collectors.toList());
         Assert.assertTrue("expected SessionInitEvent",
                 events.contains(SessionInitEvent.class.toString()));
         Assert.assertTrue("expected UIInitEvent",

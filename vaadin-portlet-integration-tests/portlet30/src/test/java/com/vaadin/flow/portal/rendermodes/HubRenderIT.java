@@ -24,7 +24,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.vaadin.flow.component.button.testbench.ButtonElement;
 import com.vaadin.flow.component.html.testbench.SelectElement;
@@ -39,9 +38,9 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
 
     @Test
     public void changeModeAndState_modeAndStateAreKept() {
-        ButtonElement stateChange = P().$(ButtonElement.class)
+        ButtonElement stateChange = getFirstPortlet().$(ButtonElement.class)
                 .id(RenderView.WINDOW_STATE_CHANGE);
-        ButtonElement modeChange = P().$(ButtonElement.class)
+        ButtonElement modeChange = getFirstPortlet().$(ButtonElement.class)
                 .id(RenderView.PORTLET_MODE_CHANGE);
 
         Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());
@@ -49,10 +48,13 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
 
         stateChange.click();
 
-        stateChange = P().$(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = P().$(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
+        stateChange = getFirstPortlet().$(ButtonElement.class)
+                .id(RenderView.WINDOW_STATE_CHANGE);
+        modeChange = getFirstPortlet().$(ButtonElement.class)
+                .id(RenderView.PORTLET_MODE_CHANGE);
 
-        WebElement stateInfo = P().findElement(By.id("state-info"));
+        WebElement stateInfo = getFirstPortlet()
+                .findElement(By.id("state-info"));
         Assert.assertEquals(WindowState.MAXIMIZED.toString(),
                 stateInfo.getText());
 
@@ -63,10 +65,12 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
 
         modeChange.click();
 
-        stateChange = P().$(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = P().$(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
+        stateChange = getFirstPortlet().$(ButtonElement.class)
+                .id(RenderView.WINDOW_STATE_CHANGE);
+        modeChange = getFirstPortlet().$(ButtonElement.class)
+                .id(RenderView.PORTLET_MODE_CHANGE);
 
-        WebElement modeInfo = P().findElement(By.id("mode-info"));
+        WebElement modeInfo = getFirstPortlet().findElement(By.id("mode-info"));
         Assert.assertEquals(PortletMode.EDIT.toString(), modeInfo.getText());
 
         Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
@@ -76,10 +80,12 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
 
         stateChange.click();
 
-        stateChange = P().$(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = P().$(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
+        stateChange = getFirstPortlet().$(ButtonElement.class)
+                .id(RenderView.WINDOW_STATE_CHANGE);
+        modeChange = getFirstPortlet().$(ButtonElement.class)
+                .id(RenderView.PORTLET_MODE_CHANGE);
 
-        stateInfo = P().findElement(By.id("state-info"));
+        stateInfo = getFirstPortlet().findElement(By.id("state-info"));
         Assert.assertEquals(WindowState.NORMAL.toString(), stateInfo.getText());
 
         Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());

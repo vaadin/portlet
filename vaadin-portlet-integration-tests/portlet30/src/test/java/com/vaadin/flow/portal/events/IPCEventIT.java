@@ -28,75 +28,74 @@ import com.vaadin.flow.portal.AbstractPlutoPortalTest;
 public class IPCEventIT extends AbstractPlutoPortalTest {
 
     public IPCEventIT() {
-        super("event-target");
+        super("portlet30", "event-target");
     }
 
     @Test
     public void sendEventFromSourceToTarget() throws InterruptedException {
-        addPortlet("event-source", getPage());
-        addPortlet("other-event-target", getPage());
+        String eventSource = addVaadinPortlet("event-source");
+        String otherEventTarget = addVaadinPortlet("other-event-target");
 
-        waitUntil(driver -> !findElements(By.id("send-event")).isEmpty());
+        waitUntil(driver -> !P(eventSource).findElements(By.id("send-event"))
+                .isEmpty());
 
-        NativeButtonElement sendEvent = $(NativeButtonElement.class)
-                .id("send-event");
+        NativeButtonElement sendEvent = P(eventSource)
+                .$(NativeButtonElement.class).id("send-event");
 
         sendEvent.click();
 
-        waitUntil(driver -> !findElements(By.className("event")).isEmpty());
+        waitUntil(driver -> !P().findElements(By.className("event")).isEmpty());
 
-        WebElement event = findElement(By.className("event"));
+        WebElement event = P().findElement(By.className("event"));
         Assert.assertEquals("click[left]", event.getText());
 
-        Assert.assertTrue(findElements(By.className("other-event")).isEmpty());
+        Assert.assertTrue(P(otherEventTarget)
+                .findElements(By.className("other-event")).isEmpty());
 
         // add an event listener programmatically
-        findElement(By.id("start-listen")).click();
+        P(otherEventTarget).findElement(By.id("start-listen")).click();
 
         sendEvent.click();
 
-        waitUntil(driver -> findElements(By.className("event")).size() == 2);
+        waitUntil(driver -> P().findElements(By.className("event")).size() == 2);
 
         // event should be received by a programmatic listener
-        Assert.assertFalse(findElements(By.className("other-event")).isEmpty());
+        Assert.assertFalse(P(otherEventTarget).findElements(By.className("other-event")).isEmpty());
 
         // once event is received the programmatic listener should remove
         // itself, so no more events
         sendEvent.click();
 
-        waitUntil(driver -> findElements(By.className("event")).size() == 3);
+        waitUntil(driver -> P().findElements(By.className("event")).size() == 3);
         Assert.assertEquals(1,
-                findElements(By.className("other-event")).size());
+                P(otherEventTarget).findElements(By.className("other-event")).size());
     }
-
 
     @Test
     public void sendEventFromSourceToTarget_portletsOnDifferentTabsReceiveEventsIndependently() throws InterruptedException {
-        addPortlet("event-source", getPage());
-        addPortlet("other-event-target", getPage());
+        String eventSource = addVaadinPortlet("event-source");
 
         String firstTab = driver.getWindowHandle();
         String secondTab = openInAnotherWindow();
 
         driver.switchTo().window(firstTab);
-        waitUntil(driver -> !findElements(By.id("send-event")).isEmpty());
-        $(NativeButtonElement.class).id("send-event").click();
+        waitUntil(driver -> !P(eventSource).findElements(By.id("send-event")).isEmpty());
+        P(eventSource).$(NativeButtonElement.class).id("send-event").click();
 
         driver.switchTo().window(secondTab);
-        waitUntil(driver -> !findElements(By.id("send-event")).isEmpty());
-        $(NativeButtonElement.class).id("send-event").click();
+        waitUntil(driver -> !P(eventSource).findElements(By.id("send-event")).isEmpty());
+        P(eventSource).$(NativeButtonElement.class).id("send-event").click();
 
         driver.switchTo().window(firstTab);
-        waitUntil(driver -> !findElements(By.className("event")).isEmpty());
-        List<WebElement> events1 = findElements(By.className("event"));
+        waitUntil(driver -> !P().findElements(By.className("event")).isEmpty());
+        List<WebElement> events1 = P().findElements(By.className("event"));
         Assert.assertEquals(1, events1.size());
         Assert.assertEquals("click[left]", events1.get(0).getText());
 
         driver.switchTo().window(secondTab);
-        waitUntil(driver -> !findElements(By.className("event")).isEmpty());
-        List<WebElement> events2 = findElements(By.className("event"));
+        waitUntil(driver -> !P().findElements(By.className("event")).isEmpty());
+        List<WebElement> events2 = P().findElements(By.className("event"));
         Assert.assertEquals(1, events2.size());
         Assert.assertEquals("click[left]", events2.get(0).getText());
-
     }
 }

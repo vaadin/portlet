@@ -28,7 +28,7 @@ import com.vaadin.testbench.TestBenchElement;
 public class EventHandlerIT extends AbstractPlutoPortalTest {
 
     public EventHandlerIT() {
-        super("eventhandler");
+        super("tests-generic", "eventhandler");
     }
 
     @Test
@@ -57,19 +57,19 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
         waitUntil(driver -> PortletMode.EDIT.toString()
                 .equals(getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
         Assert.assertEquals(PortletMode.EDIT.toString(),
-                findElement(By.id("request-mode-info")).getText());
+                P().findElement(By.id("request-mode-info")).getText());
 
         setPortletModeInPortal(PortletMode.HELP);
         waitUntil(driver -> PortletMode.HELP.toString()
                 .equals(getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
         Assert.assertEquals(PortletMode.HELP.toString(),
-                findElement(By.id("request-mode-info")).getText());
+                P().findElement(By.id("request-mode-info")).getText());
 
         setPortletModeInPortal(PortletMode.VIEW);
         waitUntil(driver -> PortletMode.VIEW.toString()
                 .equals(getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
         Assert.assertEquals(PortletMode.VIEW.toString(),
-                findElement(By.id("request-mode-info")).getText());
+                P().findElement(By.id("request-mode-info")).getText());
     }
 
     @Test
@@ -80,18 +80,16 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
         waitUntil(driver -> WindowState.MAXIMIZED.toString().equals(
                 getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID)));
         Assert.assertEquals(WindowState.MAXIMIZED.toString(),
-                findElement(By.id("request-state-info")).getText());
+                P().findElement(By.id("request-state-info")).getText());
 
         setWindowStateInPortal(WindowState.NORMAL);
         waitUntil(driver -> WindowState.NORMAL.toString().equals(
                 getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID)));
         Assert.assertEquals(WindowState.NORMAL.toString(),
-                findElement(By.id("request-state-info")).getText());
+                P().findElement(By.id("request-state-info")).getText());
 
         setWindowStateInPortal(WindowState.MINIMIZED);
-        waitUntil(driver -> !$(TestBenchElement.class)
-                .attribute("id", EventHandlerContent.WINDOW_STATE_LABEL_ID)
-                .exists());
+        waitUntil(driver -> !getVaadinPortletRootElement().isPresent());
     }
 
     @Test
@@ -132,6 +130,6 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
     }
 
     protected String getLabelContent(String id) {
-        return $(TestBenchElement.class).id(id).getText();
+        return P().$(TestBenchElement.class).id(id).getText();
     }
 }

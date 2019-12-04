@@ -21,24 +21,25 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.vaadin.flow.component.html.testbench.LabelElement;
+import com.vaadin.flow.portal.AbstractPlutoPortalTest;
 
 public class InjectedComponentIT extends AbstractPlutoPortalTest {
 
     public InjectedComponentIT() {
-        super("injected-component");
+        super("cdi", "injected-component");
     }
 
     @Test
     public void injectedComponentIsAddedAndPreserved() {
         // wait for label to be added
         waitUntil(
-                driver -> $(LabelElement.class)
+                driver -> P().$(LabelElement.class)
                         .attributeContains("class",
                                 InjectedComponentView.INJECTED_LABEL_CLASS)
                         .exists());
 
         // check that label contains a random integer
-        final List<LabelElement> labels = $(LabelElement.class)
+        final List<LabelElement> labels = P().$(LabelElement.class)
                 .attributeContains("class",
                         InjectedComponentView.INJECTED_LABEL_CLASS)
                 .all();
@@ -49,13 +50,13 @@ public class InjectedComponentIT extends AbstractPlutoPortalTest {
         driver.navigate().refresh();
 
         waitUntil(
-                driver -> $(LabelElement.class)
+                driver -> P().$(LabelElement.class)
                         .attributeContains("class",
                                 InjectedComponentView.INJECTED_LABEL_CLASS)
                         .exists());
 
         // check that label contains the same random integer
-        final List<LabelElement> labelsAfterRefresh = $(LabelElement.class)
+        final List<LabelElement> labelsAfterRefresh = P().$(LabelElement.class)
                 .attributeContains("class",
                         InjectedComponentView.INJECTED_LABEL_CLASS)
                 .all();

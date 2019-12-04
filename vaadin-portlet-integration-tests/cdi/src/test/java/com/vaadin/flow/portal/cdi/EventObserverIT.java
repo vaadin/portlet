@@ -23,28 +23,29 @@ import org.junit.Test;
 
 import com.vaadin.flow.component.button.testbench.ButtonElement;
 import com.vaadin.flow.component.html.testbench.SpanElement;
+import com.vaadin.flow.portal.AbstractPlutoPortalTest;
 import com.vaadin.flow.server.SessionInitEvent;
 import com.vaadin.flow.server.UIInitEvent;
 
 public class EventObserverIT extends AbstractPlutoPortalTest {
 
     public EventObserverIT() {
-        super("event-observer");
+        super("cdi", "event-observer");
     }
 
     @Test
     public void receivesSessionAndUIInitEvents() {
         // ask to populate event list
-        $(ButtonElement.class).id(EventObserverView.POPULATE_EVENTS_BUTTON_ID)
+        P().$(ButtonElement.class).id(EventObserverView.POPULATE_EVENTS_BUTTON_ID)
                 .click();
 
         // wait for event labels to be added
-        waitUntil(driver -> $(SpanElement.class)
+        waitUntil(driver -> P().$(SpanElement.class)
                 .attributeContains("class", EventObserverView.EVENT_LABEL_CLASS)
                 .exists());
 
         // we should have received SessionInitEvent and UIInitEvent
-        List<String> events = $(SpanElement.class)
+        List<String> events = P().$(SpanElement.class)
                 .attributeContains("class", EventObserverView.EVENT_LABEL_CLASS)
                 .all().stream().map(se -> se.getText()).collect(Collectors.toList());
         Assert.assertTrue("expected SessionInitEvent",

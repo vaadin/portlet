@@ -27,12 +27,12 @@ import com.vaadin.flow.portal.AbstractPlutoPortalTest;
 public class IPCNotVaadinEventIT extends AbstractPlutoPortalTest {
 
     public IPCNotVaadinEventIT() {
-        super("vaadin-ipc-portlet");
+        super("portlet30", "vaadin-ipc-portlet");
     }
 
     @Test
     public void sendEventFromNonVaadinToVaadin() throws InterruptedException {
-        addPortlet("PlainPortlet", getPage());
+        addPortlet("PlainPortlet");
 
         waitUntil(driver -> !findElements(By.id("send-to-vaadin")).isEmpty());
 
@@ -41,17 +41,17 @@ public class IPCNotVaadinEventIT extends AbstractPlutoPortalTest {
 
         sendEvent.click();
 
-        WebElement event = findElement(By.id("response-from-plain-portlet"));
+        WebElement event = P().findElement(By.id("response-from-plain-portlet"));
         Assert.assertEquals("foo", event.getText());
     }
 
     @Test
     public void sendEventFromVaadinToNonVaadin() throws InterruptedException {
-        addPortlet("PlainPortlet", getPage());
+        addPortlet("PlainPortlet");
 
-        waitUntil(driver -> !findElements(By.id("send-to-plain")).isEmpty());
+        waitUntil(driver -> !P().findElements(By.id("send-to-plain")).isEmpty());
 
-        ButtonElement sendEvent = $(ButtonElement.class).id("send-to-plain");
+        ButtonElement sendEvent = P().$(ButtonElement.class).id("send-to-plain");
         sendEvent.click();
 
         WebElement event = findElement(By.id("response-from-vaadin"));

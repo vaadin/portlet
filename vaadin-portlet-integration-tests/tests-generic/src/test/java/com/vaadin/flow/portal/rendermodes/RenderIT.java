@@ -30,14 +30,14 @@ import com.vaadin.testbench.TestBenchElement;
 public class RenderIT extends AbstractPlutoPortalTest {
 
     public RenderIT() {
-        super("render");
+        super("tests-generic", "render");
     }
 
     @Test
     public void changeModeAndState_modeAndStateAreKept() {
-        ButtonElement stateChange = $(ButtonElement.class)
+        ButtonElement stateChange = P().$(ButtonElement.class)
                 .id(RenderView.WINDOW_STATE_CHANGE);
-        ButtonElement modeChange = $(ButtonElement.class)
+        ButtonElement modeChange = P().$(ButtonElement.class)
                 .id(RenderView.PORTLET_MODE_CHANGE);
 
         Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());
@@ -45,11 +45,8 @@ public class RenderIT extends AbstractPlutoPortalTest {
 
         stateChange.click();
 
-        waitUntil(ExpectedConditions.presenceOfElementLocated(
-                By.id(RenderView.WINDOW_STATE_CHANGE)));
-
-        stateChange = $(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = $(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
+        stateChange = P().$(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
+        modeChange = P().$(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
 
         Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_EDIT, modeChange.getText());
@@ -58,11 +55,8 @@ public class RenderIT extends AbstractPlutoPortalTest {
 
         modeChange.click();
 
-        waitUntil(ExpectedConditions.presenceOfElementLocated(
-                By.id(RenderView.WINDOW_STATE_CHANGE)));
-
-        stateChange = $(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = $(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
+        stateChange = P().$(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
+        modeChange = P().$(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
 
         Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());
@@ -71,11 +65,8 @@ public class RenderIT extends AbstractPlutoPortalTest {
 
         stateChange.click();
 
-        waitUntil(ExpectedConditions.presenceOfElementLocated(
-                By.id(RenderView.WINDOW_STATE_CHANGE)));
-
-        stateChange = $(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = $(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
+        stateChange = P().$(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
+        modeChange = P().$(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
 
         Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());

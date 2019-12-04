@@ -9,19 +9,19 @@ import com.vaadin.testbench.TestBenchElement;
 
 public class ErrorHandlingIT extends AbstractPlutoPortalTest {
     public ErrorHandlingIT() {
-        super("errorhandling");
+        super("tests-generic", "errorhandling");
     }
 
     @Test
     public void exceptionIsShownInsideOfTheThrowingPortlet() {
-        TestBenchElement errorPortlet = $("error-portlet").first();
-
-        ButtonElement buttonElement = errorPortlet.$(ButtonElement.class)
+        ButtonElement buttonElement = getFirstPortlet()
+                .$(ButtonElement.class)
                 .id("error-button");
         buttonElement.click();
 
-        TestBenchElement errorElement = errorPortlet.$(TestBenchElement.class)
-                .attribute("class", "v-system-error").first();
+        TestBenchElement errorElement = getFirstPortlet()
+                .$(TestBenchElement.class).attribute("class", "v-system-error")
+                .first();
 
         Assert.assertNotNull("Error should have been found", errorElement);
     }

@@ -35,20 +35,21 @@ import com.vaadin.flow.portal.AbstractPlutoPortalTest;
 public class UploadIT extends AbstractPlutoPortalTest {
 
     public UploadIT() {
-        super("upload");
+        super("tests-generic", "upload");
     }
 
     @Test
     public void fileUploaded_fileSizeIsRendered() throws Exception {
         // upload a file
         File file = createTempFile();
-        UploadElement upload = $(UploadElement.class).first();
+        UploadElement upload = getFirstPortlet().$(UploadElement.class).first();
         WebElement input = getInShadowRoot(upload, By.id("fileInput"));
         setLocalFileDetector(input);
         input.sendKeys(file.getAbsolutePath());
 
         // check that label indicates size of file
-        LabelElement label = $(LabelElement.class).id(UploadPortletContent.UPLOAD_LABEL_ID);
+        LabelElement label = getFirstPortlet().$(LabelElement.class)
+                .id(UploadPortletContent.UPLOAD_LABEL_ID);
         Assert.assertEquals(Long.toString(file.length()), label.getText());
     }
 

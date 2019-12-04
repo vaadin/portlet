@@ -22,6 +22,13 @@
 
         <dependency>
             <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-portlet-it-shared</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.vaadin</groupId>
             <artifactId>vaadin-portlet-cdi</artifactId>
         </dependency>
 

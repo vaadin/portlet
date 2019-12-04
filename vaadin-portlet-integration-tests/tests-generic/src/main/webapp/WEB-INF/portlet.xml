@@ -49,11 +49,6 @@
             <portlet-mode>VIEW</portlet-mode>
             <portlet-mode>EDIT</portlet-mode>
         </supports>
-        <portlet-info>
-            <title>Mode Changes Portlet</title>
-            <short-title>modechanges</short-title>
-            <keywords></keywords>
-        </portlet-info>
     </portlet>
 
     <portlet>

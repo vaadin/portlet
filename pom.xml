@@ -36,9 +36,9 @@
     <inceptionYear>2019</inceptionYear>
 
     <scm>
-        <connection>scm:https:https://github.com/vaadin/portlet-support.git</connection>
-        <developerConnection>scm:git:git@github.com:vaadin/portlet-support.git</developerConnection>
-        <url>https://github.com/vaadin/portlet-support.git</url>
+        <connection>scm:https:https://github.com/vaadin/portlet.git</connection>
+        <developerConnection>scm:git:git@github.com:vaadin/portlet.git</developerConnection>
+        <url>https://github.com/vaadin/portlet.git</url>
     </scm>
 
     <properties>

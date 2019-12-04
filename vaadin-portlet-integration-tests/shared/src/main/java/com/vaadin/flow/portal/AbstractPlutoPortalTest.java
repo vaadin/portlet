@@ -15,8 +15,13 @@
  */
 package com.vaadin.flow.portal;
 
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -27,10 +32,13 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import com.vaadin.flow.component.html.testbench.AnchorElement;
 import com.vaadin.flow.component.html.testbench.SelectElement;
 import com.vaadin.testbench.ScreenshotOnFailureRule;
 import com.vaadin.testbench.TestBench;
+import com.vaadin.testbench.TestBenchElement;
 import com.vaadin.testbench.parallel.ParallelTest;
 
 /**
@@ -57,13 +65,18 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
 
     private static final int SERVER_PORT = 8080;
 
-    private final String route = "pluto/portal";
-    private final String warName = "portlet30";
-    private String testPage = "IT";
-    private final String adminPage = "Pluto Admin";
-    private final String portletName;
+    private static final String PORTLET_ID_ATTRIBUTE = "data-portlet-id";
 
-    public AbstractPlutoPortalTest(String portletName) {
+    private static final String PORTAL_ROUTE = "pluto/portal";
+    private static final String ADMIN_PAGE_FRAGMENT = "Pluto Admin";
+
+    private final String warName;
+    private String testPage;
+    private final String portletName;
+    private String firstPortletId = null;
+
+    public AbstractPlutoPortalTest(String warName, String portletName) {
+        this.warName = warName;
         this.portletName = portletName;
     }
 
@@ -79,9 +92,9 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         } else {
             setDriver(TestBench.createDriver(new ChromeDriver()));
         }
-        getDriver().get(getURL(route));
+        getDriver().get(getURL(PORTAL_ROUTE));
         loginToPortal();
-        addPortlet(portletName, null);
+        addVaadinPortlet(portletName);
     }
 
     protected void loginToPortal() {
@@ -102,18 +115,50 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
      *
      * @param portlet
      *            the portlet name
-     * @return
+     * @return the portlet instance ID for uniquely identifying it
      */
-    protected void addPortlet(String portlet, String page) {
-        getDriver().get(getURL(route + "/" + adminPage));
+    protected String addVaadinPortlet(String portlet) {
+        createTestPageIfNotExists();
 
-        // Create a new page
-        if (page == null) {
-            testPage = String.format("IT-%d",
-                    new Random().nextInt(Integer.MAX_VALUE));
-            findElement(By.name("newPage")).sendKeys(testPage);
-            findElement(By.id("addPageButton")).click();
+        // Go to the page and collect the portlet names
+        getDriver().get(getURL(getPortalRoute() + "/" + getPage()));
+        final Set<String> portletIds = getVaadinPortletRootElements().stream()
+                .map(we -> we.getAttribute(PORTLET_ID_ATTRIBUTE))
+                .collect(Collectors.toSet());
+
+        addPortlet(portlet);
+
+        // Added portlet is expected to be the only new portlet amongst all the
+        // portlets on the page
+        Set<String> newPortletId = getVaadinPortletRootElements().stream()
+                .map(we -> we.getAttribute(PORTLET_ID_ATTRIBUTE))
+                .filter(id -> !portletIds.contains(id))
+                .collect(Collectors.toSet());
+        if (newPortletId.isEmpty()) {
+            throw new AssertionError("no new portlet added");
+        } else if (newPortletId.size() > 1) {
+            throw new AssertionError("expected only one portal to be added");
         }
+        String portletId = newPortletId.iterator().next();
+        if (firstPortletId == null) {
+            firstPortletId = portletId;
+        }
+        return portletId;
+    }
+
+    /**
+     * Adds a new {@code portlet} to the {@code page}.
+     * <p>
+     * A new page is created if {@code page} is {@code null}.
+     *
+     * @param portlet
+     *            the portlet name
+     */
+    protected void addPortlet(String portlet) {
+        createTestPageIfNotExists();
+
+        // Go to admin
+        getDriver().get(getURL(PORTAL_ROUTE + "/" + ADMIN_PAGE_FRAGMENT));
 
         // Add the portlet
         Map<String, SelectElement> nameMap = $(SelectElement.class).all()
@@ -127,10 +172,26 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         findElement(By.id("addButton")).click();
 
         getDriver().get(getURL(getPortalRoute() + "/" + getPage()));
+
+        // Wait for the portlet to appear on the page
+        waitUntil(ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//h2[contains(text(),'" + portlet + "')]")));
+    }
+
+    protected void createTestPageIfNotExists() {
+        if (testPage == null) {
+            // Go to admin
+            getDriver().get(getURL(PORTAL_ROUTE + "/" + ADMIN_PAGE_FRAGMENT));
+
+            testPage = String.format("IT-%d",
+                    new Random().nextInt(Integer.MAX_VALUE));
+            findElement(By.name("newPage")).sendKeys(testPage);
+            findElement(By.id("addPageButton")).click();
+        }
     }
 
     protected void removePortletPage() {
-        getDriver().get(getURL(route + "/" + adminPage));
+        getDriver().get(getURL(PORTAL_ROUTE + "/" + ADMIN_PAGE_FRAGMENT));
         Map<String, SelectElement> nameMap = $(SelectElement.class).all()
                 .stream()
                 .collect(Collectors.toMap(
@@ -143,12 +204,75 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     protected String openInAnotherWindow() {
         final String firstWin = getDriver().getWindowHandle();
         ((JavascriptExecutor) getDriver()).executeScript("window.open('"
-                + getURL(route + "/" + testPage) + "','_blank');");
+                + getURL(PORTAL_ROUTE + "/" + testPage) + "','_blank');");
         final String secondWin = driver.getWindowHandles().stream()
                 .filter(windowId -> !windowId.equals(firstWin)).findFirst()
                 .get();
         driver.switchTo().window(secondWin);
         return secondWin;
+    }
+
+    protected List<TestBenchElement> getVaadinPortletRootElements() {
+        return $(TestBenchElement.class).hasAttribute(PORTLET_ID_ATTRIBUTE)
+                .all();
+    }
+
+    protected Optional<TestBenchElement> getVaadinPortletRootElement(
+            String id) {
+        return getVaadinPortletRootElements().stream().filter(
+                tbe -> id.equals(tbe.getAttribute(PORTLET_ID_ATTRIBUTE)))
+                .findFirst();
+    }
+
+    protected Optional<TestBenchElement> getVaadinPortletRootElement() {
+        if (firstPortletId == null) {
+            throw new AssertionError("no Vaadin Portlet added");
+        }
+        return getVaadinPortletRootElement(firstPortletId);
+    }
+
+    /**
+     * Gets the shadow root of the Vaadin Portlet identified by id
+     */
+    protected TestBenchElement getPortletById(String id) {
+        return getVaadinPortletRootElement(id)
+                .map(tbe -> (TestBenchElement) getShadowRoot(tbe))
+                .orElseThrow(() -> new AssertionError(
+                        "no Vaadin Portlet with id '" + id + "'"));
+    }
+
+    /**
+     * Gets the shadow root of the first added portlet.
+     */
+    protected TestBenchElement getFirstPortlet() {
+        if (firstPortletId == null) {
+            throw new AssertionError("no Vaadin Portlet added");
+        }
+        return getPortletById(firstPortletId);
+    }
+
+    /**
+     * Set the mode of the first portlet on page via Pluto's header dropdown.
+     */
+    protected void setPortletModeInPortal(PortletMode portletMode) {
+        SelectElement modeSelector = $(TestBenchElement.class)
+                .attribute("name", "modeSelectionForm").first()
+                .$(SelectElement.class).first();
+        modeSelector.selectByText(portletMode.toString().toUpperCase());
+    }
+
+    /**
+     * Set the mode of the first portlet on page via Pluto's header dropdown.
+     */
+    protected void setWindowStateInPortal(WindowState windowState) {
+        String buttonLabel = WindowState.MAXIMIZED.equals(windowState)
+                ? "Maximize"
+                : WindowState.NORMAL.equals(windowState) ? "Restore"
+                        : WindowState.MINIMIZED.equals(windowState) ? "Minimize"
+                                : null;
+        AnchorElement anchor = $(AnchorElement.class)
+                .attribute("title", buttonLabel).first();
+        anchor.click();
     }
 
     /**
@@ -175,7 +299,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
      * @return the portal route
      */
     protected String getPortalRoute() {
-        return route;
+        return PORTAL_ROUTE;
     }
 
     /**
@@ -187,7 +311,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         return testPage;
     }
 
-    private WebElement getShadowRoot(WebElement webComponent) {
+    protected WebElement getShadowRoot(WebElement webComponent) {
         waitUntil(driver -> getCommandExecutor().executeScript(
                 "return arguments[0].shadowRoot", webComponent) != null);
         WebElement shadowRoot = (WebElement) getCommandExecutor()

@@ -213,7 +213,8 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     }
 
     protected List<TestBenchElement> getVaadinPortletRootElements() {
-        return $(TestBenchElement.class).hasAttribute("data-portlet-id").all();
+        return $(TestBenchElement.class).hasAttribute(PORTLET_ID_ATTRIBUTE)
+                .all();
     }
 
     protected Optional<TestBenchElement> getVaadinPortletRootElement(

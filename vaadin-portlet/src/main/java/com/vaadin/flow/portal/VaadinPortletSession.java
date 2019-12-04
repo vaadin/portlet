@@ -40,12 +40,10 @@ public class VaadinPortletSession extends VaadinSession {
      * Create a portlet service session for the given portlet service.
      *
      * @param service
-     *         the portlet service to which the new session belongs
+     *            the portlet service to which the new session belongs
      */
     public VaadinPortletSession(VaadinPortletService service) {
         super(service);
-
-        setErrorHandler(new DefaultPortletErrorHandler(service));
     }
 
     @Override

@@ -65,6 +65,8 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
 
     private static final int SERVER_PORT = 8080;
 
+    private static final String PORTLET_ID_ATTRIBUTE = "data-portlet-id";
+
     private final String route = "pluto/portal";
     private final String warName;
     private String testPage;
@@ -120,7 +122,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         // Go to the page and collect the portlet names
         getDriver().get(getURL(getPortalRoute() + "/" + getPage()));
         final Set<String> portletIds = getVaadinPortletRootElements().stream()
-                .map(we -> we.getAttribute("data-portlet-id"))
+                .map(we -> we.getAttribute(PORTLET_ID_ATTRIBUTE))
                 .collect(Collectors.toSet());
 
         addPortlet(portlet);
@@ -128,7 +130,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         // Added portlet is expected to be the only new portlet amongst all the
         // portlets on the page
         Set<String> newPortletId = getVaadinPortletRootElements().stream()
-                .map(we -> we.getAttribute("data-portlet-id"))
+                .map(we -> we.getAttribute(PORTLET_ID_ATTRIBUTE))
                 .filter(id -> !portletIds.contains(id))
                 .collect(Collectors.toSet());
         if (newPortletId.size() == 0) {
@@ -216,7 +218,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
 
     protected Optional<TestBenchElement> getVaadinPortletRootElement(String id) {
         return getVaadinPortletRootElements().stream()
-                .filter(tbe -> id.equals(tbe.getAttribute("data-portlet-id")))
+                .filter(tbe -> id.equals(tbe.getAttribute(PORTLET_ID_ATTRIBUTE)))
                 .findFirst();
     }
 

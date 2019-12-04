@@ -13,12 +13,17 @@
     <artifactId>portlet30</artifactId>
     <name>Portlet 3.0 feature tests</name>
 
-
     <dependencies>
-
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-portlet</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-portlet-it-shared</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- Test dependency from components -->
@@ -26,6 +31,7 @@
             <groupId>com.vaadin</groupId>
             <artifactId>flow-data</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>flow-html-components</artifactId>

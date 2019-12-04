@@ -28,6 +28,7 @@
     </properties>
 
     <modules>
+        <module>shared</module>
         <module>portlet30</module>
         <module>tests-generic</module>
         <module>cdi</module>
@@ -182,6 +183,9 @@
                 <property>
                     <name>!skipTests</name>
                 </property>
+                <file>
+                    <exists>${basedir}/src/main/webapp</exists>
+                </file>
             </activation>
             <build>
                 <plugins>

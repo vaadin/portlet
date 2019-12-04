@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 
-@PortletConfiguration(portletName = "PlainPortlet", publicParams = "param", title = @LocaleString("Non Vaadin Portlet"), dependencies = @Dependency(name = "PortletHub", scope = "javax.portlet", version = "3.0.0"))
+@PortletConfiguration(portletName = "PlainPortlet", publicParams = "param", dependencies = @Dependency(name = "PortletHub", scope = "javax.portlet", version = "3.0.0"))
 public class PlainIPCPortlet extends GenericPortlet {
 
     private static final String PARAM = "param";

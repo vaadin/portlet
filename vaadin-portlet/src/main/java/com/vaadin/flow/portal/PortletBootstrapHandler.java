@@ -98,8 +98,8 @@ class PortletBootstrapHandler extends SynchronizedRequestHandler {
                     tag, namespace);
 
             writer.write(initScript);
-            writer.write("<" + tag + " data-portlet-id='" + namespace + "'></"
-                    + tag + ">");
+            writer.write("<" + tag + " data-portlet-id='" + namespace
+                    + "' style='width: 100%;'></" + tag + ">");
         } catch (Exception exception) {
             String message = exception.getMessage();
             writer.write("<div style='color:red;'>" + message + "</div>");

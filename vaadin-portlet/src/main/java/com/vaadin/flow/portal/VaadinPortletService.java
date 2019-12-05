@@ -15,6 +15,13 @@
  */
 package com.vaadin.flow.portal;
 
+import javax.portlet.EventRequest;
+import javax.portlet.PortletContext;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
+import javax.portlet.PortletSession;
+import javax.portlet.RenderRequest;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -23,18 +30,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-import javax.portlet.EventRequest;
-import javax.portlet.PortletContext;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
-import javax.portlet.PortletSession;
-import javax.portlet.RenderRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.UsageStatistics;
+import com.vaadin.flow.server.ErrorHandler;
 import com.vaadin.flow.server.PwaRegistry;
 import com.vaadin.flow.server.RequestHandler;
 import com.vaadin.flow.server.RouteRegistry;
@@ -48,6 +49,7 @@ import com.vaadin.flow.server.Version;
 import com.vaadin.flow.server.WebBrowser;
 import com.vaadin.flow.server.WrappedSession;
 import com.vaadin.flow.server.startup.ApplicationRouteRegistry;
+import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.theme.AbstractTheme;
 
 /**
@@ -69,11 +71,18 @@ public class VaadinPortletService extends VaadinService {
 
     private final VaadinPortlet portlet;
 
+    private final ErrorHandler DEFAULT_HANDLER = new DefaultPortletErrorHandler(
+            this);
+
     public VaadinPortletService(VaadinPortlet portlet,
             DeploymentConfiguration deploymentConfiguration) {
         super(deploymentConfiguration);
         this.portlet = portlet;
         verifyLicense(deploymentConfiguration.isProductionMode());
+
+        Registration registration = addSessionInitListener(
+                event -> event.getSession().setErrorHandler(DEFAULT_HANDLER));
+        addServiceDestroyListener(event -> registration.remove());
     }
 
     private void verifyLicense(boolean productionMode) {

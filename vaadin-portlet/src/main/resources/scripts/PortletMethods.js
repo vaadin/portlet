@@ -60,8 +60,8 @@ if (!window.Vaadin.Flow.Portlets) {
     window.Vaadin.Flow.Portlets.registerHub = function (tag, portletRegistryName, elem) {
         var targetElem;
         var allPortletElems = document.querySelectorAll(tag);
-        for (i = 0; i < allPortletElems.length; i++) {
-            if (allPortletElems[i].getAttribute('data-portlet-id') == portletRegistryName) {
+        for (var i = 0; i !== allPortletElems.length; i++) {
+            if (allPortletElems[i].getAttribute('data-portlet-id') === portletRegistryName) {
                 targetElem = allPortletElems[i];
                 break;
             }
@@ -75,22 +75,25 @@ if (!window.Vaadin.Flow.Portlets) {
             window.Vaadin.Flow.Portlets[portletRegistryName] = window.Vaadin.Flow.Portlets[portletRegistryName] || {};
 
             var portletObj = window.Vaadin.Flow.Portlets[portletRegistryName];
-            if (!portletObj.hub && portlet) {
-                portlet.register(portletRegistryName).then(function (hub) {
-                    portletObj.hub = hub;
+            if (!portletObj.hub) {
+                if (portlet) {
+                    portlet.register(portletRegistryName).then(function (hub) {
+                        portletObj.hub = hub;
 
-                    hub.addEventListener('portlet.onStateChange', function (type, state) {});
-                    portletObj.eventPoller = window.Vaadin.Flow.Portlets.eventPoller;
-                    if (portletObj.listeners) {
-                        Object.getOwnPropertyNames(portletObj.listeners).forEach(
-                            function (uid) {
-                                portletObj.registerListener(portletObj.listeners[uid], uid);
-                            }
-                        );
-                        delete portletObj.listeners;
-                    }
-                });
-                targetElem.afterServerUpdate = afterServerUpdate;
+                        hub.addEventListener('portlet.onStateChange', function (type, state) {
+                        });
+                        portletObj.eventPoller = window.Vaadin.Flow.Portlets.eventPoller;
+                        if (portletObj.listeners) {
+                            Object.getOwnPropertyNames(portletObj.listeners).forEach(
+                              function (uid) {
+                                  portletObj.registerListener(portletObj.listeners[uid], uid);
+                              }
+                            );
+                            delete portletObj.listeners;
+                        }
+                    });
+                    targetElem.afterServerUpdate = afterServerUpdate;
+                }
             }
         };
         window.Vaadin.Flow.Portlets.initListenerRegistration(portletRegistryName, elem);
@@ -149,9 +152,11 @@ if (!window.Vaadin.Flow.Portlets) {
             }
         };
         portletObj._removeListener = function (uid) {
-            if (portletObj.eventHandles && portletObj.eventHandles[uid]) {
-                portletObj.hub.removeEventListener(portletObj.eventHandles[uid]);
-                delete portletObj.eventHandles[uid];
+            if (portletObj.eventHandles) {
+                if(portletObj.eventHandles[uid]) {
+                    portletObj.hub.removeEventListener(portletObj.eventHandles[uid]);
+                    delete portletObj.eventHandles[uid];
+                }
             }
         };
         portletObj.unregisterListener = function (uid) {

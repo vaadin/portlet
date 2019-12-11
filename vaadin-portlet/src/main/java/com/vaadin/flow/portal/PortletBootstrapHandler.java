@@ -20,9 +20,10 @@ import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.ResourceURL;
-
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.server.SynchronizedRequestHandler;
@@ -93,10 +94,22 @@ class PortletBootstrapHandler extends SynchronizedRequestHandler {
                 LicenseChecker.checkLicense(VaadinPortletService.PROJECT_NAME,
                         VaadinPortletService.getPortletVersion());
             }
-            String initScript = String.format(
-                    "<script>window.Vaadin.Flow.Portlets.registerElement('%s','%s');</script>",
-                    tag, namespace);
-
+            String initScript = String
+                    .format("<script>window.Vaadin.Flow.Portlets.registerElement('%s','%s','%s','%s','%s');</script>",
+                            tag, namespace, Collections
+                                    .list(portlet.getWindowStates("text/html"))
+                                    .stream()
+                                    .map(state -> "\"" + state.toString()
+                                            + "\"")
+                                    .collect(Collectors.joining(",", "[", "]")),
+                            Collections
+                                    .list(portlet.getPortletModes("text/html"))
+                                    .stream()
+                                    .map(mode -> "\"" + mode.toString() + "\"")
+                                    .collect(Collectors.joining(",", "[", "]")),
+                            ((RenderResponse) resp).createActionURL());
+            // For liferay send accepted window states, portlet modes and action url to add to client side data.
+            
             writer.write(initScript);
             writer.write("<" + tag + " data-portlet-id='" + namespace
                     + "' style='width: 100%;'></" + tag + ">");

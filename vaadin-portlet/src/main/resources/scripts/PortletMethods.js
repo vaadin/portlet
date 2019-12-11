@@ -1,7 +1,17 @@
 window.Vaadin = window.Vaadin || {};
 window.Vaadin.Flow = window.Vaadin.Flow || {};
+// <liferay>
+// 7.2.1-ga2 should create and populate these for us.
+// Forcing object generation for hub registration later on.
+window.portlet = window.portlet || {};
+window.portlet.data = window.portlet.data || {};
+window.portlet.data.pageRenderState = window.portlet.data.pageRenderState || {};
+window.portlet.data.pageRenderState.portlets = window.portlet.data.pageRenderState.portlets ||{};
+window.portlet.data.pageRenderState.encodedCurrentURL = window.portlet.data.pageRenderState.encodedCurrentURL || encodeURIComponent(window.location.origin);
+// </liferay>
 
 if (!window.Vaadin.Flow.Portlets) {
+
     window.Vaadin.Flow.Portlets = {};
 
     window.Vaadin.Flow.Portlets.reload = function (hub) {
@@ -13,11 +23,11 @@ if (!window.Vaadin.Flow.Portlets) {
             }
         };
         poller();
-    }
+    };
 
     window.Vaadin.Flow.Portlets.getHubRegistartion = function (portletRegistryName) {
         return window.Vaadin.Flow.Portlets[portletRegistryName].hub;
-    }
+    };
 
     window.Vaadin.Flow.Portlets.setPortletState = function (portletRegistryName, windowState, portletMode) {
         var hub = window.Vaadin.Flow.Portlets.getHubRegistartion(portletRegistryName);
@@ -28,7 +38,7 @@ if (!window.Vaadin.Flow.Portlets) {
         hub.setRenderState(state);
 
         reload(hub);
-    }
+    };
 
     window.Vaadin.Flow.Portlets.fireEvent = function (portletRegistryName, event, parameters) {
         var hub = window.Vaadin.Flow.Portlets.getHubRegistartion(portletRegistryName);
@@ -40,9 +50,16 @@ if (!window.Vaadin.Flow.Portlets) {
             });
 
         hub.dispatchClientEvent(event, params);
-    }
+    };
 
-    window.Vaadin.Flow.Portlets.registerElement = function (tag, portletRegistryName) {
+    window.Vaadin.Flow.Portlets.registerElement = function (tag, portletRegistryName, windowStates, portletModes, actionUrl) {
+        // <liferay>
+        // Force objects, urls and arrays for liferay portlet data to enable hub registration and hub usage
+        window.portlet.data.pageRenderState.portlets[portletRegistryName] = window.portlet.data.pageRenderState.portlets[portletRegistryName] || {};
+        window.portlet.data.pageRenderState.portlets[portletRegistryName].allowedPM = portletModes;
+        window.portlet.data.pageRenderState.portlets[portletRegistryName].allowedWS = windowStates;
+        window.portlet.data.pageRenderState.portlets[portletRegistryName].encodedActionURL = encodeURIComponent(actionUrl);
+        // </liferay>
         customElements.whenDefined(tag).then(function () {
             var elem = document.querySelector(tag);
             elem.constructor._getClientStrategy = function (portletComponent) {
@@ -55,13 +72,13 @@ if (!window.Vaadin.Flow.Portlets) {
             };
             window.Vaadin.Flow.Portlets.registerHub(tag, portletRegistryName, elem);
         });
-    }
+    };
 
     window.Vaadin.Flow.Portlets.registerHub = function (tag, portletRegistryName, elem) {
         var targetElem;
         var allPortletElems = document.querySelectorAll(tag);
-        for (i = 0; i < allPortletElems.length; i++) {
-            if (allPortletElems[i].getAttribute('data-portlet-id') == portletRegistryName) {
+        for (var i = 0; i !== allPortletElems.length; i++) {
+            if (allPortletElems[i].getAttribute('data-portlet-id') === portletRegistryName) {
                 targetElem = allPortletElems[i];
                 break;
             }
@@ -75,7 +92,8 @@ if (!window.Vaadin.Flow.Portlets) {
             window.Vaadin.Flow.Portlets[portletRegistryName] = window.Vaadin.Flow.Portlets[portletRegistryName] || {};
 
             var portletObj = window.Vaadin.Flow.Portlets[portletRegistryName];
-            if (!portletObj.hub && portlet) {
+            if (!portletObj.hub) {
+                if(portlet) {
                 portlet.register(portletRegistryName).then(function (hub) {
                     portletObj.hub = hub;
 
@@ -91,10 +109,10 @@ if (!window.Vaadin.Flow.Portlets) {
                     }
                 });
                 targetElem.afterServerUpdate = afterServerUpdate;
-            }
+            }}
         };
         window.Vaadin.Flow.Portlets.initListenerRegistration(portletRegistryName, elem);
-    }
+    };
 
     window.Vaadin.Flow.Portlets.eventPoller = function (portletObj, type, payload, uid, elem) {
         var hub = portletObj.hub;
@@ -126,15 +144,15 @@ if (!window.Vaadin.Flow.Portlets) {
                 clients[portletObj.appId].poll();
             });
         }
-    }
+    };
 
     window.Vaadin.Flow.Portlets.initListenerRegistration = function (portletRegistryName, elem) {
         window.Vaadin.Flow.Portlets[portletRegistryName] = window.Vaadin.Flow.Portlets[portletRegistryName] || {};
 
         var portletObj = window.Vaadin.Flow.Portlets[portletRegistryName];
         portletObj._regListener = function (eventType, uid) {
-            var poller = portletObj.eventPoller;
-            var handle = portletObj.hub.addEventListener(eventType, function (type, payload) {
+            let poller = portletObj.eventPoller;
+            let handle = portletObj.hub.addEventListener(eventType, function (type, payload) {
                 poller(portletObj, type, payload, uid, elem);
             });
             portletObj.eventHandles = portletObj.eventHandles || {};
@@ -149,9 +167,11 @@ if (!window.Vaadin.Flow.Portlets) {
             }
         };
         portletObj._removeListener = function (uid) {
-            if (portletObj.eventHandles && portletObj.eventHandles[uid]) {
-                portletObj.hub.removeEventListener(portletObj.eventHandles[uid]);
-                delete portletObj.eventHandles[uid];
+            if (portletObj.eventHandles) {
+                if(portletObj.eventHandles[uid]) {
+                    portletObj.hub.removeEventListener(portletObj.eventHandles[uid]);
+                    delete portletObj.eventHandles[uid];
+                }
             }
         };
         portletObj.unregisterListener = function (uid) {
@@ -161,5 +181,5 @@ if (!window.Vaadin.Flow.Portlets) {
                 delete portletObj.listeners[uid];
             }
         }
-    }
+    };
 }

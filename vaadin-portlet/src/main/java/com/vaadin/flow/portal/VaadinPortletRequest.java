@@ -42,6 +42,7 @@ public class VaadinPortletRequest extends PortletRequestWrapper
         implements VaadinRequest {
 
     private final VaadinPortletService vaadinService;
+    private final static String HOST_HTTP_HEADER_NAME = "host";
 
     /**
      * Wraps a portlet request and an associated vaadin service.
@@ -169,7 +170,14 @@ public class VaadinPortletRequest extends PortletRequestWrapper
     }
 
     @Override
-    public String getHeader(String string) {
+    public String getHeader(String headerName) {
+        if(HOST_HTTP_HEADER_NAME.equalsIgnoreCase(headerName)) {
+            String host = getServerName();
+            if(getServerPort() != 80)
+                host += ":" + getServerPort();
+            return host;
+        }
+
         return null;
     }
 

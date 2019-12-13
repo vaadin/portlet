@@ -42,15 +42,16 @@ public class VaadinPortletRequest extends PortletRequestWrapper
         implements VaadinRequest {
 
     private final VaadinPortletService vaadinService;
-    private final static String HOST_HTTP_HEADER_NAME = "host";
+    private static final String HOST_HTTP_HEADER_NAME = "host";
+    private static final String SCHEME_HTTP_HEADER_NAME = "scheme";
 
     /**
      * Wraps a portlet request and an associated vaadin service.
      *
      * @param request
-     *         the portlet request to wrap
+     *            the portlet request to wrap
      * @param vaadinService
-     *         the associated vaadin service
+     *            the associated vaadin service
      */
     public VaadinPortletRequest(PortletRequest request,
             VaadinPortletService vaadinService) {
@@ -171,11 +172,11 @@ public class VaadinPortletRequest extends PortletRequestWrapper
 
     @Override
     public String getHeader(String headerName) {
-        if(HOST_HTTP_HEADER_NAME.equalsIgnoreCase(headerName)) {
-            String host = getServerName();
-            if(getServerPort() != 80)
-                host += ":" + getServerPort();
-            return host;
+        if (HOST_HTTP_HEADER_NAME.equalsIgnoreCase(headerName)) {
+            return String.format("%s:%s", getServerName(), getServerPort());
+        }
+        if (SCHEME_HTTP_HEADER_NAME.equalsIgnoreCase(headerName)) {
+            return getScheme();
         }
 
         return null;
@@ -185,9 +186,9 @@ public class VaadinPortletRequest extends PortletRequestWrapper
      * Reads a portal property from the portal context of the Vaadin request.
      *
      * @param name
-     *         a string with the name of the portal property to get
+     *            a string with the name of the portal property to get
      * @return a string with the value of the property, or <code>null</code> if
-     * the property is not defined
+     *         the property is not defined
      */
     public String getPortalProperty(String name) {
         return getRequest().getPortalContext().getProperty(name);
@@ -197,10 +198,10 @@ public class VaadinPortletRequest extends PortletRequestWrapper
      * Reads a portlet preference from the portlet of the request.
      *
      * @param name
-     *         The name of the portlet preference. Cannot be
-     *         <code>null</code>.
+     *            The name of the portlet preference. Cannot be
+     *            <code>null</code>.
      * @return The value of the portlet preference, <code>null</code> if the
-     * preference is not defined.
+     *         preference is not defined.
      */
     public String getPortletPreference(String name) {
         PortletRequest request = getRequest();
@@ -246,7 +247,7 @@ public class VaadinPortletRequest extends PortletRequestWrapper
      * server implementations reuse request instances.
      *
      * @return the current portlet request instance if available, otherwise
-     * <code>null</code>
+     *         <code>null</code>
      * @since 7.3
      */
     public static PortletRequest getCurrentPortletRequest() {
@@ -261,7 +262,7 @@ public class VaadinPortletRequest extends PortletRequestWrapper
      * implementations reuse request instances.
      *
      * @return the current Vaadin portlet request instance if available,
-     * otherwise <code>null</code>
+     *         otherwise <code>null</code>
      * @since 7.3
      */
     public static VaadinPortletRequest getCurrent() {

@@ -32,7 +32,6 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.portlet.WindowState;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -147,7 +146,8 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      *
      */
     @PreserveOnRefresh
-    protected class PortletWebComponentExporter extends WebComponentExporter<C> {
+    protected class PortletWebComponentExporter
+            extends WebComponentExporter<C> {
         /**
          * Creates a new exporter instance using a provided {@code tag}.
          *
@@ -318,14 +318,23 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                 return;
             }
 
-            // try to let super handle - it'll call methods annotated for
-            // handling, the default doXYZ(), or throw if a handler for the mode
-            // is not found
-            super.doDispatch(request, response);
+            // WindowState.MINIMIZED Javadoc says it should be possible to
+            // render a minimal output. But, it is not supported in
+            // GenericPortlet. So, to make VaadinPortlet support rendering in
+            // MINIMIZED state, handleRequest is directly called here.
+            if (WindowState.MINIMIZED.equals(request.getWindowState())) {
+                handleRequest(request, response);
+            } else {
+                // try to let super handle - it'll call methods annotated for
+                // handling, the default doXYZ(), or throw if a handler for the
+                // mode
+                // is not found
+                super.doDispatch(request, response);
+            }
 
         } catch (PortletException e) {
             if (e.getCause() == null) {
-                // No cause interpreted as 'unknown mode' - pass that trough
+                // No cause interpreted as 'unknown mode' - pass that through
                 // so that the application can handle
                 handleRequest(request, response);
 

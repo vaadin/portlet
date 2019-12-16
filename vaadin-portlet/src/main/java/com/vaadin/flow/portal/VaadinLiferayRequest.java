@@ -10,8 +10,10 @@ import com.liferay.portal.kernel.util.PropsUtil;
 
 /**
  * Portlet request for Liferay.
+ *
+ * @since
  */
-public class VaadinLiferayRequest extends VaadinHttpAndPortletRequest {
+public class VaadinLiferayRequest extends VaadinHttpPortletRequest {
     /**
      * The PortalUtil class to use. Set to either
      * {@link #LIFERAY_6_PORTAL_UTIL} or {@link #LIFERAY_7_PORTAL_UTIL} the
@@ -89,7 +91,7 @@ public class VaadinLiferayRequest extends VaadinHttpAndPortletRequest {
             try {
                 invokeStaticLiferayMethod(LIFERAY_7_PORTAL_UTIL,
                         "getHttpServletRequest", request,
-                        "javax.portlet.PortletRequest");
+                        PortletRequest.class.getName());
                 portalUtilClass = LIFERAY_7_PORTAL_UTIL;
             } catch (Exception e) {
                 // Liferay 6 or older
@@ -100,13 +102,13 @@ public class VaadinLiferayRequest extends VaadinHttpAndPortletRequest {
             // httpRequest = PortalUtil.getHttpServletRequest(request);
             HttpServletRequest httpRequest = (HttpServletRequest) invokeStaticLiferayMethod(
                     portalUtilClass, "getHttpServletRequest", request,
-                    "javax.portlet.PortletRequest");
+                    PortletRequest.class.getName());
 
             // httpRequest =
             // PortalUtil.getOriginalServletRequest(httpRequest);
             httpRequest = (HttpServletRequest) invokeStaticLiferayMethod(
                     portalUtilClass, "getOriginalServletRequest", httpRequest,
-                    "javax.servlet.http.HttpServletRequest");
+                    HttpServletRequest.class.getName());
             return httpRequest;
         } catch (Exception e) {
             throw new IllegalStateException("Liferay request not detected", e);

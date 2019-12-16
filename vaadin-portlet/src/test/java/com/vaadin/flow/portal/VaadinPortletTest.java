@@ -4,6 +4,7 @@ import javax.portlet.ActionParameters;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.ActionURL;
+import javax.portlet.PortalContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
@@ -449,11 +450,14 @@ public class VaadinPortletTest {
 
         ActionRequest request = Mockito.mock(ActionRequest.class);
         ActionResponse response = Mockito.mock(ActionResponse.class);
+        PortalContext portalContext = Mockito.mock(PortalContext.class);
 
         Mockito.when(response.getNamespace()).thenReturn(namespace);
 
         Mockito.when(request.getActionParameters()).thenReturn(params);
+        Mockito.when(request.getPortalContext()).thenReturn(portalContext);
 
+        Mockito.when(portalContext.getPortalInfo()).thenReturn("");
         Mockito.when(params.getNames())
                 .thenReturn(Collections.singleton("vaadin.ev"));
 

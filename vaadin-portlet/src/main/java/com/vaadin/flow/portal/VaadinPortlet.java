@@ -345,7 +345,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      * @return A wrapped version of the PortletRequest
      */
     protected VaadinPortletRequest createVaadinRequest(PortletRequest request) {
-        PortalContext portalContext = request.getPortalContext();
+            PortalContext portalContext = request.getPortalContext();
         String portalInfo = portalContext.getPortalInfo()
                 .toLowerCase(Locale.ROOT).trim();
         VaadinPortletService service = getService();

@@ -8,19 +8,20 @@ import java.util.Map;
 /**
  * Base class for portlet requests that need access to HTTP servlet
  * requests.
+ *
+ * @since
  */
-public abstract class VaadinHttpAndPortletRequest extends VaadinPortletRequest {
+public abstract class VaadinHttpPortletRequest extends VaadinPortletRequest {
 
     /**
-     * Constructs a new {@link VaadinHttpAndPortletRequest}.
+     * Constructs a new {@link VaadinHttpPortletRequest}.
      *
      * @param request
      *         {@link PortletRequest} to be wrapped
      * @param vaadinService
      *         {@link VaadinPortletService} associated with this request
-     * @since 7.2
      */
-    public VaadinHttpAndPortletRequest(PortletRequest request,
+    public VaadinHttpPortletRequest(PortletRequest request,
             VaadinPortletService vaadinService) {
         super(request, vaadinService);
     }
@@ -33,7 +34,6 @@ public abstract class VaadinHttpAndPortletRequest extends VaadinPortletRequest {
      * @param request
      *         {@link PortletRequest} used to
      * @return the original HTTP servlet request
-     * @since 7.2
      */
     protected abstract HttpServletRequest getServletRequest(
             PortletRequest request);

@@ -22,6 +22,7 @@ import javax.portlet.EventResponse;
 import javax.portlet.GenericPortlet;
 import javax.portlet.HeaderRequest;
 import javax.portlet.HeaderResponse;
+import javax.portlet.PortalContext;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
@@ -32,11 +33,11 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.portlet.WindowState;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -344,7 +345,13 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      * @return A wrapped version of the PortletRequest
      */
     protected VaadinPortletRequest createVaadinRequest(PortletRequest request) {
+            PortalContext portalContext = request.getPortalContext();
+        String portalInfo = portalContext.getPortalInfo()
+                .toLowerCase(Locale.ROOT).trim();
         VaadinPortletService service = getService();
+        if (portalInfo.contains("liferay")) {
+            return new VaadinLiferayRequest(request, service);
+        }
         return new VaadinPortletRequest(request, service);
     }
 

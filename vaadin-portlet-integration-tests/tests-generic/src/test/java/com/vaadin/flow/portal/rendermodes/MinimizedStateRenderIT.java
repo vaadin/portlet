@@ -29,7 +29,7 @@ import com.vaadin.testbench.TestBenchElement;
 
 public class MinimizedStateRenderIT extends AbstractPlutoPortalTest {
     public MinimizedStateRenderIT() {
-        super("tests-generi", "minimized-state-render");
+        super("tests-generic", "minimized-state-render");
     }
 
     @Test

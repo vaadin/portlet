@@ -318,20 +318,19 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                 return;
             }
 
+            // try to let super handle - it'll call methods annotated for
+            // handling, the default doXYZ(), or throw if a handler for the
+            // mode is not found
+            super.doDispatch(request, response);
+
             // WindowState.MINIMIZED Javadoc says it should be possible to
             // render a minimal output. But, it is not supported in
             // GenericPortlet. So, to make VaadinPortlet support rendering in
             // MINIMIZED state, handleRequest is directly called here.
-            if (WindowState.MINIMIZED.equals(request.getWindowState())) {
+            if (isRenderedInMinimizedState()
+                    && WindowState.MINIMIZED.equals(request.getWindowState())) {
                 handleRequest(request, response);
-            } else {
-                // try to let super handle - it'll call methods annotated for
-                // handling, the default doXYZ(), or throw if a handler for the
-                // mode
-                // is not found
-                super.doDispatch(request, response);
             }
-
         } catch (PortletException e) {
             if (e.getCause() == null) {
                 // No cause interpreted as 'unknown mode' - pass that through
@@ -624,4 +623,16 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         return LoggerFactory.getLogger(VaadinPortlet.class);
     }
 
+    /**
+     * Determines if the portlet needs to be rendered in minimized window state
+     * or not. By default, nothing is rendered. If a {@link VaadinPortlet}
+     * subclass wants to be rendered in minimized state as well as other states,
+     * it should override this method and return true.
+     * 
+     * @return true is the portlet should be rendered in minimized state.
+     *         Otherwise false.
+     */
+    protected boolean isRenderedInMinimizedState() {
+        return false;
+    }
 }

@@ -27,7 +27,6 @@ import com.vaadin.flow.portal.PortletViewContext;
 public class RenderView extends VerticalLayout implements PortletView {
 
     public static final String STATE_MAXIMIZE = "Maximize";
-    public static final String STATE_MINIMIZE = "Minimize";
     public static final String STATE_NORMALIZE = "Normalize";
     public static final String MODE_VIEW = "To view mode";
     public static final String MODE_EDIT = "To edit mode";
@@ -47,8 +46,6 @@ public class RenderView extends VerticalLayout implements PortletView {
         windowState = new Button(
                 WindowState.NORMAL.equals(context.getWindowState())
                         ? STATE_MAXIMIZE
-                        : WindowState.MAXIMIZED.equals(context.getWindowState())
-                        ? STATE_MINIMIZE
                         : STATE_NORMALIZE,
                 event -> switchWindowState());
         windowState.setId(WINDOW_STATE_CHANGE);
@@ -78,11 +75,8 @@ public class RenderView extends VerticalLayout implements PortletView {
     private void switchWindowState() {
         if (WindowState.NORMAL.equals(context.getWindowState())) {
             context.setWindowState(WindowState.MAXIMIZED);
-            windowState.setText(STATE_MINIMIZE);
-        } else if (WindowState.MAXIMIZED.equals(context.getWindowState())) {
-            context.setWindowState(WindowState.MINIMIZED);
             windowState.setText(STATE_NORMALIZE);
-        } else if (WindowState.MINIMIZED.equals(context.getWindowState())) {
+        } else if (WindowState.MAXIMIZED.equals(context.getWindowState())) {
             context.setWindowState(WindowState.NORMAL);
             windowState.setText(STATE_MAXIMIZE);
         }

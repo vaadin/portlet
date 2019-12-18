@@ -49,24 +49,12 @@ public class RenderIT extends AbstractPlutoPortalTest {
         modeChange = getFirstPortlet().$(ButtonElement.class)
                 .id(RenderView.PORTLET_MODE_CHANGE);
 
-        Assert.assertEquals(RenderView.STATE_MINIMIZE, stateChange.getText());
+        Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_EDIT, modeChange.getText());
         Assert.assertEquals("VIEW", getWindowMode());
-        Assert.assertFalse(isMaximizedWindowState());
+        Assert.assertFalse(isNormalWindowState());
 
         modeChange.click();
-
-        stateChange = getFirstPortlet().$(ButtonElement.class)
-                .id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = getFirstPortlet().$(ButtonElement.class)
-                .id(RenderView.PORTLET_MODE_CHANGE);
-
-        Assert.assertEquals(RenderView.STATE_MINIMIZE, stateChange.getText());
-        Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());
-        Assert.assertEquals("EDIT", getWindowMode());
-        Assert.assertFalse(isMaximizedWindowState());
-
-        stateChange.click();
 
         stateChange = getFirstPortlet().$(ButtonElement.class)
                 .id(RenderView.WINDOW_STATE_CHANGE);
@@ -76,7 +64,7 @@ public class RenderIT extends AbstractPlutoPortalTest {
         Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());
         Assert.assertEquals("EDIT", getWindowMode());
-        Assert.assertTrue(isMaximizedWindowState());
+        Assert.assertFalse(isNormalWindowState());
 
         stateChange.click();
 
@@ -88,7 +76,7 @@ public class RenderIT extends AbstractPlutoPortalTest {
         Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());
         Assert.assertEquals("EDIT", getWindowMode());
-        Assert.assertTrue(isMaximizedWindowState());
+        Assert.assertTrue(isNormalWindowState());
     }
 
     private String getWindowMode() {
@@ -98,8 +86,8 @@ public class RenderIT extends AbstractPlutoPortalTest {
         return modeSelector.getSelectedText().toUpperCase(Locale.ENGLISH);
     }
 
-    private boolean isMaximizedWindowState() {
-        return findElements(By.id("portlets-left-column")).isEmpty();
+    private boolean isNormalWindowState() {
+        return findElements(By.id("portlets-left-column")).size() > 0;
     }
 
 }

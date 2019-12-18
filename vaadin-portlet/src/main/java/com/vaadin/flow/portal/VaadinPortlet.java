@@ -148,7 +148,8 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      *
      */
     @PreserveOnRefresh
-    protected class PortletWebComponentExporter extends WebComponentExporter<C> {
+    protected class PortletWebComponentExporter
+            extends WebComponentExporter<C> {
         /**
          * Creates a new exporter instance using a provided {@code tag}.
          *
@@ -320,13 +321,21 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             }
 
             // try to let super handle - it'll call methods annotated for
-            // handling, the default doXYZ(), or throw if a handler for the mode
-            // is not found
+            // handling, the default doXYZ(), or throw if a handler for the
+            // mode is not found
             super.doDispatch(request, response);
 
+            // WindowState.MINIMIZED Javadoc says it should be possible to
+            // render a minimal output. But, it is not supported in
+            // GenericPortlet. So, to make VaadinPortlet support rendering in
+            // MINIMIZED state, handleRequest is directly called here.
+            if (shouldRenderMinimized()
+                    && WindowState.MINIMIZED.equals(request.getWindowState())) {
+                handleRequest(request, response);
+            }
         } catch (PortletException e) {
             if (e.getCause() == null) {
-                // No cause interpreted as 'unknown mode' - pass that trough
+                // No cause interpreted as 'unknown mode' - pass that through
                 // so that the application can handle
                 handleRequest(request, response);
 
@@ -622,4 +631,19 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         return LoggerFactory.getLogger(VaadinPortlet.class);
     }
 
+    /**
+     * Determines if the portlet needs to be able to render in minimized window
+     * state or not.
+     * <p>
+     * By default, nothing is rendered. If a {@link VaadinPortlet} subclass
+     * wants to be rendered in minimized state as well as other states, it
+     * should override this method and return true.
+     * </p>
+     * 
+     * @return true is the portlet should be rendered in minimized state.
+     *         Otherwise false.
+     */
+    protected boolean shouldRenderMinimized() {
+        return false;
+    }
 }

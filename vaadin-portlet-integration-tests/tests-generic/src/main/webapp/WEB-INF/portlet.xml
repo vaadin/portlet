@@ -52,6 +52,18 @@
     </portlet>
 
     <portlet>
+        <portlet-name>minimized-state-render</portlet-name>
+        <display-name>Flow Portlet with Minimizeed state rendering</display-name>
+        <portlet-class>com.vaadin.flow.portal.rendermodes.MinimizedStateRenderPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode>
+        </supports>
+    </portlet>
+
+    <portlet>
         <portlet-name>errorhandling</portlet-name>
         <display-name>Flow Portlet that throws and exception</display-name>
         <portlet-class>com.vaadin.flow.portal.errorhandling.ErrorPortlet</portlet-class>

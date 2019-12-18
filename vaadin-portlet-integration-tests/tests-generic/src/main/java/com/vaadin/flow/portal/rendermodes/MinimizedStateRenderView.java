@@ -72,7 +72,7 @@ public class MinimizedStateRenderView extends VerticalLayout
         context.addWindowStateChangeListener(
                 event -> stateInfo.setText(event.getWindowState().toString()));
 
-        add(minimize, normalize, maximize, portletMode, stateInfo);
+        add(minimize, normalize, maximize, portletMode, stateInfo, modeInfo);
     }
 
     private void minimize() {

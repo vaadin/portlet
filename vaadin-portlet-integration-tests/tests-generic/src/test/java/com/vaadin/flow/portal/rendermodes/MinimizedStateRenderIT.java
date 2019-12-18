@@ -50,6 +50,7 @@ public class MinimizedStateRenderIT extends AbstractPlutoPortalTest {
                 WindowState.MAXIMIZED.toString());
     }
 
+    @Test
     public void switchBetweenViewAndEditModesInMinimizedState() {
         clickButtonAndCheckState(MinimizedStateRenderView.MINIMIZE_BUTTON_ID,
                 WindowState.MINIMIZED.toString());

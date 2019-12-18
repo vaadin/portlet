@@ -24,7 +24,7 @@ public class MinimizedStateRenderPortlet
         extends VaadinPortlet<MinimizedStateRenderView>
         implements Portlet {
     @Override
-    protected boolean isRenderedInMinimizedState() {
+    protected boolean shouldRenderMinimized() {
         return true;
     }
 }

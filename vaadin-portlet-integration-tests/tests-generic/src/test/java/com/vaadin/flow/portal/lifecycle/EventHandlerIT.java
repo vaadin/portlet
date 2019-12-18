@@ -89,14 +89,11 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
                 .findElement(By.id("request-state-info")).getText());
 
         setWindowStateInPortal(WindowState.MINIMIZED);
-        waitUntil(driver -> WindowState.MINIMIZED.toString().equals(
-                getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID)));
-        Assert.assertEquals(WindowState.MINIMIZED.toString(), getFirstPortlet()
-                .findElement(By.id("request-state-info")).getText());
+        waitUntil(driver -> !getVaadinPortletRootElement().isPresent());
     }
 
     @Test
-    public void windowStateAndModeChangedInPortal_portletStateIsPreservedOnRefresh() {
+    public void windowStateAndModeChangedInPortal_portletStateIsPreservedtOnRefresh() {
         setWindowStateInPortal(WindowState.MAXIMIZED);
         waitUntil(driver -> WindowState.MAXIMIZED.toString().equals(
                 getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID)));

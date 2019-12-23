@@ -35,7 +35,7 @@ public class HeartbeatHandlerIT extends AbstractPlutoPortalTest {
         ButtonElement buttonElement = getFirstPortlet().$(ButtonElement.class)
                 .first();
 
-        Thread.sleep(35000);
+        Thread.sleep(17000);
 
         // In this test, we make sure that Vaadin responds after the first
         // heartbeat request. If it doesn't respond, then the test will hang

@@ -51,7 +51,7 @@ public class VaadinPortletConfig implements VaadinConfig {
                     .getPortlet().getPortletConfig();
         } else if (config == null) {
             throw new IllegalStateException(
-                    "The underlying PortletContext of VaadinPortletContext is null and there is no VaadinPorletService to obtain it from.");
+                    "The underlying PortletContext of VaadinPortletContext is null and there is no VaadinPortletService to obtain it from.");
         }
     }
 

@@ -36,6 +36,7 @@ import javax.portlet.WindowState;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -225,6 +226,12 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         }
     }
 
+    public VaadinPortlet() {
+        // renderHeaders method was added to portlet API since version 3.0
+        isPortlet3.set(Arrays.stream(GenericPortlet.class.getMethods())
+                .anyMatch(method -> "renderHeaders".equals(method.getName())));
+    }
+
     @Override
     public void init(PortletConfig config) throws PortletException {
         CurrentInstance.clearAll();
@@ -275,8 +282,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     @Override
     public void renderHeaders(HeaderRequest request, HeaderResponse response)
             throws PortletException, IOException {
-        // This is only called for portlet 3.0 portlets.
-        isPortlet3.set(true);
         response.addDependency("PortletHub", "javax.portlet", "3.0.0");
 
         // How do we get this to only exec once for multiple portlets on same
@@ -354,7 +359,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      * @return A wrapped version of the PortletRequest
      */
     protected VaadinPortletRequest createVaadinRequest(PortletRequest request) {
-            PortalContext portalContext = request.getPortalContext();
+        PortalContext portalContext = request.getPortalContext();
         String portalInfo = portalContext.getPortalInfo()
                 .toLowerCase(Locale.ROOT).trim();
         VaadinPortletService service = getService();

@@ -1,13 +1,12 @@
 package com.vaadin.flow.portal;
 
+import javax.portlet.PortletConfig;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import javax.portlet.PortletConfig;
 
 import com.vaadin.flow.server.Constants;
 import com.vaadin.flow.server.VaadinConfig;
@@ -35,7 +34,7 @@ public class VaadinPortletConfig implements VaadinConfig {
      * Creates an instance of this context with given {@link PortletConfig}.
      *
      * @param config
-     *         PortletConfig
+     *            PortletConfig
      */
     public VaadinPortletConfig(PortletConfig config) {
         this.config = config;
@@ -45,13 +44,16 @@ public class VaadinPortletConfig implements VaadinConfig {
      * Ensures there is a valid instance of {@link PortletConfig}.
      */
     private void ensurePortletConfig() {
-        if (config == null && VaadinService
-                .getCurrent() instanceof VaadinPortletService) {
+        if (config == null
+                && VaadinService.getCurrent() instanceof VaadinPortletService) {
             config = ((VaadinPortletService) VaadinService.getCurrent())
                     .getPortlet().getPortletConfig();
         } else if (config == null) {
-            throw new IllegalStateException(
-                    "The underlying PortletContext of VaadinPortletContext is null and there is no VaadinPortletService to obtain it from.");
+            throw new IllegalStateException(String.format(
+                    "The underlying %s of %s is null and there is no %s to obtain it from.",
+                    PortletConfig.class.getSimpleName(),
+                    VaadinPortletConfig.class.getSimpleName(),
+                    VaadinPortletService.class.getSimpleName()));
         }
     }
 
@@ -81,7 +83,7 @@ public class VaadinPortletConfig implements VaadinConfig {
         }
         return initParameter;
     }
-    
+
     private void writeObject(java.io.ObjectOutputStream out)
             throws IOException {
         out.defaultWriteObject();

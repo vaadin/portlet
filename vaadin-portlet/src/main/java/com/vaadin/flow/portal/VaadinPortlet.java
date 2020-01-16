@@ -200,8 +200,14 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                     .getNamespace();
             VaadinSession session = ui.getSession();
             PortletViewContext context;
+
+            // NOTE! The closure of this instance (which is created by the
+            // webcomponent factory), is just a temporary instance. Hence, we
+            // must obtain the correct portlet instead of using this.
+            VaadinPortlet<C> portlet = (VaadinPortlet<C>) getCurrent();
+
             try {
-                context = getViewContext(session, namespace, windowName);
+                context = portlet.getViewContext(session, namespace, windowName);
             } catch (PortletException exception) {
                 throw new RuntimeException("Unable to initialize component, "
                         + "PortletException raised", exception);
@@ -211,9 +217,9 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             boolean needViewInit = false;
             if (context == null) {
                 needViewInit = true;
-                context = new PortletViewContext(component, isPortlet3,
+                context = new PortletViewContext(component, portlet.isPortlet3,
                         request.getPortletMode(), request.getWindowState());
-                setViewContext(session, namespace, windowName, context);
+                portlet.setViewContext(session, namespace, windowName, context);
             }
             context.init();
             context.updateModeAndState(request.getPortletMode(),

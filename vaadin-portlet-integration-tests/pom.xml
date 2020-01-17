@@ -110,7 +110,9 @@
                     <configuration>
                         <container>
                             <containerId>tomcat8x</containerId>
+	                        <home>${project.build.directory}/pluto-${pluto.version}</home>
                         </container>
+                        <type>existing</type>
                         <!-- Set an empty deployer so that cargo does not try to add the
                         current project's artifact to the container (as this was already
                         done by maven) -->

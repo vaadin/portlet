@@ -19,7 +19,6 @@ import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
@@ -217,14 +216,14 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
                 .all();
     }
 
-    protected Optional<TestBenchElement> getVaadinPortletRootElement(
+    protected TestBenchElement getVaadinPortletRootElement(
             String id) {
-        return getVaadinPortletRootElements().stream().filter(
-                tbe -> id.equals(tbe.getAttribute(PORTLET_ID_ATTRIBUTE)))
-                .findFirst();
+        return $(TestBenchElement.class).hasAttribute(PORTLET_ID_ATTRIBUTE)
+                .attribute(PORTLET_ID_ATTRIBUTE,id)
+                .waitForFirst();
     }
 
-    protected Optional<TestBenchElement> getVaadinPortletRootElement() {
+    protected TestBenchElement getVaadinPortletRootElement() {
         if (firstPortletId == null) {
             throw new AssertionError("no Vaadin Portlet added");
         }
@@ -235,10 +234,8 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
      * Gets the shadow root of the Vaadin Portlet identified by id
      */
     protected TestBenchElement getPortletById(String id) {
-        return getVaadinPortletRootElement(id)
-                .map(tbe -> (TestBenchElement) getShadowRoot(tbe))
-                .orElseThrow(() -> new AssertionError(
-                        "no Vaadin Portlet with id '" + id + "'"));
+        return (TestBenchElement) getShadowRoot(
+                getVaadinPortletRootElement(id));
     }
 
     /**

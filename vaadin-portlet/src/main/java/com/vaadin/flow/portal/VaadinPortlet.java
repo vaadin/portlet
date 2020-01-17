@@ -466,7 +466,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      *         <code>null</code>
      * @since 7.0
      */
-    public static VaadinPortlet<?> getCurrent() {
+    public static VaadinPortlet getCurrent() {
         VaadinService vaadinService = CurrentInstance.get(VaadinService.class);
         if (vaadinService instanceof VaadinPortletService) {
             VaadinPortletService vps = (VaadinPortletService) vaadinService;

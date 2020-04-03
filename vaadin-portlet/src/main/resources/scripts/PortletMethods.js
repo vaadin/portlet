@@ -27,7 +27,7 @@ if (!window.Vaadin.Flow.Portlets) {
         state.portletMode = portletMode;
         hub.setRenderState(state);
 
-        reload(hub);
+        window.Vaadin.Flow.Portlets.reload(hub);
     }
 
     window.Vaadin.Flow.Portlets.fireEvent = function (portletRegistryName, event, parameters) {

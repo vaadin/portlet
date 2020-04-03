@@ -89,7 +89,7 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
                 .findElement(By.id("request-state-info")).getText());
 
         setWindowStateInPortal(WindowState.MINIMIZED);
-        waitUntil(driver -> !getVaadinPortletRootElement().isPresent());
+        waitUntil(driver -> getVaadinPortletRootElements().isEmpty());
     }
 
     @Test

@@ -179,49 +179,8 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                     WebComponentExporterFactory.class);
         }
 
-        /**
-         * Initializes the portlet {@code component}.
-         *
-         * @param component
-         *            a portlet component
-         */
         protected void initComponent(C component) {
-            // We rely on the component being attached and the window name
-            // having been retrieved here---this is due to the
-            // implementation of @PreserveOnRefresh
-            UI ui = component.getUI()
-                    .orElseThrow(() -> new IllegalStateException(
-                            "Unable to initialize component, UI instance not available from "
-                                    + component.getClass().getName()));
-
-            String windowName = ui.getInternals().getExtendedClientDetails()
-                    .getWindowName();
-            String namespace = VaadinPortletResponse.getCurrentPortletResponse()
-                    .getNamespace();
-            VaadinSession session = ui.getSession();
-            PortletViewContext context;
-            try {
-                context = getViewContext(session, namespace, windowName);
-            } catch (PortletException exception) {
-                throw new RuntimeException("Unable to initialize component, "
-                        + "PortletException raised", exception);
-            }
-            PortletRequest request = VaadinPortletRequest
-                    .getCurrentPortletRequest();
-            boolean needViewInit = false;
-            if (context == null) {
-                needViewInit = true;
-                context = new PortletViewContext(component, isPortlet3,
-                        request.getPortletMode(), request.getWindowState());
-                setViewContext(session, namespace, windowName, context);
-            }
-            context.init();
-            context.updateModeAndState(request.getPortletMode(),
-                    request.getWindowState());
-            if (needViewInit && component instanceof PortletView) {
-                PortletView view = (PortletView) component;
-                view.onPortletViewContextInit(context);
-            }
+            VaadinPortlet.initComponent(component);
         }
     }
 
@@ -460,7 +419,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      *         <code>null</code>
      * @since 7.0
      */
-    public static VaadinPortlet<?> getCurrent() {
+    public static VaadinPortlet getCurrent() {
         VaadinService vaadinService = CurrentInstance.get(VaadinService.class);
         if (vaadinService instanceof VaadinPortletService) {
             VaadinPortletService vps = (VaadinPortletService) vaadinService;
@@ -645,5 +604,52 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      */
     protected boolean shouldRenderMinimized() {
         return false;
+    }
+
+    /**
+     * Initializes the portlet {@code component}.
+     *
+     * @param component
+     *            a portlet component
+     */
+    static <C extends Component> void initComponent(C component) {
+        // We rely on the component being attached and the window name having
+        // having been retrieved here---this is due to the implementation of
+        // @PreserveOnRefresh
+        UI ui = component.getUI().orElseThrow(() -> new IllegalStateException(
+                "Unable to initialize component, UI instance not available from "
+                        + component.getClass().getName()));
+
+        String windowName = ui.getInternals().getExtendedClientDetails()
+                .getWindowName();
+        String namespace = VaadinPortletResponse.getCurrentPortletResponse()
+                .getNamespace();
+        VaadinSession session = ui.getSession();
+        PortletViewContext context;
+
+        VaadinPortlet<C> portlet = (VaadinPortlet<C>) getCurrent();
+
+        try {
+            context = portlet.getViewContext(session, namespace, windowName);
+        } catch (PortletException exception) {
+            throw new RuntimeException("Unable to initialize component, "
+                    + "PortletException raised", exception);
+        }
+        PortletRequest request = VaadinPortletRequest
+                .getCurrentPortletRequest();
+        boolean needViewInit = false;
+        if (context == null) {
+            needViewInit = true;
+            context = new PortletViewContext(component, portlet.isPortlet3,
+                    request.getPortletMode(), request.getWindowState());
+            portlet.setViewContext(session, namespace, windowName, context);
+        }
+        context.init();
+        context.updateModeAndState(request.getPortletMode(),
+                request.getWindowState());
+        if (needViewInit && component instanceof PortletView) {
+            PortletView view = (PortletView) component;
+            view.onPortletViewContextInit(context);
+        }
     }
 }

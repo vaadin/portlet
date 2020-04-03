@@ -58,13 +58,6 @@ public class VaadinPortletTest {
             private TestWebComponentExporter(String tag) {
                 super(tag);
             }
-
-            @Override
-            protected void configureInstance(
-                    WebComponent<TestComponent> webComponent,
-                    TestComponent component) {
-                super.configureInstance(webComponent, component);
-            }
         }
 
         private TestWebComponentExporter exporter;

@@ -165,8 +165,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                 C component) {
             assert VaadinSession.getCurrent().hasLock();
 
-            SerializableRunnable runnable = () -> VaadinPortlet
-                    .initComponent(component);
+            SerializableRunnable runnable = () -> initComponent(component);
             if (component.getElement().getNode().isAttached()) {
                 runnable.run();
             }
@@ -178,6 +177,10 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             return (Class<C>) ReflectTools.getGenericInterfaceType(
                     VaadinPortlet.this.getClass(),
                     WebComponentExporterFactory.class);
+        }
+
+        protected void initComponent(C component) {
+            VaadinPortlet.initComponent(component);
         }
     }
 

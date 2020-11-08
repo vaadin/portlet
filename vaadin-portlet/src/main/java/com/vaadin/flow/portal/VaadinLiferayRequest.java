@@ -10,8 +10,10 @@ import com.liferay.portal.kernel.util.PropsUtil;
 
 /**
  * Portlet request for Liferay.
+ *
+ * @since
  */
-public class VaadinLiferayRequest extends VaadinHttpAndPortletRequest {
+public class VaadinLiferayRequest extends VaadinHttpPortletRequest {
     /**
      * The PortalUtil class to use. Set to either
      * {@link #LIFERAY_6_PORTAL_UTIL} or {@link #LIFERAY_7_PORTAL_UTIL} the
@@ -89,7 +91,7 @@ public class VaadinLiferayRequest extends VaadinHttpAndPortletRequest {
             try {
                 invokeStaticLiferayMethod(LIFERAY_7_PORTAL_UTIL,
                         "getHttpServletRequest", request,
-                        "javax.portlet.PortletRequest");
+                        PortletRequest.class.getName());
                 portalUtilClass = LIFERAY_7_PORTAL_UTIL;
             } catch (Exception e) {
                 // Liferay 6 or older

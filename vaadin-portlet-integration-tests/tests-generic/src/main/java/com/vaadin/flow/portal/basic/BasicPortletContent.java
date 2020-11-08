@@ -16,18 +16,22 @@
 package com.vaadin.flow.portal.basic;
 
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.portal.VaadinPortlet;
 
 public class BasicPortletContent extends VerticalLayout {
 
+    public static final String GREETING_MESSAGE_ID = "greeting-message";
+
     public BasicPortletContent() {
         VaadinPortlet portlet = VaadinPortlet.getCurrent();
         String name = portlet.getPortletName();
         String serverInfo = portlet.getPortletContext().getServerInfo();
-        Button button = new Button("Click me", event -> Notification.show(
+        Div message = new Div();
+        message.setId(GREETING_MESSAGE_ID);
+        Button button = new Button("Click me", event -> message.setText(
                 "Hello from " + name + " running in " + serverInfo + "!"));
-        add(button);
+        add(button, message);
     }
 }

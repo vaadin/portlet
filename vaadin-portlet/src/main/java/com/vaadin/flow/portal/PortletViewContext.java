@@ -78,7 +78,6 @@ public final class PortletViewContext implements Serializable {
 
     private String windowState;
 
-
     PortletViewContext(Component view, AtomicBoolean portlet3,
                        PortletMode portletMode, WindowState windowState) {
 
@@ -130,6 +129,7 @@ public final class PortletViewContext implements Serializable {
      *            parameters to add to event action
      */
     public void fireEvent(String eventName, Map<String, String> parameters) {
+        checkPortletHubAvailability();
         executeJS(getFireEventScript(eventName, parameters));
     }
 
@@ -340,6 +340,7 @@ public final class PortletViewContext implements Serializable {
 
     private Registration doAddEventChangeListener(String eventType,
             PortletEventListener listener) {
+        checkPortletHubAvailability();
         String uid = Long.toString(nextUid.getAndIncrement());
         String namespace = registerEventChangeListener(uid, eventType,
                 listener);
@@ -422,6 +423,15 @@ public final class PortletViewContext implements Serializable {
         }
     }
 
+    private void checkPortletHubAvailability() {
+        if (!isPortlet3.get()) {
+            String message = "Portlet Hub not available; to use Vaadin "
+                    + "Portlet IPC, ensure that portlet.xml specifies at "
+                    + "least portlet version 3.0";
+            throw new IllegalStateException(message);
+        }
+    }
+
     private static String escape(String str) {
         return str.replaceAll("([\\\\'])", "\\\\$1");
     }
@@ -472,5 +482,4 @@ public final class PortletViewContext implements Serializable {
     private static Logger getLogger() {
         return LoggerFactory.getLogger(PortletViewContext.class);
     }
-
 }

@@ -21,7 +21,6 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -48,6 +47,7 @@ import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.Version;
 import com.vaadin.flow.server.WebBrowser;
 import com.vaadin.flow.server.WrappedSession;
+import com.vaadin.flow.server.communication.HeartbeatHandler;
 import com.vaadin.flow.server.startup.ApplicationRouteRegistry;
 import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.theme.AbstractTheme;
@@ -117,6 +117,14 @@ public class VaadinPortletService extends VaadinService {
         handlers.add(new PortletWebComponentBootstrapHandler());
         handlers.add(new PortletUidlRequestHandler());
         handlers.add(new PortletStreamRequestHandler());
+
+        // HeartbeatHandler should have a higher priority because otherwise,
+        // heartbeat requests are handled by PortletUidlRequestHandler or
+        // PortletBootstrapHandler which causes Vaadin portlets stop responding.
+        // See https://github.com/vaadin/portlet/issues/166
+        handlers.removeIf(
+                requestHandler -> requestHandler instanceof HeartbeatHandler);
+        handlers.add(new HeartbeatHandler());
         return handlers;
     }
 

@@ -37,8 +37,8 @@ if (!window.Vaadin.Flow.Portlets) {
         state.portletMode = portletMode;
         hub.setRenderState(state);
 
-        reload(hub);
-    };
+        window.Vaadin.Flow.Portlets.reload(hub);
+    }
 
     window.Vaadin.Flow.Portlets.fireEvent = function (portletRegistryName, event, parameters) {
         var hub = window.Vaadin.Flow.Portlets.getHubRegistartion(portletRegistryName);
@@ -93,23 +93,25 @@ if (!window.Vaadin.Flow.Portlets) {
 
             var portletObj = window.Vaadin.Flow.Portlets[portletRegistryName];
             if (!portletObj.hub) {
-                if(portlet) {
-                portlet.register(portletRegistryName).then(function (hub) {
-                    portletObj.hub = hub;
+                if (portlet) {
+                    portlet.register(portletRegistryName).then(function (hub) {
+                        portletObj.hub = hub;
 
-                    hub.addEventListener('portlet.onStateChange', function (type, state) {});
-                    portletObj.eventPoller = window.Vaadin.Flow.Portlets.eventPoller;
-                    if (portletObj.listeners) {
-                        Object.getOwnPropertyNames(portletObj.listeners).forEach(
-                            function (uid) {
-                                portletObj.registerListener(portletObj.listeners[uid], uid);
-                            }
-                        );
-                        delete portletObj.listeners;
-                    }
-                });
-                targetElem.afterServerUpdate = afterServerUpdate;
-            }}
+                        hub.addEventListener('portlet.onStateChange', function (type, state) {
+                        });
+                        portletObj.eventPoller = window.Vaadin.Flow.Portlets.eventPoller;
+                        if (portletObj.listeners) {
+                            Object.getOwnPropertyNames(portletObj.listeners).forEach(
+                              function (uid) {
+                                  portletObj.registerListener(portletObj.listeners[uid], uid);
+                              }
+                            );
+                            delete portletObj.listeners;
+                        }
+                    });
+                    targetElem.afterServerUpdate = afterServerUpdate;
+                }
+            }
         };
         window.Vaadin.Flow.Portlets.initListenerRegistration(portletRegistryName, elem);
     };

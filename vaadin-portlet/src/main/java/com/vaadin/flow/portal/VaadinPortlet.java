@@ -22,6 +22,7 @@ import javax.portlet.EventResponse;
 import javax.portlet.GenericPortlet;
 import javax.portlet.HeaderRequest;
 import javax.portlet.HeaderResponse;
+import javax.portlet.MimeResponse;
 import javax.portlet.PortalContext;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
@@ -45,6 +46,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
@@ -232,23 +234,41 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     }
 
     @Override
+    protected void doHeaders(RenderRequest request, RenderResponse response) throws PortletException, IOException {
+        if (!isPortlet3.get() && request.getPortalContext().getProperty(PortalContext.MARKUP_HEAD_ELEMENT_SUPPORT) != null) {
+            // TEMP: bruteforce the inclusion of portlet scripts for 7.3 for testing
+            Element htmlHeader = response.createElement("script");
+            htmlHeader.setAttribute("type", "text/javascript");
+            htmlHeader.setTextContent(getPortletScripts(request).replace("\r", ""));
+
+            response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, htmlHeader);
+        }
+    }
+
+    @Override
     public void renderHeaders(HeaderRequest request, HeaderResponse response)
             throws PortletException, IOException {
         // This is only called for portlet 3.0 portlets.
+        // NOTE: Liferay 7.3.x seems to not call this for VaadinPortlets
         isPortlet3.set(true);
         response.addDependency("PortletHub", "javax.portlet", "3.0.0");
 
         // How do we get this to only exec once for multiple portlets on same
         // page, but still every time the page refreshes?
+        String initScript = "<script type=\"text/javascript\">"
+            + getPortletScripts(request) + "</script>";
+        response.getWriter().println(initScript);
+    }
+
+    private String getPortletScripts(RenderRequest request) {
         String initScript = (String) request.getPortletContext()
                 .getAttribute(PORTLET_SCRIPTS);
         if (initScript == null) {
-            initScript = "<script type=\"text/javascript\">"
-                    + loadFile("scripts/PortletMethods.js") + "</script>";
+            initScript = loadFile("scripts/PortletMethods.js");
             request.getPortletContext().setAttribute(PORTLET_SCRIPTS,
                     initScript);
         }
-        response.getWriter().println(initScript);
+        return initScript;
     }
 
     private String loadFile(String fileName) {

@@ -129,7 +129,7 @@ public final class PortletViewContext implements Serializable {
      *            parameters to add to event action
      */
     public void fireEvent(String eventName, Map<String, String> parameters) {
-        checkPortletHubAvailability();
+        //checkPortletHubAvailability();
         executeJS(getFireEventScript(eventName, parameters));
     }
 
@@ -340,7 +340,7 @@ public final class PortletViewContext implements Serializable {
 
     private Registration doAddEventChangeListener(String eventType,
             PortletEventListener listener) {
-        checkPortletHubAvailability();
+        //checkPortletHubAvailability();
         String uid = Long.toString(nextUid.getAndIncrement());
         String namespace = registerEventChangeListener(uid, eventType,
                 listener);

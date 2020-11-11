@@ -233,17 +233,17 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     protected void portletInitialized() throws PortletException {
     }
 
-    @Override
+    /*@Override
     protected void doHeaders(RenderRequest request, RenderResponse response) throws PortletException, IOException {
         if (!isPortlet3.get() && request.getPortalContext().getProperty(PortalContext.MARKUP_HEAD_ELEMENT_SUPPORT) != null) {
-            // TEMP: bruteforce the inclusion of portlet scripts for 7.3 for testing
+            // TEMP: bruteforce the inclusion of portlet scripts for liferay 7.3.x for testing
             Element htmlHeader = response.createElement("script");
             htmlHeader.setAttribute("type", "text/javascript");
             htmlHeader.setTextContent(getPortletScripts(request).replace("\r", ""));
 
             response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, htmlHeader);
         }
-    }
+    }*/
 
     @Override
     public void renderHeaders(HeaderRequest request, HeaderResponse response)
@@ -257,6 +257,10 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         // page, but still every time the page refreshes?
         String initScript = "<script type=\"text/javascript\">"
             + getPortletScripts(request) + "</script>";
+
+        if (response.getContentType() == null)
+            response.setContentType("text/html");
+
         response.getWriter().println(initScript);
     }
 

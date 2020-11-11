@@ -1,3 +1,5 @@
+//<![CDATA[
+// Liferay parses this file as XML, so make it appear as a CDATA section
 window.Vaadin = window.Vaadin || {};
 window.Vaadin.Flow = window.Vaadin.Flow || {};
 // <liferay>
@@ -185,3 +187,4 @@ if (!window.Vaadin.Flow.Portlets) {
         }
     };
 }
+//]]>

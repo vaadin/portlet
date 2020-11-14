@@ -16,12 +16,12 @@ if (!window.Vaadin.Flow.Portlets) {
 
     window.Vaadin.Flow.Portlets = {};
 
-    window.Vaadin.Flow.Portlets.reload = function (hub) {
+    window.Vaadin.Flow.Portlets.waitForHub = function (hub, task) {
         var poller = function () {
             if (hub.isInProgress()) {
                 setTimeout(poller, 10);
             } else {
-                location.reload();
+                task(hub);
             }
         };
         poller();
@@ -34,12 +34,17 @@ if (!window.Vaadin.Flow.Portlets) {
     window.Vaadin.Flow.Portlets.setPortletState = function (portletRegistryName, windowState, portletMode) {
         var hub = window.Vaadin.Flow.Portlets.getHubRegistartion(portletRegistryName);
 
-        var state = hub.newState();
-        state.windowState = windowState;
-        state.portletMode = portletMode;
-        hub.setRenderState(state);
+        window.Vaadin.Flow.Portlets.waitForHub(hub, function(hub) {
+            var state = hub.newState();
+            state.windowState = windowState;
+            state.portletMode = portletMode;
+            hub.setRenderState(state);
 
-        window.Vaadin.Flow.Portlets.reload(hub);
+            // FIXME: the addressbook demo was created while the reloading on state change did not happen
+            //        fix the demo or don't reload here, in the interest of time latter it is for now.
+            //        This behaviour makes no sense with multi portlet pages anyways. -> make optional?
+            //window.Vaadin.Flow.Portlets.waitForHub(hub, function (hub) { location.reload() });
+        });
     }
 
     window.Vaadin.Flow.Portlets.fireEvent = function (portletRegistryName, event, parameters) {
@@ -61,6 +66,9 @@ if (!window.Vaadin.Flow.Portlets) {
         window.portlet.data.pageRenderState.portlets[portletRegistryName].allowedPM = portletModes;
         window.portlet.data.pageRenderState.portlets[portletRegistryName].allowedWS = windowStates;
         window.portlet.data.pageRenderState.portlets[portletRegistryName].encodedActionURL = encodeURIComponent(actionUrl);
+        // This feels like a liferay 7.3 bug, not always checking if the renderData is there (since it *is* optional)
+        window.portlet.data.pageRenderState.portlets[portletRegistryName].renderData =
+            window.portlet.data.pageRenderState.portlets[portletRegistryName].renderData || { content: null, mimeType: "text/html" };
         // </liferay>
         customElements.whenDefined(tag).then(function () {
             var elem = document.querySelector(tag);

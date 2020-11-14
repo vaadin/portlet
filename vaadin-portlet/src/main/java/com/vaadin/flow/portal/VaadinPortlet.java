@@ -53,6 +53,7 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.WebComponentExporter;
 import com.vaadin.flow.component.WebComponentExporterFactory;
+import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.webcomponent.WebComponent;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.function.SerializableRunnable;
@@ -67,6 +68,7 @@ import com.vaadin.flow.server.SessionExpiredException;
 import com.vaadin.flow.server.VaadinConfigurationException;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.shared.util.SharedUtil;
 
 /**
@@ -89,7 +91,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
     private VaadinPortletService vaadinService;
 
-    private AtomicBoolean isPortlet3 = new AtomicBoolean();
+    protected AtomicBoolean isPortlet3 = new AtomicBoolean();
 
     // @formatter:off
     /*
@@ -150,6 +152,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      *
      */
     @PreserveOnRefresh
+    @Push(PushMode.DISABLED)
     protected class PortletWebComponentExporter
             extends WebComponentExporter<C> {
         /**
@@ -233,18 +236,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     protected void portletInitialized() throws PortletException {
     }
 
-    /*@Override
-    protected void doHeaders(RenderRequest request, RenderResponse response) throws PortletException, IOException {
-        if (!isPortlet3.get() && request.getPortalContext().getProperty(PortalContext.MARKUP_HEAD_ELEMENT_SUPPORT) != null) {
-            // TEMP: bruteforce the inclusion of portlet scripts for liferay 7.3.x for testing
-            Element htmlHeader = response.createElement("script");
-            htmlHeader.setAttribute("type", "text/javascript");
-            htmlHeader.setTextContent(getPortletScripts(request).replace("\r", ""));
-
-            response.addProperty(MimeResponse.MARKUP_HEAD_ELEMENT, htmlHeader);
-        }
-    }*/
-
     @Override
     public void renderHeaders(HeaderRequest request, HeaderResponse response)
             throws PortletException, IOException {
@@ -256,15 +247,12 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         // How do we get this to only exec once for multiple portlets on same
         // page, but still every time the page refreshes?
         String initScript = "<script type=\"text/javascript\">"
-            + getPortletScripts(request) + "</script>";
-
-        if (response.getContentType() == null)
-            response.setContentType("text/html");
+            + getPortletScript(request) + "</script>";
 
         response.getWriter().println(initScript);
     }
 
-    private String getPortletScripts(RenderRequest request) {
+    protected String getPortletScript(RenderRequest request) {
         String initScript = (String) request.getPortletContext()
                 .getAttribute(PORTLET_SCRIPTS);
         if (initScript == null) {

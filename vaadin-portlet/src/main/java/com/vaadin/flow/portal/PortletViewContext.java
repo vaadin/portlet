@@ -129,7 +129,7 @@ public final class PortletViewContext implements Serializable {
      *            parameters to add to event action
      */
     public void fireEvent(String eventName, Map<String, String> parameters) {
-        //checkPortletHubAvailability();
+        checkPortletHubRequired();
         executeJS(getFireEventScript(eventName, parameters));
     }
 
@@ -340,7 +340,7 @@ public final class PortletViewContext implements Serializable {
 
     private Registration doAddEventChangeListener(String eventType,
             PortletEventListener listener) {
-        //checkPortletHubAvailability();
+        checkPortletHubRequired();
         String uid = Long.toString(nextUid.getAndIncrement());
         String namespace = registerEventChangeListener(uid, eventType,
                 listener);
@@ -423,7 +423,7 @@ public final class PortletViewContext implements Serializable {
         }
     }
 
-    private void checkPortletHubAvailability() {
+    private void checkPortletHubRequired() {
         if (!isPortlet3.get()) {
             String message = "Portlet Hub not available; to use Vaadin "
                     + "Portlet IPC, ensure that portlet.xml specifies at "

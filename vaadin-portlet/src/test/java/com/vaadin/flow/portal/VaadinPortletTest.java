@@ -4,6 +4,7 @@ import javax.portlet.ActionParameters;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.ActionURL;
+import javax.portlet.PortalContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
@@ -57,19 +58,6 @@ public class VaadinPortletTest {
             private TestWebComponentExporter(String tag) {
                 super(tag);
             }
-
-            @Override
-            protected void configureInstance(
-                    WebComponent<TestComponent> webComponent,
-                    TestComponent component) {
-                super.configureInstance(webComponent, component);
-            }
-
-            @Override
-            protected Class<TestComponent> getComponentClass() {
-                return super.getComponentClass();
-            }
-
         }
 
         private TestWebComponentExporter exporter;
@@ -126,6 +114,7 @@ public class VaadinPortletTest {
     private TestVaadinPortlet portlet;
     private TestComponent component;
     private VaadinPortletService service;
+    private VaadinPortletSession session;
     private UI ui;
 
     @Before
@@ -133,7 +122,7 @@ public class VaadinPortletTest {
         portlet = new TestVaadinPortlet();
         service = Mockito.mock(VaadinPortletService.class);
 
-        VaadinPortletSession session = new VaadinPortletSession(service) {
+        session = new VaadinPortletSession(service) {
             @Override
             public boolean hasLock() {
                 return true;
@@ -184,7 +173,7 @@ public class VaadinPortletTest {
 
         ExtendedClientDetails details = Mockito
                 .mock(ExtendedClientDetails.class);
-        Mockito.when(details.getWindowName()).thenReturn("");
+        Mockito.when(details.getWindowName()).thenReturn("mywindow");
         ui.getInternals().setExtendedClientDetails(details);
 
         Mockito.when(request.getPortletMode()).thenReturn(PortletMode.VIEW);
@@ -449,11 +438,14 @@ public class VaadinPortletTest {
 
         ActionRequest request = Mockito.mock(ActionRequest.class);
         ActionResponse response = Mockito.mock(ActionResponse.class);
+        PortalContext portalContext = Mockito.mock(PortalContext.class);
 
         Mockito.when(response.getNamespace()).thenReturn(namespace);
 
         Mockito.when(request.getActionParameters()).thenReturn(params);
+        Mockito.when(request.getPortalContext()).thenReturn(portalContext);
 
+        Mockito.when(portalContext.getPortalInfo()).thenReturn("");
         Mockito.when(params.getNames())
                 .thenReturn(Collections.singleton("vaadin.ev"));
 
@@ -462,6 +454,19 @@ public class VaadinPortletTest {
         portlet.processAction(request, response);
 
         Assert.assertNotNull(listener.get());
+    }
+
+    @Test
+    public void initComponent_noViewContextExists_viewContextIsAddedToSession() {
+        VaadinPortlet.initComponent(component);
+        String attributeName = TestVaadinPortlet.class.getName() + "-"
+                + "mywindow-viewContext";
+        Map<String, Object> map = (Map<String, Object>) session
+                .getAttribute(attributeName);
+        Assert.assertNotNull(map);
+        Assert.assertTrue(map.containsKey(namespace));
+        PortletViewContext context = (PortletViewContext) map.get(namespace);
+        Assert.assertEquals(component.context, context);
     }
 
     private String getListenerUid() {

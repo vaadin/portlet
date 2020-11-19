@@ -30,8 +30,9 @@ public class PortletClassesSerializableTest extends ClassesSerializableTest {
                 // this can be made serializable once VaadinPortletRequest is
                 // serializable
                 "com\\.vaadin\\.flow\\.portal\\." +
-                        "PortletStreamReceiverHandler\\$StreamRequestContext"
-
+                        "PortletStreamReceiverHandler\\$StreamRequestContext",
+                "com\\.vaadin\\.flow\\.portal\\.VaadinHttpPortletRequest",
+                "com\\.vaadin\\.flow\\.portal\\.VaadinLiferayRequest"
         );
     }
 

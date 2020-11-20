@@ -22,7 +22,6 @@ import javax.portlet.EventResponse;
 import javax.portlet.GenericPortlet;
 import javax.portlet.HeaderRequest;
 import javax.portlet.HeaderResponse;
-import javax.portlet.MimeResponse;
 import javax.portlet.PortalContext;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
@@ -46,7 +45,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
@@ -87,7 +85,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private static final String DEV_MODE_ERROR_MESSAGE = "<h2>⚠️Vaadin Portlet does not work in development mode running webpack-dev-server</h2>"
             + "<p>To run a portlet in development mode, you need to activate both <code>prepare-frontend</code> and <code>build-frontend</code> goals of <code>vaadin-maven-plugin</code>. "
             + "To run a portlet in production mode see <a href='https://vaadin.com/docs/v14/flow/production/tutorial-production-mode-basic.html' target='_blank'>this</a>.</p>";
-    public static final String PORTLET_SCRIPTS = "general-methods";
+    public static final String PORTLET_SCRIPT = "general-methods";
 
     private VaadinPortletService vaadinService;
 
@@ -246,18 +244,18 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
         // How do we get this to only exec once for multiple portlets on same
         // page, but still every time the page refreshes?
-        String initScript = "<script type=\"text/javascript\">"
-            + getPortletScript(request) + "</script>";
+        String initScript = "<script type=\"text/javascript\">\n"
+                + getPortletScript(request) + "\n</script>";
 
         response.getWriter().println(initScript);
     }
 
     protected String getPortletScript(RenderRequest request) {
         String initScript = (String) request.getPortletContext()
-                .getAttribute(PORTLET_SCRIPTS);
+                .getAttribute(PORTLET_SCRIPT);
         if (initScript == null) {
             initScript = loadFile("scripts/PortletMethods.js");
-            request.getPortletContext().setAttribute(PORTLET_SCRIPTS,
+            request.getPortletContext().setAttribute(PORTLET_SCRIPT,
                     initScript);
         }
         return initScript;
@@ -325,7 +323,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      * @return A wrapped version of the PortletRequest
      */
     protected VaadinPortletRequest createVaadinRequest(PortletRequest request) {
-            PortalContext portalContext = request.getPortalContext();
+        PortalContext portalContext = request.getPortalContext();
         String portalInfo = portalContext.getPortalInfo()
                 .toLowerCase(Locale.ROOT).trim();
         VaadinPortletService service = getService();

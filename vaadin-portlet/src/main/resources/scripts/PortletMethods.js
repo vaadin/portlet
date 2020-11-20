@@ -16,7 +16,7 @@ if (!window.Vaadin.Flow.Portlets) {
 
     window.Vaadin.Flow.Portlets = {};
 
-    window.Vaadin.Flow.Portlets.waitForHub = function (hub, task) {
+    window.Vaadin.Flow.Portlets.executeWhenHubIdle = function (hub, task) {
         var poller = function () {
             if (hub.isInProgress()) {
                 setTimeout(poller, 10);
@@ -34,7 +34,7 @@ if (!window.Vaadin.Flow.Portlets) {
     window.Vaadin.Flow.Portlets.setPortletState = function (portletRegistryName, windowState, portletMode) {
         var hub = window.Vaadin.Flow.Portlets.getHubRegistartion(portletRegistryName);
 
-        window.Vaadin.Flow.Portlets.waitForHub(hub, function(hub) {
+        window.Vaadin.Flow.Portlets.executeWhenHubIdle(hub, function(hub) {
             var state = hub.newState();
             state.windowState = windowState;
             state.portletMode = portletMode;
@@ -43,7 +43,7 @@ if (!window.Vaadin.Flow.Portlets) {
             // FIXME: the addressbook demo was created while the reloading on state change did not happen
             //        fix the demo or don't reload here, in the interest of time latter it is for now.
             //        This behaviour makes no sense with multi portlet pages anyways. -> make optional?
-            //window.Vaadin.Flow.Portlets.waitForHub(hub, function (hub) { location.reload() });
+            //window.Vaadin.Flow.Portlets.executeWhenHubIdle(hub, function (hub) { location.reload() });
         });
     }
 
@@ -66,7 +66,7 @@ if (!window.Vaadin.Flow.Portlets) {
         window.portlet.data.pageRenderState.portlets[portletRegistryName].allowedPM = portletModes;
         window.portlet.data.pageRenderState.portlets[portletRegistryName].allowedWS = windowStates;
         window.portlet.data.pageRenderState.portlets[portletRegistryName].encodedActionURL = encodeURIComponent(actionUrl);
-        // This feels like a liferay 7.3 bug, not always checking if the renderData is there (since it *is* optional)
+        // liferay 7.3 does not always check if the renderData is there
         window.portlet.data.pageRenderState.portlets[portletRegistryName].renderData =
             window.portlet.data.pageRenderState.portlets[portletRegistryName].renderData || { content: null, mimeType: "text/html" };
         // </liferay>

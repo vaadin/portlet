@@ -15,6 +15,13 @@
  */
 package com.vaadin.flow.portal;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.EventRequest;
@@ -33,18 +40,6 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.portlet.WindowState;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
@@ -69,6 +64,9 @@ import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.shared.util.SharedUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Vaadin implementation of the {@link GenericPortlet}.
  *
@@ -85,7 +83,6 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private static final String DEV_MODE_ERROR_MESSAGE = "<h2>⚠️Vaadin Portlet does not work in development mode running webpack-dev-server</h2>"
             + "<p>To run a portlet in development mode, you need to activate both <code>prepare-frontend</code> and <code>build-frontend</code> goals of <code>vaadin-maven-plugin</code>. "
             + "To run a portlet in production mode see <a href='https://vaadin.com/docs/v14/flow/production/tutorial-production-mode-basic.html' target='_blank'>this</a>.</p>";
-    public static final String PORTLET_SCRIPT = "general-methods";
 
     private VaadinPortletService vaadinService;
 
@@ -242,42 +239,33 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         isPortlet3.set(true);
         response.addDependency("PortletHub", "javax.portlet", "3.0.0");
 
-        // How do we get this to only exec once for multiple portlets on same
-        // page, but still every time the page refreshes?
-        String initScript = "<script type=\"text/javascript\">\n"
-                + getPortletScript(request) + "\n</script>";
-
-        response.getWriter().println(initScript);
+        response.getWriter().println(
+                getPortletScriptTag(request, "scripts/PortletMethods.js"));
     }
 
-    protected String getPortletScript(RenderRequest request) {
-        String initScript = (String) request.getPortletContext()
-                .getAttribute(PORTLET_SCRIPT);
-        if (initScript == null) {
-            initScript = loadFile("scripts/PortletMethods.js");
-            request.getPortletContext().setAttribute(PORTLET_SCRIPT,
-                    initScript);
-        }
-        return initScript;
+    protected String getPortletScriptTag(RenderRequest request,
+            String filePath) {
+        // static bundle or context path? 
+        // latter is more lenient for old projects, former is less friendly to caching
+        String scriptSrc = getServerUrl(request) + getStaticResourcesPath()
+                + filePath;
+        return "<script src=\"" + scriptSrc + "\" type=\"text/javascript\" />";
     }
 
-    private String loadFile(String fileName) {
-        String fileContent = "";
-        InputStream inputStream = getClass().getClassLoader()
-                .getResourceAsStream(fileName);
-        if (inputStream == null) {
-            LoggerFactory.getLogger(getClass())
-                    .warn("No resource file found for '{}'", fileName);
-            return fileContent;
-        }
+    protected String getStaticResourcesPath() {
+        return getService().getDeploymentConfiguration().getStringProperty(
+                PortletConstants.PORTLET_PARAMETER_STATIC_RESOURCES_MAPPING,
+                "/vaadin-portlet-static/");
+    }
 
-        try {
-            fileContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            LoggerFactory.getLogger(getClass())
-                    .error("Failed to load file '{}'", fileName, e);
-        }
-        return fileContent;
+    private static String getServerUrl(RenderRequest req) {
+        int port = req.getServerPort();
+        String scheme = req.getScheme();
+        boolean isDefaultPort = (scheme == "http" && port == 80)
+                || (scheme == "https" && port == 443);
+
+        return String.format("%s://%s%s", scheme, req.getServerName(),
+                (isDefaultPort ? "" : ":" + port));
     }
 
     @Override

@@ -59,6 +59,6 @@ public abstract class VaadinLiferayPortlet<C extends Component>
     }
 
     private boolean checkStaticResourcesConfiguration() {
-        return "/o/vaadin-portlet-static/".equals(getStaticResourcesPath());
+        return getStaticResourcesPath().startsWith("/o/");
     }
 }

@@ -43,7 +43,6 @@
             <scope>provided</scope>
         </dependency>
 
-
         <!--Portlet API -->
         <dependency>
             <groupId>javax.portlet</groupId>
@@ -108,4 +107,3 @@
         </plugins>
     </build>
 </project>
-

@@ -21,6 +21,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -48,7 +49,7 @@ import com.vaadin.flow.server.Version;
 import com.vaadin.flow.server.WebBrowser;
 import com.vaadin.flow.server.WrappedSession;
 import com.vaadin.flow.server.communication.HeartbeatHandler;
-import com.vaadin.flow.server.startup.ApplicationRouteRegistry;
+import com.vaadin.flow.server.startup.PortletApplicationRouteRegistryUtil;
 import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.theme.AbstractTheme;
 
@@ -277,7 +278,8 @@ public class VaadinPortletService extends VaadinService {
 
     @Override
     protected RouteRegistry getRouteRegistry() {
-        return ApplicationRouteRegistry.getInstance(getContext());
+        return PortletApplicationRouteRegistryUtil
+                .getInstance((VaadinPortletContext) getContext());
     }
 
     @Override

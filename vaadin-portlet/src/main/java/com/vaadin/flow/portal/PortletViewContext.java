@@ -22,6 +22,7 @@ import javax.portlet.PortletModeException;
 import javax.portlet.PortletResponse;
 import javax.portlet.WindowState;
 import javax.portlet.WindowStateException;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -260,6 +261,10 @@ public final class PortletViewContext implements Serializable {
             firePortletModeEvent(
                     new PortletModeEvent(newPortletMode, oldValue, false));
         }
+    }
+
+    public Component getView() {
+        return view;
     }
 
     private void updatePortletState(String windowState, String portletMode) {

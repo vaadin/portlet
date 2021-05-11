@@ -31,7 +31,7 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>license-checker</artifactId>
-            <version>1.0.0</version>
+            <version>1.2.1</version>
             <scope>compile</scope>
         </dependency>
 
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>com.liferay.portal</groupId>
             <artifactId>com.liferay.portal.kernel</artifactId>
-            <version>4.38.0</version>
+            <version>9.30.0</version>
             <scope>provided</scope>
         </dependency>
 

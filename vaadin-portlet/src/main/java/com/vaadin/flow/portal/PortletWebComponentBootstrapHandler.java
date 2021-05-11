@@ -15,9 +15,10 @@
  */
 package com.vaadin.flow.portal;
 
-import java.io.IOException;
-
 import javax.portlet.PortletResponse;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import org.jsoup.nodes.Element;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,6 @@ import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.communication.WebComponentBootstrapHandler;
-import com.vaadin.pro.licensechecker.LicenseChecker;
 
 /**
  * For internal use only.
@@ -54,7 +54,7 @@ class PortletWebComponentBootstrapHandler
     }
 
     @Override
-    protected String modifyPath(String basePath, String path) {
+    protected String modifyPath(String basePath, String path) throws UnsupportedEncodingException {
         // Require that the static files are available from the server root
         path = path.replaceFirst("^.VAADIN/", "./VAADIN/");
         if (path.startsWith("./VAADIN/")) {
@@ -129,8 +129,13 @@ class PortletWebComponentBootstrapHandler
             // to load UI. There is also a license check when the portlet is
             // written to the page. That check shows a message on the client
             // side
-            LicenseChecker.checkLicense(VaadinPortletService.PROJECT_NAME,
-                    VaadinPortletService.getPortletVersion());
+
+            // TODO LicenseChecker crashes to java.lang.NoSuchMethodError:
+            // com.sun.jna.Native.load(Ljava/lang/String;Ljava/lang/Class;Ljava/util/Map;)Lcom/sun/jna/Library;
+            // due to Liferay 7.3 running with jna dependency older than
+            // Vaadin's jna-5.7.0
+            // LicenseChecker.checkLicense(VaadinPortletService.PROJECT_NAME,
+            // VaadinPortletService.getPortletVersion());
         }
         return super.createAndInitUI(uiClass, request, response, session);
     }

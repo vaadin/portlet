@@ -25,9 +25,15 @@ public class PortletStreamResourceHandler extends StreamResourceHandler {
         try {
             PortletContext context = ((VaadinPortletRequest) request)
                     .getPortletContext();
-            response.setContentType(Optional
-                    .ofNullable(context.getMimeType(streamResource.getName()))
-                    .orElse("application/octet-stream"));
+            try {
+                response.setContentType(streamResource.getContentTypeResolver()
+                        .apply(streamResource, null));
+            } catch (NullPointerException e) {
+                response.setContentType(Optional
+                        .ofNullable(
+                                context.getMimeType(streamResource.getName()))
+                        .orElse("application/octet-stream"));
+            }
             response.setCacheTime(streamResource.getCacheTime());
             writer = streamResource.getWriter();
             if (writer == null) {

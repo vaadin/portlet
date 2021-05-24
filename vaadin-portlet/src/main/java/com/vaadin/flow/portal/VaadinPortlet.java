@@ -249,7 +249,8 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         // latter is more lenient for old projects, former is less friendly to caching
         String scriptSrc = getServerUrl(request) + getStaticResourcesPath()
                 + filePath;
-        return "<script src=\"" + scriptSrc + "\" type=\"text/javascript\" />";
+        return "<script src=\"" + scriptSrc
+                + "\" type=\"text/javascript\"></script>";
     }
 
     protected String getStaticResourcesPath() {

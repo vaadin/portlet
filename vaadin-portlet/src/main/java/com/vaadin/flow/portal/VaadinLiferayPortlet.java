@@ -22,7 +22,10 @@ public abstract class VaadinLiferayPortlet<C extends Component>
     @Override
     public void renderHeaders(HeaderRequest request, HeaderResponse response) {
         // Skip most of renderHeaders for liferay portlets as it is called inconsistently between different versions (7.2, 7.3).
-        // - response.addDependency() won't work (ref: https://issues.liferay.com/browse/LPS-107438).
+        // - response.addDependency() won't work with all versions
+        // (ref:https://issues.liferay.com/browse/LPS-107438)
+        // Update: LPS-107438 testcase works with 7.3.10 after removing
+        // PortletHub dependency from portlet.xml.
         // - injected scripts may or may not actually appear on the page, and they are processed as XML (?)
         // -> do the injection in doHeaders instead
 

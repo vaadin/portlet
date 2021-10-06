@@ -54,7 +54,8 @@ class PortletWebComponentBootstrapHandler
     }
 
     @Override
-    protected String modifyPath(String basePath, String path) {
+    protected String modifyPath(String basePath, String path)
+            throws UnsupportedEncodingException {
         // Require that the static files are available from the server root
         path = path.replaceFirst("^.VAADIN/", "./VAADIN/");
         if (path.startsWith("./VAADIN/")) {

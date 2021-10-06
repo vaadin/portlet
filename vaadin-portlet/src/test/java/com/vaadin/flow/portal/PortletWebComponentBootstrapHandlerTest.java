@@ -46,7 +46,7 @@ public class PortletWebComponentBootstrapHandlerTest {
     }
 
     @Test
-    public void modifyPath_staticResourcesPathIsEmpty_pathIsPrefixedWithSlash() {
+    public void modifyPath_staticResourcesPathIsEmpty_pathIsPrefixedWithSlash() throws Exception {
         Mockito.when(configuration.isProductionMode()).thenReturn(true);
 
         Mockito.when(configuration.getStringProperty(Mockito.eq(
@@ -57,7 +57,7 @@ public class PortletWebComponentBootstrapHandlerTest {
     }
 
     @Test
-    public void modifyPath_staticResourcesPathHasNoSlashes_pathIsPrefixedAndPostfixedWithSlash() {
+    public void modifyPath_staticResourcesPathHasNoSlashes_pathIsPrefixedAndPostfixedWithSlash() throws Exception {
         Mockito.when(configuration.isProductionMode()).thenReturn(true);
 
         Mockito.when(configuration.getStringProperty(Mockito.eq(
@@ -68,7 +68,7 @@ public class PortletWebComponentBootstrapHandlerTest {
     }
 
     @Test
-    public void modifyPath_staticResourcesPathHasAllSlashes_pathIsConcatenatedWithMappingURI() {
+    public void modifyPath_staticResourcesPathHasAllSlashes_pathIsConcatenatedWithMappingURI() throws Exception {
         Mockito.when(configuration.isProductionMode()).thenReturn(true);
 
         Mockito.when(configuration.getStringProperty(Mockito.eq(

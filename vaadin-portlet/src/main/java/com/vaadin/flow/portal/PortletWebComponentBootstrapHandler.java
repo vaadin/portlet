@@ -16,6 +16,7 @@
 package com.vaadin.flow.portal;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import javax.portlet.PortletResponse;
 

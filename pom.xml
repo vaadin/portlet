@@ -70,8 +70,8 @@
         <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
 
         <testbench.version>6.2.0</testbench.version>
-        <flow.version>2.2-SNAPSHOT</flow.version>
-        <flow.cdi.version>11.2-SNAPSHOT</flow.cdi.version>
+        <flow.version>2.7-SNAPSHOT</flow.version>
+        <flow.cdi.version>11.3-SNAPSHOT</flow.cdi.version>
         <jetty.version>9.4.9.v20180320</jetty.version>
 
         <maven.test.skip>false</maven.test.skip>

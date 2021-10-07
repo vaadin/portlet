@@ -22,6 +22,7 @@ import java.io.IOException;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.WrapsElement;
@@ -39,6 +40,7 @@ public class UploadIT extends AbstractPlutoPortalTest {
     }
 
     @Test
+    @Ignore("Ignored until fixed in https://github.com/vaadin/portlet/issues/190")
     public void fileUploaded_fileSizeIsRendered() throws Exception {
         // upload a file
         File file = createTempFile();

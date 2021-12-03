@@ -31,6 +31,7 @@ import javax.portlet.HeaderRequest;
 import javax.portlet.HeaderResponse;
 import javax.portlet.PortalContext;
 import javax.portlet.PortletConfig;
+import javax.portlet.PortletContext;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
@@ -245,8 +246,10 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
 
     protected String getPortletScriptTag(RenderRequest request,
             String filePath) {
-        // static bundle or context path? 
+        // static bundle or context path?
         // latter is more lenient for old projects, former is less friendly to caching
+        // current implementation uses portlet context to load the portlet
+        // methods JS file and Liferay implementation uses static bundle
         String scriptSrc = getServerUrl(request) + getStaticResourcesPath()
                 + filePath;
         return "<script src=\"" + scriptSrc
@@ -254,9 +257,14 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     }
 
     protected String getStaticResourcesPath() {
-        return getService().getDeploymentConfiguration().getStringProperty(
-                PortletConstants.PORTLET_PARAMETER_STATIC_RESOURCES_MAPPING,
-                "/vaadin-portlet-static/");
+        PortletContext portletContext = getPortletContext();
+        if (portletContext != null) {
+            String contextPath = portletContext.getContextPath();
+            if (contextPath != null && !contextPath.isEmpty()) {
+                return contextPath + "/";
+            }
+        }
+        return "/";
     }
 
     private static String getServerUrl(RenderRequest req) {
@@ -597,7 +605,7 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
      * wants to be rendered in minimized state as well as other states, it
      * should override this method and return true.
      * </p>
-     * 
+     *
      * @return true is the portlet should be rendered in minimized state.
      *         Otherwise false.
      */

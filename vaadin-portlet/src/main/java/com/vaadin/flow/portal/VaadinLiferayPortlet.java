@@ -12,7 +12,7 @@ import com.vaadin.flow.component.Component;
 
 /**
  * VaadinPortlet workarounds for Liferay versions 7.2.x and 7.3.x
- * 
+ *
  * Requires the implementing portlet to signal PortletHub dependency due to a Liferay bug.
  * Addresses inconsistent behaviour in injecting required Vaadin specific javascript.
  */
@@ -48,7 +48,7 @@ public abstract class VaadinLiferayPortlet<C extends Component>
          * 1. The script tag will appear once per portlet
          * 2. Liferay partial page update breaks the page and causes Vaadin components to render blank
          *    *if* the browser has stale Vaadin related things from the previous page.
-         * 
+         *
          * In other words we probably need a surgical way to scrub stale Vaadin things from users browser
          * that only runs once, even if the script can be on the page multiple times. Alternatively we can
          * just detect the problem and force a hard reload.
@@ -59,6 +59,13 @@ public abstract class VaadinLiferayPortlet<C extends Component>
         // we don't actually know if the portlet is a 3.0 one here, but we need to stop the IPC errors from being thrown
         // with liferay 7.3 the portlet generally fails to render if the exception is thrown
         isPortlet3.set(true);
+    }
+
+    @Override
+    protected String getStaticResourcesPath() {
+        return getService().getDeploymentConfiguration().getStringProperty(
+        PortletConstants.PORTLET_PARAMETER_STATIC_RESOURCES_MAPPING,
+        "/vaadin-portlet-static/");
     }
 
     private boolean checkStaticResourcesConfiguration() {

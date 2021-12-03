@@ -43,7 +43,7 @@ if (!window.Vaadin.Flow.Portlets) {
             // FIXME: the addressbook demo was created while the reloading on state change did not happen
             //        fix the demo or don't reload here, in the interest of time latter it is for now.
             //        This behaviour makes no sense with multi portlet pages anyways. -> make optional?
-            //window.Vaadin.Flow.Portlets.executeWhenHubIdle(hub, function (hub) { location.reload() });
+            window.Vaadin.Flow.Portlets.executeWhenHubIdle(hub, function (hub) { location.reload() });
         });
     }
 

@@ -35,6 +35,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.vaadin.flow.component.html.testbench.AnchorElement;
 import com.vaadin.flow.component.html.testbench.SelectElement;
+import com.vaadin.testbench.ElementQuery;
 import com.vaadin.testbench.ScreenshotOnFailureRule;
 import com.vaadin.testbench.TestBench;
 import com.vaadin.testbench.TestBenchElement;
@@ -228,23 +229,6 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
             throw new AssertionError("no Vaadin Portlet added");
         }
         return getVaadinPortletRootElement(firstPortletId);
-    }
-
-    /**
-     * Gets the shadow root of the Vaadin Portlet identified by id
-     */
-    protected TestBenchElement getPortletById(String id) {
-        return getVaadinPortletRootElement(id).$("*").first();
-    }
-
-    /**
-     * Gets the shadow root of the first added portlet.
-     */
-    protected TestBenchElement getFirstPortlet() {
-        if (firstPortletId == null) {
-            throw new AssertionError("no Vaadin Portlet added");
-        }
-        return getPortletById(firstPortletId);
     }
 
     /**

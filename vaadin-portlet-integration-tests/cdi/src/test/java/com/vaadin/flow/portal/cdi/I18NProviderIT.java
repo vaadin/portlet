@@ -29,13 +29,15 @@ public class I18NProviderIT extends AbstractPlutoPortalTest {
 
     @Test
     public void i18NProviderTranslatesKeyCorrectly() {
-        final String label1 = getFirstPortlet().$(SpanElement.class)
+        final String label1 = getVaadinPortletRootElement().$("*").first()
+                .$(SpanElement.class)
                 .attributeContains("id", I18NProviderView.TRANSLATED_LABEL1_ID)
                 .waitForFirst().getText();
         Assert.assertEquals("translation", label1);
 
-        final String label2 = getFirstPortlet().$(SpanElement.class)
-                .id(I18NProviderView.TRANSLATED_LABEL1_ID).getText();
+        final String label2 = getVaadinPortletRootElement().$("*").first()
+                .$(SpanElement.class).id(I18NProviderView.TRANSLATED_LABEL1_ID)
+                .getText();
         Assert.assertEquals("translation", label2);
     }
 
@@ -43,10 +45,11 @@ public class I18NProviderIT extends AbstractPlutoPortalTest {
     public void i18NProviderCreatedOnlyOnce() {
         openInAnotherWindow();
 
-        final int counter = Integer.parseInt(getFirstPortlet()
-                .$(SpanElement.class)
-                .attributeContains("id", I18NProviderView.COUNTER_LABEL_ID)
-                .waitForFirst().getText());
+        final int counter = Integer.parseInt(
+                getVaadinPortletRootElement().$("*").first()
+                        .$(SpanElement.class).attributeContains("id",
+                                I18NProviderView.COUNTER_LABEL_ID).waitForFirst()
+                        .getText());
         Assert.assertEquals("I18NProvider expected initialized only once",
                 counter, 1);
     }

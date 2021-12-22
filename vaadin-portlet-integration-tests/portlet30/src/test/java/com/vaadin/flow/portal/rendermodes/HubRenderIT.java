@@ -38,23 +38,23 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
 
     @Test
     public void changeModeAndState_modeAndStateAreKept() {
-        ButtonElement stateChange = getFirstPortlet().$(ButtonElement.class)
-                .id(RenderView.WINDOW_STATE_CHANGE);
-        ButtonElement modeChange = getFirstPortlet().$(ButtonElement.class)
-                .id(RenderView.PORTLET_MODE_CHANGE);
+        ButtonElement stateChange = getVaadinPortletRootElement().$("*").first()
+                .$(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
+        ButtonElement modeChange = getVaadinPortletRootElement().$("*").first()
+                .$(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
 
         Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_EDIT, modeChange.getText());
 
         stateChange.click();
 
-        stateChange = getFirstPortlet().$(ButtonElement.class)
-                .id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = getFirstPortlet().$(ButtonElement.class)
-                .id(RenderView.PORTLET_MODE_CHANGE);
+        stateChange = getVaadinPortletRootElement().$("*").first()
+                .$(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
+        modeChange = getVaadinPortletRootElement().$("*").first()
+                .$(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
 
-        WebElement stateInfo = getFirstPortlet()
-                .findElement(By.id("state-info"));
+        WebElement stateInfo = getVaadinPortletRootElement().$("*")
+                .id("state-info");
         Assert.assertEquals(WindowState.MAXIMIZED.toString(),
                 stateInfo.getText());
 
@@ -65,12 +65,13 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
 
         modeChange.click();
 
-        stateChange = getFirstPortlet().$(ButtonElement.class)
+        stateChange = getVaadinPortletRootElement().$(ButtonElement.class)
                 .id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = getFirstPortlet().$(ButtonElement.class)
+        modeChange = getVaadinPortletRootElement().$(ButtonElement.class)
                 .id(RenderView.PORTLET_MODE_CHANGE);
 
-        WebElement modeInfo = getFirstPortlet().findElement(By.id("mode-info"));
+        WebElement modeInfo = getVaadinPortletRootElement().$("*")
+                .id("mode-info");
         Assert.assertEquals(PortletMode.EDIT.toString(), modeInfo.getText());
 
         Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
@@ -80,12 +81,12 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
 
         stateChange.click();
 
-        stateChange = getFirstPortlet().$(ButtonElement.class)
-                .id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = getFirstPortlet().$(ButtonElement.class)
-                .id(RenderView.PORTLET_MODE_CHANGE);
+        stateChange = getVaadinPortletRootElement().$("*").first()
+                .$(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
+        modeChange = getVaadinPortletRootElement().$("*").first()
+                .$(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
 
-        stateInfo = getFirstPortlet().findElement(By.id("state-info"));
+        stateInfo = getVaadinPortletRootElement().$("*").id("state-info");
         Assert.assertEquals(WindowState.NORMAL.toString(), stateInfo.getText());
 
         Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());
@@ -95,9 +96,8 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
     }
 
     private String getWindowMode() {
-        SelectElement modeSelector = $(TestBenchElement.class)
-                .attribute("name", "modeSelectionForm").first()
-                .$(SelectElement.class).first();
+        SelectElement modeSelector = $(TestBenchElement.class).attribute("name",
+                "modeSelectionForm").first().$(SelectElement.class).first();
         return modeSelector.getSelectedText().toUpperCase(Locale.ENGLISH);
     }
 

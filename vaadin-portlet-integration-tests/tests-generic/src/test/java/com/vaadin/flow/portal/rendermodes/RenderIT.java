@@ -34,9 +34,9 @@ public class RenderIT extends AbstractPlutoPortalTest {
 
     @Test
     public void changeModeAndState_modeAndStateAreKept() {
-        ButtonElement stateChange = getFirstPortlet().$(ButtonElement.class)
+        TestBenchElement stateChange = getVaadinPortletRootElement().$("*")
                 .id(RenderView.WINDOW_STATE_CHANGE);
-        ButtonElement modeChange = getFirstPortlet().$(ButtonElement.class)
+        TestBenchElement modeChange = getVaadinPortletRootElement().$("*")
                 .id(RenderView.PORTLET_MODE_CHANGE);
 
         Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());
@@ -44,9 +44,9 @@ public class RenderIT extends AbstractPlutoPortalTest {
 
         stateChange.click();
 
-        stateChange = getFirstPortlet().$(ButtonElement.class)
+        stateChange = getVaadinPortletRootElement().$("*")
                 .id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = getFirstPortlet().$(ButtonElement.class)
+        modeChange = getVaadinPortletRootElement().$("*")
                 .id(RenderView.PORTLET_MODE_CHANGE);
 
         Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
@@ -56,9 +56,9 @@ public class RenderIT extends AbstractPlutoPortalTest {
 
         modeChange.click();
 
-        stateChange = getFirstPortlet().$(ButtonElement.class)
+        stateChange = getVaadinPortletRootElement().$("*")
                 .id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = getFirstPortlet().$(ButtonElement.class)
+        modeChange = getVaadinPortletRootElement().$("*")
                 .id(RenderView.PORTLET_MODE_CHANGE);
 
         Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
@@ -68,9 +68,9 @@ public class RenderIT extends AbstractPlutoPortalTest {
 
         stateChange.click();
 
-        stateChange = getFirstPortlet().$(ButtonElement.class)
+        stateChange = getVaadinPortletRootElement().$("*")
                 .id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = getFirstPortlet().$(ButtonElement.class)
+        modeChange = getVaadinPortletRootElement().$("*")
                 .id(RenderView.PORTLET_MODE_CHANGE);
 
         Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());
@@ -80,9 +80,8 @@ public class RenderIT extends AbstractPlutoPortalTest {
     }
 
     private String getWindowMode() {
-        SelectElement modeSelector = $(TestBenchElement.class)
-                .attribute("name", "modeSelectionForm").first()
-                .$(SelectElement.class).first();
+        SelectElement modeSelector = $(TestBenchElement.class).attribute("name",
+                "modeSelectionForm").first().$(SelectElement.class).first();
         return modeSelector.getSelectedText().toUpperCase(Locale.ENGLISH);
     }
 

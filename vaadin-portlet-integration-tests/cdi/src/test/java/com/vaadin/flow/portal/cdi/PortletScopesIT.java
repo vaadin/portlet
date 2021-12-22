@@ -35,12 +35,12 @@ public class PortletScopesIT extends AbstractPlutoPortalTest {
     public void preDefinedRequestBeansReflectPortletState() {
         // initially expect normal window state and view mode
         waitUntil(driver -> WindowState.NORMAL.toString()
-                .equals(getFirstPortlet().$(TestBenchElement.class)
+                .equals(getVaadinPortletRootElement().$("*")
                         .id(PortletScopesView.WINDOW_STATE_LABEL_ID).getText())
                 && PortletMode.VIEW.toString()
-                        .equals(getFirstPortlet().$(TestBenchElement.class)
-                                .id(PortletScopesView.PORTLET_MODE_LABEL_ID)
-                                .getText()));
+                .equals(getVaadinPortletRootElement().$("*")
+                        .id(PortletScopesView.PORTLET_MODE_LABEL_ID)
+                        .getText()));
 
         // maximize and switch to edit mode
         setWindowStateInPortal(WindowState.MAXIMIZED);
@@ -48,12 +48,12 @@ public class PortletScopesIT extends AbstractPlutoPortalTest {
 
         // then expect maximized window state and edit mode
         waitUntil(driver -> WindowState.MAXIMIZED.toString()
-                .equals(getFirstPortlet().$(TestBenchElement.class)
+                .equals(getVaadinPortletRootElement().$("*")
                         .id(PortletScopesView.WINDOW_STATE_LABEL_ID).getText())
                 && PortletMode.EDIT.toString()
-                        .equals(getFirstPortlet().$(TestBenchElement.class)
-                                .id(PortletScopesView.PORTLET_MODE_LABEL_ID)
-                                .getText()));
+                .equals(getVaadinPortletRootElement().$("*")
+                        .id(PortletScopesView.PORTLET_MODE_LABEL_ID)
+                        .getText()));
     }
 
     @Test
@@ -75,10 +75,10 @@ public class PortletScopesIT extends AbstractPlutoPortalTest {
     }
 
     private int getAttachCounter() {
-        return Integer.parseInt(getFirstPortlet().$(SpanElement.class)
+        return Integer.parseInt(getVaadinPortletRootElement().$("*").first()
+                .$(SpanElement.class)
                 .attribute("id", PortletScopesView.ATTACH_COUNTER_LABEL_ID)
-                .waitForFirst()
-                .getText());
+                .waitForFirst().getText());
     }
 
 }

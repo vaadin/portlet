@@ -24,6 +24,7 @@ import org.openqa.selenium.WebElement;
 
 import com.vaadin.flow.component.html.testbench.NativeButtonElement;
 import com.vaadin.flow.portal.AbstractPlutoPortalTest;
+import com.vaadin.testbench.TestBenchElement;
 
 public class IPCEventIT extends AbstractPlutoPortalTest {
 
@@ -36,42 +37,47 @@ public class IPCEventIT extends AbstractPlutoPortalTest {
         String eventSource = addVaadinPortlet("event-source");
         String otherEventTarget = addVaadinPortlet("other-event-target");
 
-        NativeButtonElement sendEvent = getPortletById(eventSource)
-                .$(NativeButtonElement.class).attribute("id", "send-event")
-                .waitForFirst();
+        TestBenchElement sendEvent = getVaadinPortletRootElement(eventSource).$(
+                "*").attribute("id", "send-event").waitForFirst();
 
         sendEvent.click();
 
-        waitUntil(driver -> !getFirstPortlet()
-                .findElements(By.className("event")).isEmpty());
+        waitUntil(driver -> getVaadinPortletRootElement().$("*").first()
+                .$("event").exists());
 
-        WebElement event = getFirstPortlet().findElement(By.className("event"));
+        WebElement event = getVaadinPortletRootElement().$("*").first()
+                .$("event").first();
         Assert.assertEquals("click[left]", event.getText());
 
-        Assert.assertTrue(getPortletById(otherEventTarget)
-                .findElements(By.className("other-event")).isEmpty());
+        Assert.assertTrue(
+                getVaadinPortletRootElement(otherEventTarget).$("*").first()
+                        .$("other-event").exists());
 
         // add an event listener programmatically
-        getPortletById(otherEventTarget).findElement(By.id("start-listen"))
+        getVaadinPortletRootElement(otherEventTarget).$("*").id("start-listen")
                 .click();
 
         sendEvent.click();
 
-        waitUntil(driver -> getFirstPortlet()
-                .findElements(By.className("event")).size() == 2);
+        waitUntil(driver ->
+                getVaadinPortletRootElement().$("*").first().$("event").all()
+                        .size() == 2);
 
         // event should be received by a programmatic listener
-        Assert.assertFalse(getPortletById(otherEventTarget)
-                .findElements(By.className("other-event")).isEmpty());
+        Assert.assertFalse(
+                getVaadinPortletRootElement(otherEventTarget).$("*").first()
+                        .$("other-event").exists());
 
         // once event is received the programmatic listener should remove
         // itself, so no more events
         sendEvent.click();
 
-        waitUntil(driver -> getFirstPortlet()
-                .findElements(By.className("event")).size() == 3);
-        Assert.assertEquals(1, getPortletById(otherEventTarget)
-                .findElements(By.className("other-event")).size());
+        waitUntil(driver ->
+                getVaadinPortletRootElement().$("*").first().$("event").all()
+                        .size() == 3);
+        Assert.assertEquals(1,
+                getVaadinPortletRootElement(otherEventTarget).$("*").first()
+                        .$("other-event").all().size());
     }
 
     @Test
@@ -83,26 +89,26 @@ public class IPCEventIT extends AbstractPlutoPortalTest {
         String secondTab = openInAnotherWindow();
 
         driver.switchTo().window(firstTab);
-        getPortletById(eventSource).$(NativeButtonElement.class)
+        getVaadinPortletRootElement(eventSource).$(NativeButtonElement.class)
                 .attribute("id", "send-event").waitForFirst().click();
 
         driver.switchTo().window(secondTab);
-        getPortletById(eventSource).$(NativeButtonElement.class)
+        getVaadinPortletRootElement(eventSource).$(NativeButtonElement.class)
                 .attribute("id", "send-event").waitForFirst().click();
 
         driver.switchTo().window(firstTab);
-        waitUntil(driver -> !getFirstPortlet()
-                .findElements(By.className("event")).isEmpty());
-        List<WebElement> events1 = getFirstPortlet()
-                .findElements(By.className("event"));
+        waitUntil(driver -> getVaadinPortletRootElement().$("*").first()
+                .$("event").exists());
+        List<TestBenchElement> events1 = getVaadinPortletRootElement().$("*")
+                .first().$("event").all();
         Assert.assertEquals(1, events1.size());
         Assert.assertEquals("click[left]", events1.get(0).getText());
 
         driver.switchTo().window(secondTab);
-        waitUntil(driver -> !getFirstPortlet()
-                .findElements(By.className("event")).isEmpty());
-        List<WebElement> events2 = getFirstPortlet()
-                .findElements(By.className("event"));
+        waitUntil(driver -> getVaadinPortletRootElement().$("*").first()
+                .$("event").exists());
+        List<TestBenchElement> events2 = getVaadinPortletRootElement().$("*")
+                .first().$("event").all();
         Assert.assertEquals(1, events2.size());
         Assert.assertEquals("click[left]", events2.get(0).getText());
     }

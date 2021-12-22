@@ -60,22 +60,22 @@ public class MinimizedStateRenderIT extends AbstractPlutoPortalTest {
     }
 
     private void clickPortletModeChangeButtonAndCheckMode(String mode) {
-        ButtonElement portletModeChangeButton = getFirstPortlet().$(ButtonElement.class)
-                .id(MinimizedStateRenderView.PORTLET_MODE_CHANGE);
+        TestBenchElement portletModeChangeButton = getVaadinPortletRootElement().$(
+                "*").id(MinimizedStateRenderView.PORTLET_MODE_CHANGE);
         portletModeChangeButton.click();
-        TestBenchElement modeInfo = getFirstPortlet()
-                .findElement(By.id(MinimizedStateRenderView.MODE_INFO_ID));
+        TestBenchElement modeInfo = getVaadinPortletRootElement().$("*")
+                .id(MinimizedStateRenderView.MODE_INFO_ID);
         Assert.assertEquals(mode, modeInfo.getText());
     }
 
     private void clickButtonAndCheckState(String buttonId, String state) {
-        ButtonElement button = getFirstPortlet().$(ButtonElement.class)
+        TestBenchElement button = getVaadinPortletRootElement().$("*")
                 .id(buttonId);
 
         button.click();
 
-        TestBenchElement stateInfo = getFirstPortlet()
-                .findElement(By.id(MinimizedStateRenderView.STATE_INFO_ID));
+        TestBenchElement stateInfo = getVaadinPortletRootElement().$("*")
+                .id(MinimizedStateRenderView.STATE_INFO_ID);
         Assert.assertEquals(state, stateInfo.getText());
     }
 }

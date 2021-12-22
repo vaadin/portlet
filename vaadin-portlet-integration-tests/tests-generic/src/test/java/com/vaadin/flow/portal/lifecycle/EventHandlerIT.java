@@ -43,8 +43,9 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
     @Test
     public void windowStateUpdatedInPortal_noModeStateHandlerCalled() {
         setWindowStateInPortal(WindowState.MAXIMIZED);
-        waitUntil(driver -> WindowState.MAXIMIZED.toString().equals(
-                getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID)));
+        waitUntil(driver -> WindowState.MAXIMIZED.toString()
+                .equals(getLabelContent(
+                        EventHandlerContent.WINDOW_STATE_LABEL_ID)));
         Assert.assertEquals("",
                 getLabelContent(EventHandlerContent.MODE_LABEL_ID));
     }
@@ -56,20 +57,23 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
         setPortletModeInPortal(PortletMode.EDIT);
         waitUntil(driver -> PortletMode.EDIT.toString()
                 .equals(getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
-        Assert.assertEquals(PortletMode.EDIT.toString(), getFirstPortlet()
-                .findElement(By.id("request-mode-info")).getText());
+        Assert.assertEquals(PortletMode.EDIT.toString(),
+                getVaadinPortletRootElement().$("*").id("request-mode-info")
+                        .getText());
 
         setPortletModeInPortal(PortletMode.HELP);
         waitUntil(driver -> PortletMode.HELP.toString()
                 .equals(getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
-        Assert.assertEquals(PortletMode.HELP.toString(), getFirstPortlet()
-                .findElement(By.id("request-mode-info")).getText());
+        Assert.assertEquals(PortletMode.HELP.toString(),
+                getVaadinPortletRootElement().$("*").id("request-mode-info")
+                        .getText());
 
         setPortletModeInPortal(PortletMode.VIEW);
         waitUntil(driver -> PortletMode.VIEW.toString()
                 .equals(getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
-        Assert.assertEquals(PortletMode.VIEW.toString(), getFirstPortlet()
-                .findElement(By.id("request-mode-info")).getText());
+        Assert.assertEquals(PortletMode.VIEW.toString(),
+                getVaadinPortletRootElement().$("*").id("request-mode-info")
+                        .getText());
     }
 
     @Test
@@ -77,16 +81,20 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
         // This test is neutral on whether an event for the initial state is
         // sent
         setWindowStateInPortal(WindowState.MAXIMIZED);
-        waitUntil(driver -> WindowState.MAXIMIZED.toString().equals(
-                getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID)));
-        Assert.assertEquals(WindowState.MAXIMIZED.toString(), getFirstPortlet()
-                .findElement(By.id("request-state-info")).getText());
+        waitUntil(driver -> WindowState.MAXIMIZED.toString()
+                .equals(getLabelContent(
+                        EventHandlerContent.WINDOW_STATE_LABEL_ID)));
+        Assert.assertEquals(WindowState.MAXIMIZED.toString(),
+                getVaadinPortletRootElement().$("*").id("request-state-info")
+                        .getText());
 
         setWindowStateInPortal(WindowState.NORMAL);
-        waitUntil(driver -> WindowState.NORMAL.toString().equals(
-                getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID)));
-        Assert.assertEquals(WindowState.NORMAL.toString(), getFirstPortlet()
-                .findElement(By.id("request-state-info")).getText());
+        waitUntil(driver -> WindowState.NORMAL.toString()
+                .equals(getLabelContent(
+                        EventHandlerContent.WINDOW_STATE_LABEL_ID)));
+        Assert.assertEquals(WindowState.NORMAL.toString(),
+                getVaadinPortletRootElement().$("*").id("request-state-info")
+                        .getText());
 
         setWindowStateInPortal(WindowState.MINIMIZED);
         waitUntil(driver -> getVaadinPortletRootElements().isEmpty());
@@ -95,13 +103,15 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
     @Test
     public void windowStateAndModeChangedInPortal_portletStateIsPreservedtOnRefresh() {
         setWindowStateInPortal(WindowState.MAXIMIZED);
-        waitUntil(driver -> WindowState.MAXIMIZED.toString().equals(
-                getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID)));
+        waitUntil(driver -> WindowState.MAXIMIZED.toString()
+                .equals(getLabelContent(
+                        EventHandlerContent.WINDOW_STATE_LABEL_ID)));
 
         driver.navigate().refresh();
 
-        waitUntil(driver -> WindowState.MAXIMIZED.toString().equals(
-                getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID)));
+        waitUntil(driver -> WindowState.MAXIMIZED.toString()
+                .equals(getLabelContent(
+                        EventHandlerContent.WINDOW_STATE_LABEL_ID)));
     }
 
     @Test
@@ -116,20 +126,20 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
         setWindowStateInPortal(WindowState.MINIMIZED);
 
         driver.switchTo().window(secondTab);
-        waitUntil(driver -> WindowState.MAXIMIZED.toString().equals(
-                getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID)));
+        waitUntil(driver -> WindowState.MAXIMIZED.toString()
+                .equals(getLabelContent(
+                        EventHandlerContent.WINDOW_STATE_LABEL_ID)));
         waitUntil(driver -> PortletMode.EDIT.toString()
                 .equals(getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
 
         driver.switchTo().window(firstTab);
-        waitUntil(driver -> !$(TestBenchElement.class)
-                .attribute("id", EventHandlerContent.WINDOW_STATE_LABEL_ID)
-                .exists());
-        waitUntil(driver -> !$(TestBenchElement.class)
-                .attribute("id", EventHandlerContent.MODE_LABEL_ID).exists());
+        waitUntil(driver -> !$(TestBenchElement.class).attribute("id",
+                EventHandlerContent.WINDOW_STATE_LABEL_ID).exists());
+        waitUntil(driver -> !$(TestBenchElement.class).attribute("id",
+                EventHandlerContent.MODE_LABEL_ID).exists());
     }
 
     protected String getLabelContent(String id) {
-        return getFirstPortlet().$(TestBenchElement.class).id(id).getText();
+        return getVaadinPortletRootElement().$("*").id(id).getText();
     }
 }

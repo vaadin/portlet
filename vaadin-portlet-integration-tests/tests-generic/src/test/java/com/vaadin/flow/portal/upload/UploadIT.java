@@ -45,7 +45,7 @@ public class UploadIT extends AbstractPlutoPortalTest {
         // upload a file
         File file = createTempFile();
         UploadElement upload = getFirstPortlet().$(UploadElement.class).first();
-        WebElement input = getInShadowRoot(upload, By.id("fileInput"));
+        WebElement input = upload.$("*").id("fileInput");
         setLocalFileDetector(input);
         input.sendKeys(file.getAbsolutePath());
 
@@ -64,7 +64,7 @@ public class UploadIT extends AbstractPlutoPortalTest {
         return tempFile;
     }
 
-    private void setLocalFileDetector(WebElement element) throws Exception {
+    private void setLocalFileDetector(WebElement element) {
         if (getRunLocallyBrowser() != null) {
             return;
         }

@@ -234,8 +234,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
      * Gets the shadow root of the Vaadin Portlet identified by id
      */
     protected TestBenchElement getPortletById(String id) {
-        return (TestBenchElement) getShadowRoot(
-                getVaadinPortletRootElement(id));
+        return getVaadinPortletRootElement(id).$("*").first();
     }
 
     /**
@@ -273,24 +272,6 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     }
 
     /**
-     * Find the first {@link WebElement} using the given {@link By} selector.
-     *
-     * @param shadowRootOwner
-     *            the web component owning shadow DOM to start search from
-     * @param by
-     *            the selector used to find element
-     * @return an element from shadow root, if located
-     * @throws AssertionError
-     *             if shadow root is not present or element is not found in the
-     *             shadow root
-     */
-    protected WebElement getInShadowRoot(WebElement shadowRootOwner, By by) {
-        return getShadowRoot(shadowRootOwner).findElements(by).stream()
-                .findFirst().orElseThrow(() -> new AssertionError(
-                        "Could not find required element in the shadowRoot"));
-    }
-
-    /**
      * Gets the portal route.
      *
      * @return the portal route
@@ -306,16 +287,6 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
      */
     protected String getPage() {
         return testPage;
-    }
-
-    protected WebElement getShadowRoot(WebElement webComponent) {
-        waitUntil(driver -> getCommandExecutor().executeScript(
-                "return arguments[0].shadowRoot", webComponent) != null);
-        WebElement shadowRoot = (WebElement) getCommandExecutor()
-                .executeScript("return arguments[0].shadowRoot", webComponent);
-        Assert.assertNotNull("Could not locate shadowRoot in the element",
-                shadowRoot);
-        return shadowRoot;
     }
 
     /**

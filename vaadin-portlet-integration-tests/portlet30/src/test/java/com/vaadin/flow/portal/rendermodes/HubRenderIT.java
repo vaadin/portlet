@@ -48,6 +48,8 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
 
         stateChange.click();
 
+        waitForPageRefresh();
+
         stateChange = getVaadinPortletRootElement().$("*")
                 .id(RenderView.WINDOW_STATE_CHANGE);
         modeChange = getVaadinPortletRootElement().$("*")
@@ -65,6 +67,8 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
 
         modeChange.click();
 
+        waitForPageRefresh();
+
         stateChange = getVaadinPortletRootElement().$(ButtonElement.class)
                 .id(RenderView.WINDOW_STATE_CHANGE);
         modeChange = getVaadinPortletRootElement().$(ButtonElement.class)
@@ -81,6 +85,8 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
 
         stateChange.click();
 
+        waitForPageRefresh();
+
         stateChange = getVaadinPortletRootElement().$("*")
                 .id(RenderView.WINDOW_STATE_CHANGE);
         modeChange = getVaadinPortletRootElement().$("*")
@@ -93,6 +99,15 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
         Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());
         Assert.assertEquals("EDIT", getWindowMode());
         Assert.assertTrue(isNormalWindowState());
+    }
+
+    private void waitForPageRefresh() {
+        // Wait for a moment so the page refresh is done before continuing
+        try {
+            Thread.sleep(250);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private String getWindowMode() {

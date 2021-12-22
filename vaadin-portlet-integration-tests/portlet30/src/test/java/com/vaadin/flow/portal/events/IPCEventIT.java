@@ -42,16 +42,15 @@ public class IPCEventIT extends AbstractPlutoPortalTest {
 
         sendEvent.click();
 
-        waitUntil(driver -> getVaadinPortletRootElement().$("*").first()
-                .$("event").exists());
+        waitUntil(driver -> getVaadinPortletRootElement().$("*")
+                .attributeContains("class", "event").exists());
 
-        WebElement event = getVaadinPortletRootElement().$("*").first()
-                .$("event").first();
+        WebElement event = getVaadinPortletRootElement().$("*")
+                .attributeContains("class", "event").first();
         Assert.assertEquals("click[left]", event.getText());
 
-        Assert.assertTrue(
-                getVaadinPortletRootElement(otherEventTarget).$("*").first()
-                        .$("other-event").exists());
+        Assert.assertFalse(getVaadinPortletRootElement(otherEventTarget).$("*")
+                .attributeContains("class", "other-event").exists());
 
         // add an event listener programmatically
         getVaadinPortletRootElement(otherEventTarget).$("*").id("start-listen")
@@ -60,24 +59,23 @@ public class IPCEventIT extends AbstractPlutoPortalTest {
         sendEvent.click();
 
         waitUntil(driver ->
-                getVaadinPortletRootElement().$("*").first().$("event").all()
+                getVaadinPortletRootElement().$("*").attributeContains("class", "event").all()
                         .size() == 2);
 
         // event should be received by a programmatic listener
-        Assert.assertFalse(
-                getVaadinPortletRootElement(otherEventTarget).$("*").first()
-                        .$("other-event").exists());
+        Assert.assertTrue(getVaadinPortletRootElement(otherEventTarget).$("*")
+                .attributeContains("class", "other-event").exists());
 
         // once event is received the programmatic listener should remove
         // itself, so no more events
         sendEvent.click();
 
-        waitUntil(driver ->
-                getVaadinPortletRootElement().$("*").first().$("event").all()
-                        .size() == 3);
+        waitUntil(driver -> getVaadinPortletRootElement().$("*")
+                .attributeContains("class", "event").all().size() == 3);
         Assert.assertEquals(1,
-                getVaadinPortletRootElement(otherEventTarget).$("*").first()
-                        .$("other-event").all().size());
+                getVaadinPortletRootElement(otherEventTarget).$("*")
+                        .attributeContains("class", "other-event").all()
+                        .size());
     }
 
     @Test
@@ -97,18 +95,18 @@ public class IPCEventIT extends AbstractPlutoPortalTest {
                 .attribute("id", "send-event").waitForFirst().click();
 
         driver.switchTo().window(firstTab);
-        waitUntil(driver -> getVaadinPortletRootElement().$("*").first()
-                .$("event").exists());
+        waitUntil(driver -> getVaadinPortletRootElement().$("*")
+                .attributeContains("class", "event").exists());
         List<TestBenchElement> events1 = getVaadinPortletRootElement().$("*")
-                .first().$("event").all();
+                .attributeContains("class", "event").all();
         Assert.assertEquals(1, events1.size());
         Assert.assertEquals("click[left]", events1.get(0).getText());
 
         driver.switchTo().window(secondTab);
-        waitUntil(driver -> getVaadinPortletRootElement().$("*").first()
-                .$("event").exists());
+        waitUntil(driver -> getVaadinPortletRootElement().$("*")
+                .attributeContains("class", "event").exists());
         List<TestBenchElement> events2 = getVaadinPortletRootElement().$("*")
-                .first().$("event").all();
+                .attributeContains("class", "event").all();
         Assert.assertEquals(1, events2.size());
         Assert.assertEquals("click[left]", events2.get(0).getText());
     }

@@ -33,8 +33,8 @@ public class HeartbeatHandlerIT extends AbstractPlutoPortalTest {
     @Test
     public void basicPortlet_afterFirstHeartbeatRequest_shouldWorkNormally()
             throws InterruptedException {
-        ButtonElement buttonElement = getVaadinPortletRootElement().$("*")
-                .first().$(ButtonElement.class).first();
+        TestBenchElement buttonElement = getVaadinPortletRootElement().$("*")
+                .first().$("vaadin-button").first();
 
         Thread.sleep(17000);
 

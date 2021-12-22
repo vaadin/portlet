@@ -46,7 +46,7 @@ public class IPCNotVaadinEventIT extends AbstractPlutoPortalTest {
     public void sendEventFromVaadinToNonVaadin() throws InterruptedException {
         addPortlet("PlainPortlet");
 
-        getVaadinPortletRootElement().$("*").first().$(ButtonElement.class)
+        getVaadinPortletRootElement().$("*")
                 .attribute("id", "send-to-plain").waitForFirst().click();
 
         WebElement event = findElement(By.id("response-from-vaadin"));

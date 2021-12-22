@@ -38,20 +38,20 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
 
     @Test
     public void changeModeAndState_modeAndStateAreKept() {
-        ButtonElement stateChange = getVaadinPortletRootElement().$("*").first()
-                .$(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
-        ButtonElement modeChange = getVaadinPortletRootElement().$("*").first()
-                .$(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
+        TestBenchElement stateChange = getVaadinPortletRootElement().$("*")
+                .id(RenderView.WINDOW_STATE_CHANGE);
+        TestBenchElement modeChange = getVaadinPortletRootElement().$("*")
+                .id(RenderView.PORTLET_MODE_CHANGE);
 
         Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());
         Assert.assertEquals(RenderView.MODE_EDIT, modeChange.getText());
 
         stateChange.click();
 
-        stateChange = getVaadinPortletRootElement().$("*").first()
-                .$(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = getVaadinPortletRootElement().$("*").first()
-                .$(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
+        stateChange = getVaadinPortletRootElement().$("*")
+                .id(RenderView.WINDOW_STATE_CHANGE);
+        modeChange = getVaadinPortletRootElement().$("*")
+                .id(RenderView.PORTLET_MODE_CHANGE);
 
         WebElement stateInfo = getVaadinPortletRootElement().$("*")
                 .id("state-info");
@@ -81,10 +81,10 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
 
         stateChange.click();
 
-        stateChange = getVaadinPortletRootElement().$("*").first()
-                .$(ButtonElement.class).id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = getVaadinPortletRootElement().$("*").first()
-                .$(ButtonElement.class).id(RenderView.PORTLET_MODE_CHANGE);
+        stateChange = getVaadinPortletRootElement().$("*")
+                .id(RenderView.WINDOW_STATE_CHANGE);
+        modeChange = getVaadinPortletRootElement().$("*")
+                .id(RenderView.PORTLET_MODE_CHANGE);
 
         stateInfo = getVaadinPortletRootElement().$("*").id("state-info");
         Assert.assertEquals(WindowState.NORMAL.toString(), stateInfo.getText());

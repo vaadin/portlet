@@ -14,12 +14,11 @@ public class ErrorHandlingIT extends AbstractPlutoPortalTest {
 
     @Test
     public void exceptionIsShownInsideOfTheThrowingPortlet() {
-        ButtonElement buttonElement = getVaadinPortletRootElement().$("*")
-                .first().$(ButtonElement.class).id("error-button");
+        TestBenchElement buttonElement = getVaadinPortletRootElement().$("*")
+                .id("error-button");
         buttonElement.click();
 
         TestBenchElement errorElement = getVaadinPortletRootElement().$("*")
-                .first().$(TestBenchElement.class)
                 .attribute("class", "v-system-error").first();
 
         Assert.assertNotNull("Error should have been found", errorElement);

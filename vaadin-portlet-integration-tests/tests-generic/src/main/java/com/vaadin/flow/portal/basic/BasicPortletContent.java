@@ -32,6 +32,7 @@ public class BasicPortletContent extends VerticalLayout {
         message.setId(GREETING_MESSAGE_ID);
         Button button = new Button("Click me", event -> message.setText(
                 "Hello from " + name + " running in " + serverInfo + "!"));
+        button.setId("click-button");
         add(button, message);
     }
 }

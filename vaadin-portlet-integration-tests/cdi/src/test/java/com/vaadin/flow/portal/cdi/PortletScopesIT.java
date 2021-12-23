@@ -75,8 +75,7 @@ public class PortletScopesIT extends AbstractPlutoPortalTest {
     }
 
     private int getAttachCounter() {
-        return Integer.parseInt(getVaadinPortletRootElement().$("*").first()
-                .$(SpanElement.class)
+        return Integer.parseInt(getVaadinPortletRootElement().$("*")
                 .attribute("id", PortletScopesView.ATTACH_COUNTER_LABEL_ID)
                 .waitForFirst().getText());
     }

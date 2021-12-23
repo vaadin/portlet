@@ -23,6 +23,7 @@ import com.vaadin.flow.component.button.testbench.ButtonElement;
 import com.vaadin.flow.component.html.testbench.DivElement;
 import com.vaadin.flow.portal.AbstractPlutoPortalTest;
 import com.vaadin.flow.portal.basic.BasicPortletContent;
+import com.vaadin.testbench.TestBenchElement;
 
 public class HeartbeatHandlerIT extends AbstractPlutoPortalTest {
     public HeartbeatHandlerIT() {
@@ -32,8 +33,8 @@ public class HeartbeatHandlerIT extends AbstractPlutoPortalTest {
     @Test
     public void basicPortlet_afterFirstHeartbeatRequest_shouldWorkNormally()
             throws InterruptedException {
-        ButtonElement buttonElement = getFirstPortlet().$(ButtonElement.class)
-                .first();
+        TestBenchElement buttonElement = getVaadinPortletRootElement().$("*")
+                .id("click-button");
 
         Thread.sleep(17000);
 
@@ -44,8 +45,8 @@ public class HeartbeatHandlerIT extends AbstractPlutoPortalTest {
         testBench().disableWaitForVaadin();
         try {
             buttonElement.click();
-            DivElement greetingMessage = getFirstPortlet().$(DivElement.class)
-                    .id(BasicPortletContent.GREETING_MESSAGE_ID);
+            TestBenchElement greetingMessage = getVaadinPortletRootElement().$(
+                    "*").id(BasicPortletContent.GREETING_MESSAGE_ID);
             Assert.assertTrue(
                     greetingMessage.getText().startsWith("Hello from "));
         } finally {

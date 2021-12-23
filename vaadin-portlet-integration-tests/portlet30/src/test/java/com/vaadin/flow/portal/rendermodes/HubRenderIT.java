@@ -38,9 +38,9 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
 
     @Test
     public void changeModeAndState_modeAndStateAreKept() {
-        ButtonElement stateChange = getFirstPortlet().$(ButtonElement.class)
+        TestBenchElement stateChange = getVaadinPortletRootElement().$("*")
                 .id(RenderView.WINDOW_STATE_CHANGE);
-        ButtonElement modeChange = getFirstPortlet().$(ButtonElement.class)
+        TestBenchElement modeChange = getVaadinPortletRootElement().$("*")
                 .id(RenderView.PORTLET_MODE_CHANGE);
 
         Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());
@@ -48,13 +48,15 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
 
         stateChange.click();
 
-        stateChange = getFirstPortlet().$(ButtonElement.class)
+        waitForPageRefresh();
+
+        stateChange = getVaadinPortletRootElement().$("*")
                 .id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = getFirstPortlet().$(ButtonElement.class)
+        modeChange = getVaadinPortletRootElement().$("*")
                 .id(RenderView.PORTLET_MODE_CHANGE);
 
-        WebElement stateInfo = getFirstPortlet()
-                .findElement(By.id("state-info"));
+        WebElement stateInfo = getVaadinPortletRootElement().$("*")
+                .id("state-info");
         Assert.assertEquals(WindowState.MAXIMIZED.toString(),
                 stateInfo.getText());
 
@@ -65,12 +67,15 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
 
         modeChange.click();
 
-        stateChange = getFirstPortlet().$(ButtonElement.class)
+        waitForPageRefresh();
+
+        stateChange = getVaadinPortletRootElement().$(ButtonElement.class)
                 .id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = getFirstPortlet().$(ButtonElement.class)
+        modeChange = getVaadinPortletRootElement().$(ButtonElement.class)
                 .id(RenderView.PORTLET_MODE_CHANGE);
 
-        WebElement modeInfo = getFirstPortlet().findElement(By.id("mode-info"));
+        WebElement modeInfo = getVaadinPortletRootElement().$("*")
+                .id("mode-info");
         Assert.assertEquals(PortletMode.EDIT.toString(), modeInfo.getText());
 
         Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
@@ -80,12 +85,14 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
 
         stateChange.click();
 
-        stateChange = getFirstPortlet().$(ButtonElement.class)
+        waitForPageRefresh();
+
+        stateChange = getVaadinPortletRootElement().$("*")
                 .id(RenderView.WINDOW_STATE_CHANGE);
-        modeChange = getFirstPortlet().$(ButtonElement.class)
+        modeChange = getVaadinPortletRootElement().$("*")
                 .id(RenderView.PORTLET_MODE_CHANGE);
 
-        stateInfo = getFirstPortlet().findElement(By.id("state-info"));
+        stateInfo = getVaadinPortletRootElement().$("*").id("state-info");
         Assert.assertEquals(WindowState.NORMAL.toString(), stateInfo.getText());
 
         Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());
@@ -94,10 +101,18 @@ public class HubRenderIT extends AbstractPlutoPortalTest {
         Assert.assertTrue(isNormalWindowState());
     }
 
+    private void waitForPageRefresh() {
+        // Wait for a moment so the page refresh is done before continuing
+        try {
+            Thread.sleep(250);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     private String getWindowMode() {
-        SelectElement modeSelector = $(TestBenchElement.class)
-                .attribute("name", "modeSelectionForm").first()
-                .$(SelectElement.class).first();
+        SelectElement modeSelector = $(TestBenchElement.class).attribute("name",
+                "modeSelectionForm").first().$(SelectElement.class).first();
         return modeSelector.getSelectedText().toUpperCase(Locale.ENGLISH);
     }
 

@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import com.vaadin.flow.component.html.testbench.LabelElement;
 import com.vaadin.flow.portal.AbstractPlutoPortalTest;
+import com.vaadin.testbench.TestBenchElement;
 
 public class InjectedComponentIT extends AbstractPlutoPortalTest {
 
@@ -32,37 +33,31 @@ public class InjectedComponentIT extends AbstractPlutoPortalTest {
     @Test
     public void injectedComponentIsAddedAndPreserved() {
         // wait for label to be added
-        waitUntil(
-                driver -> getFirstPortlet().$(LabelElement.class)
-                        .attributeContains("class",
-                                InjectedComponentView.INJECTED_LABEL_CLASS)
-                        .exists());
+        waitUntil(driver -> getVaadinPortletRootElement().$("*")
+                .attributeContains("class",
+                        InjectedComponentView.INJECTED_LABEL_CLASS).exists());
 
         // check that label contains a random integer
-        final List<LabelElement> labels = getFirstPortlet()
-                .$(LabelElement.class).attributeContains("class",
-                        InjectedComponentView.INJECTED_LABEL_CLASS)
-                .all();
+        final List<TestBenchElement> labels = getVaadinPortletRootElement().$(
+                "*").attributeContains("class",
+                InjectedComponentView.INJECTED_LABEL_CLASS).all();
         Assert.assertEquals(1, labels.size());
         final int labelContents = Integer.parseInt(labels.get(0).getText());
 
         // reload the portal page
         driver.navigate().refresh();
 
-        waitUntil(
-                driver -> getFirstPortlet().$(LabelElement.class)
-                        .attributeContains("class",
-                                InjectedComponentView.INJECTED_LABEL_CLASS)
-                        .exists());
+        waitUntil(driver -> getVaadinPortletRootElement().$("*")
+                .attributeContains("class",
+                        InjectedComponentView.INJECTED_LABEL_CLASS).exists());
 
         // check that label contains the same random integer
-        final List<LabelElement> labelsAfterRefresh = getFirstPortlet()
-                .$(LabelElement.class).attributeContains("class",
-                        InjectedComponentView.INJECTED_LABEL_CLASS)
-                .all();
+        final List<TestBenchElement> labelsAfterRefresh = getVaadinPortletRootElement().$(
+                "*").attributeContains("class",
+                InjectedComponentView.INJECTED_LABEL_CLASS).all();
         Assert.assertEquals(1, labels.size());
-        final int labelContentsAfterRefresh = Integer
-                .parseInt(labelsAfterRefresh.get(0).getText());
+        final int labelContentsAfterRefresh = Integer.parseInt(
+                labelsAfterRefresh.get(0).getText());
         Assert.assertEquals(labelContents, labelContentsAfterRefresh);
     }
 }

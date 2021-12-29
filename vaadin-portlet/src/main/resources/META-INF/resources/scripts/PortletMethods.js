@@ -31,19 +31,18 @@ if (!window.Vaadin.Flow.Portlets) {
         return window.Vaadin.Flow.Portlets[portletRegistryName].hub;
     };
 
-    window.Vaadin.Flow.Portlets.setPortletState = function (portletRegistryName, windowState, portletMode) {
-        var hub = window.Vaadin.Flow.Portlets.getHubRegistartion(portletRegistryName);
+    window.Vaadin.Flow.Portlets.setPortletState = function (portletRegistryName, windowState, portletMode, isLiferay) {
+        const hub = window.Vaadin.Flow.Portlets.getHubRegistartion(portletRegistryName);
 
         window.Vaadin.Flow.Portlets.executeWhenHubIdle(hub, function(hub) {
-            var state = hub.newState();
+            const state = hub.newState();
             state.windowState = windowState;
             state.portletMode = portletMode;
             hub.setRenderState(state);
 
-            // FIXME: the addressbook demo was created while the reloading on state change did not happen
-            //        fix the demo or don't reload here, in the interest of time latter it is for now.
-            //        This behaviour makes no sense with multi portlet pages anyways. -> make optional?
-            //window.Vaadin.Flow.Portlets.executeWhenHubIdle(hub, function (hub) { location.reload() });
+            if (!isLiferay) {
+                window.Vaadin.Flow.Portlets.executeWhenHubIdle(hub, function (hub) { location.reload() });
+            }
         });
     }
 

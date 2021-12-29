@@ -32,6 +32,7 @@ import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.communication.WebComponentProvider;
+import com.vaadin.pro.licensechecker.LicenseChecker;
 
 /**
  * Bootstrap handler for portlet bootstrapping.
@@ -91,13 +92,8 @@ class PortletBootstrapHandler extends SynchronizedRequestHandler {
                 // message will be shown in the browser).
                 // There is also a license check when the UI is going to be
                 // instantiated. That will throw a server side exception.
-
-                // TODO LicenseChecker crashes to java.lang.NoSuchMethodError:
-                // com.sun.jna.Native.load(Ljava/lang/String;Ljava/lang/Class;Ljava/util/Map;)Lcom/sun/jna/Library;
-                // due to Liferay 7.3 running with jna dependency older than
-                // Vaadin's jna-5.7.0
-                // LicenseChecker.checkLicense(VaadinPortletService.PROJECT_NAME,
-                // VaadinPortletService.getPortletVersion());
+                 LicenseChecker.checkLicense(VaadinPortletService.PROJECT_NAME,
+                 VaadinPortletService.getPortletVersion());
             }
             String initScript = String
                     .format("<script>window.Vaadin.Flow.Portlets.registerElement('%s','%s','%s','%s','%s');</script>",
@@ -114,7 +110,7 @@ class PortletBootstrapHandler extends SynchronizedRequestHandler {
                                     .collect(Collectors.joining(",", "[", "]")),
                             ((RenderResponse) resp).createActionURL());
             // For liferay send accepted window states, portlet modes and action url to add to client side data.
-            
+
             writer.write(initScript);
             writer.write("<" + tag + " data-portlet-id='" + namespace
                     + "' style='width: 100%;'></" + tag + ">");

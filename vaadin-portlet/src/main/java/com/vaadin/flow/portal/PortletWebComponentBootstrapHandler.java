@@ -133,13 +133,8 @@ class PortletWebComponentBootstrapHandler
             // to load UI. There is also a license check when the portlet is
             // written to the page. That check shows a message on the client
             // side
-
-            // TODO LicenseChecker crashes to java.lang.NoSuchMethodError:
-            // com.sun.jna.Native.load(Ljava/lang/String;Ljava/lang/Class;Ljava/util/Map;)Lcom/sun/jna/Library;
-            // due to Liferay 7.3 running with jna dependency older than
-            // Vaadin's jna-5.7.0
-            // LicenseChecker.checkLicense(VaadinPortletService.PROJECT_NAME,
-            // VaadinPortletService.getPortletVersion());
+             LicenseChecker.checkLicense(VaadinPortletService.PROJECT_NAME,
+             VaadinPortletService.getPortletVersion());
         }
         return super.createAndInitUI(uiClass, request, response, session);
     }

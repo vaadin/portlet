@@ -373,7 +373,7 @@ public final class PortletViewContext implements Serializable {
             PortletEventListener listener) {
         return doAddEventChangeListener(".*", listener);
     }
-    
+
     private void stateChangeAction(WindowState state, PortletMode mode) {
         PortletResponse response = VaadinPortletResponse
                 .getCurrentPortletResponse();
@@ -413,7 +413,7 @@ public final class PortletViewContext implements Serializable {
      * Executes JavaScript only if the {@code view} is attached. Normally
      * JavaScript executions are queued to wait for attach event but we don't
      * want that - the portlet is either present or it is not.
-     * 
+     *
      * @param script
      *            JavaScript string
      * @param params
@@ -442,7 +442,7 @@ public final class PortletViewContext implements Serializable {
     }
 
     /**
-     * Get the script to update the portlet state with the given windowState 
+     * Get the script to update the portlet state with the given windowState
      * and portletMode.
      *
      * @param windowState
@@ -454,14 +454,16 @@ public final class PortletViewContext implements Serializable {
             String portletMode) {
         String portletRegistryName = VaadinPortletService.getCurrentResponse()
                 .getPortletResponse().getNamespace();
+        boolean isLiferayRequest =
+                VaadinPortletService.getCurrentRequest() instanceof VaadinLiferayRequest;
         return String
-                .format("window.Vaadin.Flow.Portlets.setPortletState('%s', '%s', '%s');",
-                        portletRegistryName, windowState, portletMode);
+                .format("window.Vaadin.Flow.Portlets.setPortletState('%s', '%s', '%s', %b);",
+                        portletRegistryName, windowState, portletMode, isLiferayRequest);
     }
 
     /**
      * Get the script to fire a Portlet Hub event
-     * 
+     *
      * @param eventName
      *            Event name
      * @param parameters

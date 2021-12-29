@@ -23,6 +23,7 @@ import javax.portlet.PortletResponse;
 import javax.portlet.ResourceURL;
 
 import com.vaadin.flow.server.AbstractStreamResource;
+import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.StreamResourceRegistry;
 
@@ -49,6 +50,45 @@ class PortletStreamResourceRegistry extends StreamResourceRegistry {
 
     @Override
     public URI getTargetURI(AbstractStreamResource resource) {
+        return doGetUri(resource);
+    }
+
+    @Override
+    public StreamRegistration registerResource(AbstractStreamResource resource) {
+        StreamRegistration streamRegistration = super.registerResource(resource);
+        return new RegistrationWrapper(streamRegistration);
+    }
+
+    /**
+     * StreamRegistration implementation which embeds dynamic resource url
+     * into portlet url as a 'resourceUrl' query parameter, see
+     * {@link ResourceURL}.
+     */
+    private final class RegistrationWrapper implements StreamRegistration {
+
+        private final StreamRegistration delegate;
+
+        public RegistrationWrapper(StreamRegistration streamRegistration) {
+            delegate = streamRegistration;
+        }
+
+        @Override
+        public URI getResourceUri() {
+            return doGetUri(getResource());
+        }
+
+        @Override
+        public void unregister() {
+            delegate.unregister();
+        }
+
+        @Override
+        public AbstractStreamResource getResource() {
+            return delegate.getResource();
+        }
+    }
+
+    private URI doGetUri(AbstractStreamResource resource) {
         PortletResponse response = VaadinPortletService.getCurrentResponse()
                 .getPortletResponse();
         if (response instanceof MimeResponse) {

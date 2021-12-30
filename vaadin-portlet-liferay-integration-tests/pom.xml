@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <modules>
+        <module>liferay-tests-generic</module>
+        <module>liferay-shared</module>
+    </modules>
+    <parent>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-portlet-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>vaadin-portlet-liferay-integration-tests</artifactId>
+    <name>Liferay Integration Tests</name>
+    <packaging>pom</packaging>
+
+    <properties>
+        <liferay.version>7.4.3.5-ga5</liferay.version>
+        <tomcat.version>9.0.43</tomcat.version>
+
+        <javax.validation.version>2.0.0.Final</javax.validation.version>
+
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <vaadin.productionMode>true</vaadin.productionMode>
+
+        <failOnMissingWebXml>false</failOnMissingWebXml>
+        <component.version>14.7-SNAPSHOT</component.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-portlet</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-portlet-cdi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Test dependency from components -->
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>flow-data</artifactId>
+                <version>${flow.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-testbench-core</artifactId>
+                <version>${testbench.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+
+            <!-- Added to provide logging output as Flow uses -->
+            <!-- the unbound SLF4J no-operation (NOP) logger implementation -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>1.7.28</version>
+            </dependency>
+
+            <!-- Portlet API -->
+            <dependency>
+                <groupId>javax.portlet</groupId>
+                <artifactId>portlet-api</artifactId>
+                <version>3.0.0</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Servlet API -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>3.1.0</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>flow-server-production-mode</artifactId>
+                <version>${flow.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-lumo-theme</artifactId>
+                <version>${flow.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.cargo</groupId>
+                    <artifactId>cargo-maven2-plugin</artifactId>
+                    <version>1.7.7</version>
+                    <configuration>
+                        <container>
+                            <containerId>tomcat9x</containerId>
+                            <home>${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}</home>
+                        </container>
+                        <type>existing</type>
+                        <!-- Set an empty deployer so that cargo does not try to add the
+                        current project's artifact to the container (as this was already
+                        done by maven) -->
+                        <deployer />
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.vaadin</groupId>
+                    <artifactId>flow-maven-plugin</artifactId>
+                    <version>${flow.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>prepare-frontend</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>3.2.3</version>
+                    <executions>
+                        <execution>
+                            <id>portlet-war</id>
+                            <goals>
+                                <goal>war</goal>
+                            </goals>
+                            <configuration>
+                                <packagingExcludes>WEB-INF/classes/META-INF/VAADIN/build/**,VAADIN/</packagingExcludes>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>static-files</id>
+                            <goals>
+                                <goal>war</goal>
+                            </goals>
+                            <configuration>
+                                <warName>vaadin-portlet-static</warName>
+                                <packagingIncludes>WEB-INF/lib/flow-client*.jar,VAADIN/</packagingIncludes>
+
+                                <webResources>
+                                    <resource>
+                                        <!-- this is relative to the pom.xml directory -->
+                                        <directory>target/classes/META-INF/</directory>
+                                        <includes>
+                                            <include>**</include>
+                                        </includes>
+                                        <excludes>
+                                            <exclude>VAADIN/config/**</exclude>
+                                        </excludes>
+                                    </resource>
+                                </webResources>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+    <profiles>
+        <profile>
+            <id>test</id>
+            <activation>
+                <property>
+                    <name>!skipTests</name>
+                </property>
+                <file>
+                    <exists>${basedir}/src/main/webapp</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.cargo</groupId>
+                        <artifactId>cargo-maven2-plugin</artifactId>
+
+                        <executions>
+                            <execution>
+                                <id>start-portal</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>stop-portal</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>production</id>
+
+            <dependencies>
+                <dependency>
+                    <groupId>com.vaadin</groupId>
+                    <artifactId>flow-server-production-mode</artifactId>
+                </dependency>
+            </dependencies>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.vaadin</groupId>
+                        <artifactId>flow-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>build-frontend</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>autosetup</id>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-antrun-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <id>download-files</id>
+                                    <phase>package</phase>
+                                    <goals>
+                                        <goal>run</goal>
+                                    </goals>
+                                    <configuration>
+                                        <tasks>
+                                            <get
+                                                    src="https://github.com/liferay/liferay-portal/releases/download/${liferay.version}/liferay-ce-portal-tomcat-${liferay.version}-20211221192828235.tar.gz"
+                                                    dest="${project.build.directory}/liferay.zip"
+                                                    verbose="false" usetimestamp="true"/>
+                                            <unzip
+                                                    src="${project.build.directory}/liferay.zip"
+                                                    dest="${project.build.directory}"/>
+                                            <copy file="${project.build.directory}/${project.artifactId}.war"
+                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/webapps"/>
+                                            <copy file="${project.build.directory}/vaadin-portlet-static.war"
+                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/webapps"/>
+                                            <copy file="${project.basedir}/setenv.sh"
+                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/bin"/>
+                                            <copy file="${project.basedir}/setenv.bat"
+                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/bin"/>
+                                        </tasks>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+
+        <profile>
+            <id>autocopy</id>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-antrun-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <id>download-files</id>
+                                    <phase>package</phase>
+                                    <goals>
+                                        <goal>run</goal>
+                                    </goals>
+                                    <configuration>
+                                        <tasks>
+                                            <copy file="${project.build.directory}/${project.artifactId}.war"
+                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/webapps"/>
+                                            <copy file="${project.build.directory}/vaadin-portlet-static.war"
+                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/webapps"/>
+                                            <copy file="${project.basedir}/setenv.sh"
+                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/bin"/>
+                                            <copy file="${project.basedir}/setenv.bat"
+                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/bin"/>
+                                        </tasks>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+
+    </profiles>
+</project>

@@ -100,7 +100,7 @@ class PortletStreamRequestHandler extends StreamRequestHandler {
                         (StreamResource) resource);
             } else if (resource instanceof StreamReceiver) {
                 StreamReceiver streamReceiver = (StreamReceiver) resource;
-                String[] parts = parsePath(pathInfo);
+                String[] parts = parsePortletPath(pathInfo);
 
                 receiverHandler.handleRequest(session, request, response,
                         streamReceiver, parts[0], parts[1]);
@@ -118,7 +118,7 @@ class PortletStreamRequestHandler extends StreamRequestHandler {
      *
      * @see #generateURI
      */
-    private String[] parsePath(String pathInfo) {
+    private String[] parsePortletPath(String pathInfo) {
         // strip away part until the data we are interested starts
         int startOfData = pathInfo.indexOf(DYN_RES_PREFIX)
                 + DYN_RES_PREFIX.length();

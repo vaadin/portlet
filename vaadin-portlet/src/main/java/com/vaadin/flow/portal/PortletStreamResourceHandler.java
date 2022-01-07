@@ -23,17 +23,7 @@ public class PortletStreamResourceHandler extends StreamResourceHandler {
         StreamResourceWriter writer;
         session.lock();
         try {
-            PortletContext context = ((VaadinPortletRequest) request)
-                    .getPortletContext();
-            try {
-                response.setContentType(streamResource.getContentTypeResolver()
-                        .apply(streamResource, null));
-            } catch (NullPointerException e) {
-                response.setContentType(Optional
-                        .ofNullable(
-                                context.getMimeType(streamResource.getName()))
-                        .orElse("application/octet-stream"));
-            }
+            setResponseContentType(request, response, streamResource);
             response.setCacheTime(streamResource.getCacheTime());
             writer = streamResource.getWriter();
             if (writer == null) {
@@ -62,6 +52,22 @@ public class PortletStreamResourceHandler extends StreamResourceHandler {
             if (outputStream != null) {
                 outputStream.close();
             }
+        }
+    }
+
+    private void setResponseContentType(VaadinRequest request,
+                                        VaadinResponse response,
+                                        StreamResource streamResource) {
+        PortletContext context = ((VaadinPortletRequest) request)
+                .getPortletContext();
+        try {
+            response.setContentType(streamResource.getContentTypeResolver()
+                    .apply(streamResource, null));
+        } catch (NullPointerException e) {
+            response.setContentType(Optional
+                    .ofNullable(
+                            context.getMimeType(streamResource.getName()))
+                    .orElse("application/octet-stream"));
         }
     }
 }

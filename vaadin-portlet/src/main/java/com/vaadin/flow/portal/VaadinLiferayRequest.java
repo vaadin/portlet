@@ -23,6 +23,7 @@ public class VaadinLiferayRequest extends VaadinHttpAndPortletRequest {
     private static final String LIFERAY_6_PORTAL_UTIL = "com.liferay.portal.util.PortalUtil";
     private static final String LIFERAY_7_PORTAL_UTIL = "com.liferay.portal.kernel.util.PortalUtil";
     private static final String LIFERAY_7_PORTLET_UTIL = "com.liferay.portlet.LiferayPortletUtil";
+    private static final String PORTLET_REQUEST_CLASS = "javax.portlet.PortletRequest";
 
     public VaadinLiferayRequest(PortletRequest request,
             VaadinPortletService vaadinService) {
@@ -94,14 +95,14 @@ public class VaadinLiferayRequest extends VaadinHttpAndPortletRequest {
                 try {
                     liferayPortletRequest = (LiferayPortletRequest) invokeStaticLiferayMethod(
                             LIFERAY_7_PORTLET_UTIL, "getLiferayPortletRequest",
-                            request, "javax.portlet.PortletRequest");
+                            request, PORTLET_REQUEST_CLASS);
                     portalUtilClass = LIFERAY_7_PORTLET_UTIL;
                     // Liferay 7.1+
                 } catch (Exception e) {
                     // Liferay 7.0
                     invokeStaticLiferayMethod(LIFERAY_7_PORTAL_UTIL,
                             "getHttpServletRequest", request,
-                            "javax.portlet.PortletRequest");
+                            PORTLET_REQUEST_CLASS);
                     portalUtilClass = LIFERAY_7_PORTAL_UTIL;
                 }
             } catch (Exception e) {
@@ -116,13 +117,13 @@ public class VaadinLiferayRequest extends VaadinHttpAndPortletRequest {
             } else if (portalUtilClass.equals(LIFERAY_7_PORTLET_UTIL)) {
                 liferayPortletRequest = (LiferayPortletRequest) invokeStaticLiferayMethod(
                         portalUtilClass, "getLiferayPortletRequest", request,
-                        "javax.portlet.PortletRequest");
+                        PORTLET_REQUEST_CLASS);
                 return liferayPortletRequest.getOriginalHttpServletRequest();
             } else {
                 // httpRequest = PortalUtil.getHttpServletRequest(request);
                 httpRequest = (HttpServletRequest) invokeStaticLiferayMethod(
                         portalUtilClass, "getHttpServletRequest", request,
-                        "javax.portlet.PortletRequest");
+                        PORTLET_REQUEST_CLASS);
 
                 // httpRequest =
                 // PortalUtil.getOriginalServletRequest(httpRequest);

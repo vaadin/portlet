@@ -454,11 +454,11 @@ public final class PortletViewContext implements Serializable {
             String portletMode) {
         String portletRegistryName = VaadinPortletService.getCurrentResponse()
                 .getPortletResponse().getNamespace();
-        boolean isLiferayRequest =
-                VaadinPortletService.getCurrentRequest() instanceof VaadinLiferayRequest;
+        boolean reloadAfterChange =
+                !(VaadinPortletService.getCurrentRequest() instanceof VaadinLiferayRequest);
         return String
                 .format("window.Vaadin.Flow.Portlets.setPortletState('%s', '%s', '%s', %b);",
-                        portletRegistryName, windowState, portletMode, isLiferayRequest);
+                        portletRegistryName, windowState, portletMode, reloadAfterChange);
     }
 
     /**

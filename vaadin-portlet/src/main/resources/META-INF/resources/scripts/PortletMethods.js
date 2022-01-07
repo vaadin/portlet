@@ -31,7 +31,7 @@ if (!window.Vaadin.Flow.Portlets) {
         return window.Vaadin.Flow.Portlets[portletRegistryName].hub;
     };
 
-    window.Vaadin.Flow.Portlets.setPortletState = function (portletRegistryName, windowState, portletMode, isLiferay) {
+    window.Vaadin.Flow.Portlets.setPortletState = function (portletRegistryName, windowState, portletMode, reloadAfterChange) {
         const hub = window.Vaadin.Flow.Portlets.getHubRegistartion(portletRegistryName);
 
         window.Vaadin.Flow.Portlets.executeWhenHubIdle(hub, function(hub) {
@@ -40,7 +40,7 @@ if (!window.Vaadin.Flow.Portlets) {
             state.portletMode = portletMode;
             hub.setRenderState(state);
 
-            if (!isLiferay) {
+            if (reloadAfterChange) {
                 window.Vaadin.Flow.Portlets.executeWhenHubIdle(hub, function (hub) { location.reload() });
             }
         });

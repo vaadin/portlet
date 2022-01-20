@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import net.jcip.annotations.NotThreadSafe;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,7 +36,6 @@ import com.vaadin.flow.component.WebComponentExporter;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.internal.PendingJavaScriptInvocation;
 import com.vaadin.flow.component.page.ExtendedClientDetails;
-import com.vaadin.flow.component.webcomponent.WebComponent;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.portal.VaadinPortlet.PortletWebComponentExporter;
@@ -48,6 +48,7 @@ import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.shared.Registration;
 
+@NotThreadSafe
 public class VaadinPortletTest {
 
     private class TestVaadinPortlet extends VaadinPortlet<TestComponent> {
@@ -296,8 +297,7 @@ public class VaadinPortletTest {
         requestModeAndState("foo", "bar");
     }
 
-    private void requestModeAndState(String portletMode, String windowState)
-            throws PortletException, IOException {
+    private void requestModeAndState(String portletMode, String windowState) {
         RenderRequest request = Mockito.mock(RenderRequest.class);
         RenderResponse response = Mockito.mock(RenderResponse.class);
 
@@ -318,11 +318,15 @@ public class VaadinPortletTest {
         PortletRequest portletRequest = Mockito.mock(PortletRequest.class);
         Mockito.when(portletRequest.getPortletMode()).thenReturn(mode);
         Mockito.when(portletRequest.getWindowState()).thenReturn(state);
-        Mockito.when(VaadinPortletRequest.getCurrentPortletRequest())
-                .thenReturn(portletRequest);
 
-        Mockito.when(VaadinPortletResponse.getCurrentPortletResponse())
-                .thenReturn(response);
+        VaadinPortletRequest vaadinPortletRequest = Mockito.mock(VaadinPortletRequest.class);
+        Mockito.when(vaadinPortletRequest.getPortletRequest()).thenReturn(portletRequest);
+        CurrentInstance.set(VaadinRequest.class, vaadinPortletRequest);
+
+        VaadinPortletResponse vaadinPortletResponse =
+                Mockito.mock(VaadinPortletResponse.class);
+        Mockito.when(vaadinPortletResponse.getPortletResponse()).thenReturn(response);
+        CurrentInstance.set(VaadinResponse.class, vaadinPortletResponse);
 
         // detach
         ui.remove(component);

@@ -41,11 +41,9 @@ public class UploadIT extends AbstractPlutoPortalTest {
     public void fileUploaded_fileSizeIsRendered() throws Exception {
         // upload a file
         File file = createTempFile();
-        waitUntil(driver -> getVaadinPortletRootElement().$("*").first()
-                .$(UploadElement.class).exists());
 
         UploadElement upload = getVaadinPortletRootElement().$("*").first()
-                .$(UploadElement.class).first();
+                .$(UploadElement.class).waitForFirst();
         WebElement input = upload.$("*").id("fileInput");
         setLocalFileDetector(input);
         input.sendKeys(file.getAbsolutePath());

@@ -42,14 +42,14 @@ public class UploadIT extends AbstractPlutoPortalTest {
         // upload a file
         File file = createTempFile();
 
-        UploadElement upload = getVaadinPortletRootElement().$("*").first()
+        UploadElement upload = getVaadinPortletRootElement()
                 .$(UploadElement.class).waitForFirst();
         WebElement input = upload.$("*").id("fileInput");
         setLocalFileDetector(input);
         input.sendKeys(file.getAbsolutePath());
 
         // check that label indicates size of file
-        LabelElement label = getVaadinPortletRootElement().$("*").first()
+        LabelElement label = getVaadinPortletRootElement()
                 .$(LabelElement.class).id(UploadPortletContent.UPLOAD_LABEL_ID);
         Assert.assertEquals(Long.toString(file.length()), label.getText());
     }

@@ -49,6 +49,11 @@ class PortletStreamResourceRegistry extends StreamResourceRegistry {
     }
 
     @Override
+    public URI getTargetURI(AbstractStreamResource resource) {
+        return doGetUri(resource);
+    }
+
+    @Override
     public StreamRegistration registerResource(AbstractStreamResource resource) {
         StreamRegistration streamRegistration = super.registerResource(resource);
         return new RegistrationWrapper(streamRegistration);
@@ -69,7 +74,7 @@ class PortletStreamResourceRegistry extends StreamResourceRegistry {
 
         @Override
         public URI getResourceUri() {
-            return getTargetURI(getResource());
+            return doGetUri(getResource());
         }
 
         @Override
@@ -80,6 +85,24 @@ class PortletStreamResourceRegistry extends StreamResourceRegistry {
         @Override
         public AbstractStreamResource getResource() {
             return delegate.getResource();
+        }
+    }
+
+    private URI doGetUri(AbstractStreamResource resource) {
+        PortletResponse response = VaadinPortletService.getCurrentResponse()
+                .getPortletResponse();
+        if (response instanceof MimeResponse) {
+            MimeResponse mimeResponse = (MimeResponse) response;
+            ResourceURL resourceURL = mimeResponse.createResourceURL();
+            resourceURL.setResourceID(getURI(resource).toString());
+            try {
+                return new URI("." + resourceURL);
+            } catch (URISyntaxException e) {
+                // should not happen
+                throw new RuntimeException(e);
+            }
+        } else {
+            return super.getTargetURI(resource);
         }
     }
 }

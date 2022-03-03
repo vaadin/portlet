@@ -1,6 +1,5 @@
 package com.vaadin.flow.portal;
 
-import javax.portlet.MimeResponse;
 import javax.portlet.ResourceURL;
 import javax.portlet.filter.ResourceURLWrapper;
 import java.net.URI;
@@ -51,37 +50,6 @@ public class PortletStreamResourceRegistryTest {
         Mockito.when(ui.getUIId()).thenReturn(42);
 
         registry = new PortletStreamResourceRegistry(session);
-    }
-
-    @Test
-    public void getResourceUri_mimeContent_returnsEmbeddedUrl() {
-        MimeResponse mimeResponse = Mockito.mock(MimeResponse.class);
-
-        Mockito.when(mimeResponse.createResourceURL()).thenReturn(
-                new ResourceUrlMock("http://localhost:8080/foo?resourceUrl="));
-
-        VaadinPortletResponse vaadinPortletResponse =
-                new VaadinPortletResponse(mimeResponse, service);
-
-        VaadinResponse vaadinResponse = CurrentInstance.get(VaadinResponse.class);
-        UI currentUI = CurrentInstance.get(UI.class);
-        try {
-            CurrentInstance.set(VaadinResponse.class, vaadinPortletResponse);
-            CurrentInstance.set(UI.class, this.ui);
-            StreamRegistration registration = registry.registerResource(streamResourceMock);
-            URI resourceUri = registration.getResourceUri();
-            String expected = String.format(
-                    "http://localhost:8080/foo?resourceUrl=/VAADIN/dynamic" +
-                    "/resource/42/%s/test.xml", resourceId);
-            Assert.assertEquals(expected, resourceUri.toString());
-        } finally {
-            if (vaadinResponse != null) {
-                CurrentInstance.set(VaadinResponse.class, vaadinResponse);
-            }
-            if (currentUI != null) {
-                CurrentInstance.set(UI.class, currentUI);
-            }
-        }
     }
 
     @Test

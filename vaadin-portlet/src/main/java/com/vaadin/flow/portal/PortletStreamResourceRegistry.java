@@ -96,7 +96,13 @@ class PortletStreamResourceRegistry extends StreamResourceRegistry {
             ResourceURL resourceURL = mimeResponse.createResourceURL();
             resourceURL.setResourceID(startWithSlash(getURI(resource)));
             try {
-                return new URI("." + resourceURL);
+                // In Liferay resourceURL is absolute, whereas in Pluto it is
+                // relative
+                URI uri = new URI(resourceURL.toString());
+                if (!uri.isAbsolute()) {
+                    uri = new URI("." + uri);
+                }
+                return uri;
             } catch (URISyntaxException e) {
                 // should not happen
                 throw new RuntimeException(e);

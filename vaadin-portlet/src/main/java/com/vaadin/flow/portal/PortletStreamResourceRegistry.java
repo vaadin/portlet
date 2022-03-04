@@ -94,7 +94,7 @@ class PortletStreamResourceRegistry extends StreamResourceRegistry {
         if (response instanceof MimeResponse) {
             MimeResponse mimeResponse = (MimeResponse) response;
             ResourceURL resourceURL = mimeResponse.createResourceURL();
-            resourceURL.setResourceID(getURI(resource).toString());
+            resourceURL.setResourceID(startWithSlash(getURI(resource)));
             try {
                 return new URI("." + resourceURL);
             } catch (URISyntaxException e) {
@@ -104,5 +104,13 @@ class PortletStreamResourceRegistry extends StreamResourceRegistry {
         } else {
             return super.getTargetURI(resource);
         }
+    }
+
+    private String startWithSlash(URI uri) {
+        String uriString = uri.toString();
+        if(uriString.startsWith("/")) {
+            return uriString;
+        }
+        return "/" + uriString;
     }
 }

@@ -74,4 +74,15 @@
         </supports>
     </portlet>
 
+    <portlet>
+        <portlet-name>streamresource</portlet-name>
+        <display-name>Flow Portlet with StreamResource download</display-name>
+        <portlet-class>com.vaadin.flow.portal.streamresource.StreamResourcePortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+    </portlet>
+
 </portlet-app>

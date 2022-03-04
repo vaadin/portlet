@@ -25,6 +25,7 @@ public class PortletStreamResourceHandler extends StreamResourceHandler {
         try {
             setResponseContentType(request, response, streamResource);
             response.setCacheTime(streamResource.getCacheTime());
+            streamResource.getHeaders().forEach(response::setHeader);
             writer = streamResource.getWriter();
             if (writer == null) {
                 throw new IOException(
@@ -56,8 +57,7 @@ public class PortletStreamResourceHandler extends StreamResourceHandler {
     }
 
     private void setResponseContentType(VaadinRequest request,
-                                        VaadinResponse response,
-                                        StreamResource streamResource) {
+            VaadinResponse response, StreamResource streamResource) {
         PortletContext context = ((VaadinPortletRequest) request)
                 .getPortletContext();
         try {
@@ -65,8 +65,7 @@ public class PortletStreamResourceHandler extends StreamResourceHandler {
                     .apply(streamResource, null));
         } catch (NullPointerException e) {
             response.setContentType(Optional
-                    .ofNullable(
-                            context.getMimeType(streamResource.getName()))
+                    .ofNullable(context.getMimeType(streamResource.getName()))
                     .orElse("application/octet-stream"));
         }
     }

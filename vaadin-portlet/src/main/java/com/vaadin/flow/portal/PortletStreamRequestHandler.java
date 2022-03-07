@@ -71,8 +71,9 @@ class PortletStreamRequestHandler extends StreamRequestHandler {
             return false;
         }
         // remove leading '/'
-        assert pathInfo.startsWith(Character.toString(PATH_SEPARATOR));
-        pathInfo = pathInfo.substring(1);
+        if(pathInfo.startsWith(Character.toString(PATH_SEPARATOR))) {
+            pathInfo = pathInfo.substring(1);
+        }
 
         if (!pathInfo.startsWith(DYN_RES_PREFIX)) {
             return false;

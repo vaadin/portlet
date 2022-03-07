@@ -15,12 +15,12 @@
  */
 package com.vaadin.flow.portal;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletResponse;
 import javax.portlet.ResourceURL;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import com.vaadin.flow.server.AbstractStreamResource;
 import com.vaadin.flow.server.StreamRegistration;
@@ -42,7 +42,8 @@ class PortletStreamResourceRegistry extends StreamResourceRegistry {
     /**
      * Creates stream resource registry for provided {@code session}.
      *
-     * @param session Vaadin portlet session
+     * @param session
+     *            Vaadin portlet session
      */
     public PortletStreamResourceRegistry(VaadinPortletSession session) {
         super(session);
@@ -54,15 +55,16 @@ class PortletStreamResourceRegistry extends StreamResourceRegistry {
     }
 
     @Override
-    public StreamRegistration registerResource(AbstractStreamResource resource) {
-        StreamRegistration streamRegistration = super.registerResource(resource);
+    public StreamRegistration registerResource(
+            AbstractStreamResource resource) {
+        StreamRegistration streamRegistration = super.registerResource(
+                resource);
         return new RegistrationWrapper(streamRegistration);
     }
 
     /**
-     * StreamRegistration implementation which embeds dynamic resource url
-     * into portlet url as a 'resourceUrl' query parameter, see
-     * {@link ResourceURL}.
+     * StreamRegistration implementation which embeds dynamic resource url into
+     * portlet url as a 'resourceUrl' query parameter, see {@link ResourceURL}.
      */
     private final class RegistrationWrapper implements StreamRegistration {
 
@@ -114,7 +116,7 @@ class PortletStreamResourceRegistry extends StreamResourceRegistry {
 
     private String startWithSlash(URI uri) {
         String uriString = uri.toString();
-        if(uriString.startsWith("/")) {
+        if (uriString.startsWith("/")) {
             return uriString;
         }
         return "/" + uriString;

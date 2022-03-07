@@ -2,20 +2,15 @@ package com.vaadin.flow.portal;
 
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.server.AbstractStreamResource;
 import com.vaadin.flow.server.StreamResource;
-
-import static org.junit.Assert.*;
 
 public class PortletStreamResourceHandlerTest {
 
@@ -64,7 +59,8 @@ public class PortletStreamResourceHandlerTest {
         String headerValue = "attachment;filename=export.xlsx";
         resource.setHeader(headerName, headerValue);
         handler.handleRequest(session, request, response, resource);
-        Mockito.verify(portletResponse, Mockito.atLeastOnce()).setProperty(headerName, headerValue);
+        Mockito.verify(portletResponse, Mockito.atLeastOnce())
+                .setProperty(headerName, headerValue);
     }
 
 }

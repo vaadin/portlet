@@ -6,6 +6,7 @@
     <modules>
         <module>liferay-tests-generic</module>
         <module>liferay-shared</module>
+        <module>liferay-portlet-deployer</module>
     </modules>
     <parent>
         <groupId>com.vaadin</groupId>

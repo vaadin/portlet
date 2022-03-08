@@ -20,6 +20,7 @@
         <module>vaadin-portlet-integration-tests</module>
         <module>vaadin-portlet-cdi</module>
         <module>vaadin-portlet-liferay-integration-tests</module>
+        <module>liferay-portlet-deployer</module>
     </modules>
 
     <organization>

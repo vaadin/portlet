@@ -7,12 +7,25 @@
     <portlet>
         <portlet-name>basic</portlet-name>
         <display-name>Flow Basic Portlet with Button</display-name>
-        <portlet-class>com.vaadin.flow.portal.liferay.basic.BasicPortlet</portlet-class>
+        <portlet-class>com.vaadin.flow.portal.liferay.basic.LiferayBasicPortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
             <portlet-mode>VIEW</portlet-mode>
         </supports>
+        <portlet-info>
+            <title>Basic Portlet</title>
+            <short-title>Basic Portlet</short-title>
+        </portlet-info>
+        <container-runtime-option>
+            <name>javax.portlet.renderHeaders</name>
+            <value>true</value>
+        </container-runtime-option>
+        <dependency>
+            <name>PortletHub</name>
+            <scope>javax.portlet</scope>
+            <version>3.0.0</version>
+        </dependency>
     </portlet>
 
     <!--    <portlet>-->

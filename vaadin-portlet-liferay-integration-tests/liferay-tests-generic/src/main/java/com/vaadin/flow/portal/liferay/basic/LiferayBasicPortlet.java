@@ -15,7 +15,16 @@
  */
 package com.vaadin.flow.portal.liferay.basic;
 
-import com.vaadin.flow.portal.VaadinPortlet;
+import javax.portlet.annotations.Dependency;
+import javax.portlet.annotations.PortletConfiguration;
 
-public class LiferayBasicPortlet extends VaadinPortlet<LiferayBasicPortletContent> {
+import com.vaadin.flow.portal.VaadinLiferayPortlet;
+
+@PortletConfiguration(
+        portletName = "LiferayBasicPortlet",
+        dependencies = @Dependency(name = "PortletHub", scope = "javax" +
+                                                                ".portlet",
+                version = "3.0.0")
+)
+public class LiferayBasicPortlet extends VaadinLiferayPortlet<LiferayBasicPortletContent> {
 }

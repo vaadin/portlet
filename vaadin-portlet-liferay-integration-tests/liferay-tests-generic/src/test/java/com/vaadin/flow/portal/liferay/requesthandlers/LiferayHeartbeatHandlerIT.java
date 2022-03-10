@@ -24,9 +24,6 @@ import com.vaadin.flow.portal.liferay.basic.LiferayBasicPortletContent;
 import com.vaadin.testbench.TestBenchElement;
 
 public class LiferayHeartbeatHandlerIT extends AbstractLiferayPortalTest {
-    public LiferayHeartbeatHandlerIT() {
-        super("tests-generic", "basic");
-    }
 
     @Test
     public void basicPortlet_afterFirstHeartbeatRequest_shouldWorkNormally()
@@ -50,5 +47,10 @@ public class LiferayHeartbeatHandlerIT extends AbstractLiferayPortalTest {
         } finally {
             testBench().enableWaitForVaadin();
         }
+    }
+
+    @Override
+    protected String getFriendlyUrl() {
+        return "/test/basic";
     }
 }

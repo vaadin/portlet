@@ -17,11 +17,14 @@ package com.vaadin.flow.portal.liferay;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
@@ -58,24 +61,23 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
 
     private static final String PORTLET_ID_ATTRIBUTE = "data-portlet-id";
 
-    private static final String PORTAL_ROUTE = "web/guest/";
+    private static final String PORTAL_ROUTE = "en/web/guest/";
     private static final String PORTAL_LOGIN = "en/c/portal/login";
-    private static final String ADMIN_PAGE_FRAGMENT = "Pluto Admin";
+
+//    private static final String PORTLET_ID_PARAMETER_KEY = "p_p_id";
+//    private static final String PORTLET_LIFECYCLE_PARAMETER_KEY =
+//            "p_p_lifecycle";
+    private static final String PORTLET_STATE_PARAMETER_KEY =
+            "p_p_state";
+    private static final String PORTLET_MODE_PARAMETER_KEY =
+            "p_p_mode";
 
     private static final String LOGIN_FORM_USER_LOGIN =
             "_com_liferay_login_web_portlet_LoginPortlet_login";
     public static final String LOGIN_FORM_USER_PASSWORD =
             "_com_liferay_login_web_portlet_LoginPortlet_password";
 
-    private final String layoutName;
-    private String testPage;
-    private final String portletName;
     private String portletId = null;
-
-    public AbstractLiferayPortalTest(String layoutName, String portletName) {
-        this.layoutName = layoutName;
-        this.portletName = portletName;
-    }
 
     @Rule
     public ScreenshotOnFailureRule rule = new ScreenshotOnFailureRule(this,
@@ -127,6 +129,17 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
         submitButton.click();
     }
 
+    protected String openInAnotherWindow() {
+        final String firstWin = getDriver().getWindowHandle();
+        ((JavascriptExecutor) getDriver()).executeScript("window.open('"
+                                                         + getURL(getPortalRoute() + "/" + getFriendlyUrl()) + "','_blank');");
+        final String secondWin = driver.getWindowHandles().stream()
+                .filter(windowId -> !windowId.equals(firstWin)).findFirst()
+                .get();
+        driver.switchTo().window(secondWin);
+        return secondWin;
+    }
+
     protected List<TestBenchElement> getVaadinPortletRootElements() {
         return $(TestBenchElement.class).hasAttribute(PORTLET_ID_ATTRIBUTE)
                 .all();
@@ -147,27 +160,26 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
     }
 
     /**
-     * Set the mode of the first portlet on page via Pluto's header dropdown.
+     * Set the mode of the first portlet on page via Liferay's header dropdown.
      */
     protected void setPortletModeInPortal(PortletMode portletMode) {
-        SelectElement modeSelector = $(TestBenchElement.class)
-                .attribute("name", "modeSelectionForm").first()
-                .$(SelectElement.class).first();
-        modeSelector.selectByText(portletMode.toString().toUpperCase());
+        setPortletQueryParameter(PORTLET_MODE_PARAMETER_KEY,
+                portletMode.toString().toLowerCase());
+
+//        AnchorElement dropDown = $(AnchorElement.class)
+//                .attribute("title", "Options").first();
+//        dropDown.click();
+//        WebElement preferences =
+//                findElement(By.xpath("//a[@role='menuitem' and span='Preferences']"));
+//        preferences.click();//button[@type='submit' and span='Sign In']//button[@type='submit' and span='Sign In']
     }
 
     /**
      * Set the mode of the first portlet on page via Pluto's header dropdown.
      */
     protected void setWindowStateInPortal(WindowState windowState) {
-        String buttonLabel = WindowState.MAXIMIZED.equals(windowState)
-                ? "Maximize"
-                : WindowState.NORMAL.equals(windowState) ? "Restore"
-                : WindowState.MINIMIZED.equals(windowState) ? "Minimize"
-                : null;
-        AnchorElement anchor = $(AnchorElement.class)
-                .attribute("title", buttonLabel).first();
-        anchor.click();
+        setPortletQueryParameter(PORTLET_STATE_PARAMETER_KEY,
+                windowState.toString());
     }
 
     /**
@@ -215,6 +227,15 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
      */
     private static String getDeploymentHostname() {
         return isUsingHub() ? System.getenv("HOSTNAME") : "localhost";
+    }
+
+    private void setPortletQueryParameter(String key, String value) {
+        String currentUrl = getDriver().getCurrentUrl();
+        String portletModeQueryParamRegexp = "\\b" + key + "=.*?(&|$)";
+        String newPortletModeQueryParam = key + "=" + value + "$1";
+        String newUrl = currentUrl.replaceFirst(portletModeQueryParamRegexp,
+                newPortletModeQueryParam);
+        getDriver().get(newUrl);
     }
 
 }

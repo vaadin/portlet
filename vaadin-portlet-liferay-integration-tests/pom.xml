@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <modules>
-        <module>liferay-tests-generic</module>
-        <module>liferay-shared</module>
         <module>liferay-portlet-deployer</module>
+        <module>vaadin-portlet-liferay-it-shared</module>
+        <module>liferay-tests-generic</module>
     </modules>
     <parent>
         <groupId>com.vaadin</groupId>
@@ -19,7 +19,7 @@
 
     <properties>
         <liferay.version>7.4.3.5-ga5</liferay.version>
-        <tomcat.version>9.0.43</tomcat.version>
+        <tomcat.version>9.0.56</tomcat.version>
 
         <javax.validation.version>2.0.0.Final</javax.validation.version>
 
@@ -191,7 +191,6 @@
             </activation>
             <build>
                 <plugins>
-
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
@@ -207,7 +206,6 @@
                     <plugin>
                         <groupId>org.codehaus.cargo</groupId>
                         <artifactId>cargo-maven2-plugin</artifactId>
-
                         <executions>
                             <execution>
                                 <id>start-portal</id>
@@ -230,14 +228,12 @@
         </profile>
         <profile>
             <id>production</id>
-
             <dependencies>
                 <dependency>
                     <groupId>com.vaadin</groupId>
                     <artifactId>flow-server-production-mode</artifactId>
                 </dependency>
             </dependencies>
-
             <build>
                 <plugins>
                     <plugin>
@@ -262,6 +258,7 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-antrun-plugin</artifactId>
+                            <version>1.6</version>
                             <executions>
                                 <execution>
                                     <id>download-files</id>
@@ -271,21 +268,41 @@
                                     </goals>
                                     <configuration>
                                         <tasks>
-                                            <get
-                                                    src="https://github.com/liferay/liferay-portal/releases/download/${liferay.version}/liferay-ce-portal-tomcat-${liferay.version}-20211221192828235.tar.gz"
-                                                    dest="${project.build.directory}/liferay.zip"
-                                                    verbose="false" usetimestamp="true"/>
-                                            <unzip
-                                                    src="${project.build.directory}/liferay.zip"
-                                                    dest="${project.build.directory}"/>
+<!--                                            <if>-->
+<!--                                                <available file="${project.build.directory}/liferay.tar.gz"/>-->
+<!--                                                <then>-->
+<!--                                                    <echo>Liferay bundle already downloaded</echo>-->
+<!--                                                </then>-->
+<!--                                                <else>-->
+<!--                                                    <get src="https://github.com/liferay/liferay-portal/releases/download/${liferay.version}/liferay-ce-portal-tomcat-${liferay.version}-20211221192828235.tar.gz"-->
+<!--                                                            dest="${project.build.directory}/liferay.tar.gz"-->
+<!--                                                            verbose="false" usetimestamp="true"/>-->
+<!--                                                </else>-->
+<!--                                            </if>-->
+<!--                                            <if>-->
+<!--                                                <available-->
+<!--                                                        file="${project.build.directory}/liferay-ce-portal-${liferay.version}/"/>-->
+<!--                                                <then>-->
+<!--                                                    <echo>Liferay bundle is already unpacked</echo>-->
+<!--                                                </then>-->
+<!--                                                <else>-->
+<!--                                                    <untar src="${project.build.directory}/liferay.tar.gz" compression="gzip" dest="${project.build.directory}"/>-->
+<!--                                                </else>-->
+<!--                                            </if>-->
+                                            <get src="https://github.com/liferay/liferay-portal/releases/download/${liferay.version}/liferay-ce-portal-tomcat-${liferay.version}-20211221192828235.tar.gz"
+                                                 dest="${project.build.directory}/liferay.tar.gz"
+                                                 verbose="false" usetimestamp="true"/>
+                                            <untar src="${project.build.directory}/liferay.tar.gz" compression="gzip" dest="${project.build.directory}"/>
                                             <copy file="${project.build.directory}/${project.artifactId}.war"
-                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/webapps"/>
+                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/deploy"/>
                                             <copy file="${project.build.directory}/vaadin-portlet-static.war"
-                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/webapps"/>
-                                            <copy file="${project.basedir}/setenv.sh"
-                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/bin"/>
-                                            <copy file="${project.basedir}/setenv.bat"
-                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/bin"/>
+                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/deploy"/>
+                                            <copy file="${project.basedir}/../liferay-portlet-deployer/target/liferay-portlet-deployer.war"
+                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/deploy"/>
+<!--                                            <copy file="${project.basedir}/setenv.sh"-->
+<!--                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/bin"/>-->
+<!--                                            <copy file="${project.basedir}/setenv.bat"-->
+<!--                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/bin"/>-->
                                         </tasks>
                                     </configuration>
                                 </execution>
@@ -295,41 +312,5 @@
                 </pluginManagement>
             </build>
         </profile>
-
-        <profile>
-            <id>autocopy</id>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-antrun-plugin</artifactId>
-                            <executions>
-                                <execution>
-                                    <id>download-files</id>
-                                    <phase>package</phase>
-                                    <goals>
-                                        <goal>run</goal>
-                                    </goals>
-                                    <configuration>
-                                        <tasks>
-                                            <copy file="${project.build.directory}/${project.artifactId}.war"
-                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/webapps"/>
-                                            <copy file="${project.build.directory}/vaadin-portlet-static.war"
-                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/webapps"/>
-                                            <copy file="${project.basedir}/setenv.sh"
-                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/bin"/>
-                                            <copy file="${project.basedir}/setenv.bat"
-                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/bin"/>
-                                        </tasks>
-                                    </configuration>
-                                </execution>
-                            </executions>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
-        </profile>
-
     </profiles>
 </project>

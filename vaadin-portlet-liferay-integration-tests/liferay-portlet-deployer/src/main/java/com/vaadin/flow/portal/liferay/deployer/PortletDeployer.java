@@ -43,13 +43,8 @@ public class PortletDeployer extends GenericPortlet {
     private static final Map<String, Collection<Preference>> portletInfo = new HashMap<>(2);
 
     static {
-        List<Preference> preferences = Arrays.asList(new Preference("directory", "C:/develop/lcd"),
-                new Preference("sortOrder", "desc"),
-                new Preference("zipAsFolder", "true"),
-                new Preference("portletSetupUseCustomTitle", "true"),
-                new Preference("portletSetupTitle_de_DE", "MTM Historie"));
-        portletInfo.put("VFSFileExplorerPortlet_WAR_vfs2fileexplorer", preferences);
-        portletInfo.put("osirisxconfigportlet_WAR_osirisxconfigportlet", Collections.emptyList());
+        portletInfo.put("LiferayBasicPortlet_WAR_basic",
+                Collections.emptyList());
     }
 
     private long userId;
@@ -107,10 +102,9 @@ public class PortletDeployer extends GenericPortlet {
             long groupId = getGroupFromDefaultCompanyId(myCompanyId);
 
 
-            String name = "Mydeployer";
-            String friendlyURL = "/mydeployer";
-//            if (LayoutLocalServiceUtil.fetchLayoutByFriendlyURL(groupId,
-//                    false, friendlyURL) != null) {
+            String name = "BasicPortlet";
+            String friendlyURL = "/test/basic";
+//            if (getLayoutByFriendlyUrl(groupId, friendlyURL) != null) {
 //                friendlyURL = friendlyURL + new Random().nextInt();
 //            }
             removeOldLayoutIfPresent(groupId, friendlyURL);
@@ -128,7 +122,7 @@ public class PortletDeployer extends GenericPortlet {
 
     public boolean removeOldLayoutIfPresent(long pGroupId, String friendlyURL) {
         try {
-            Layout layoutByFriendlyURL = LayoutLocalServiceUtil.fetchLayoutByFriendlyURL(pGroupId, false, friendlyURL);
+            Layout layoutByFriendlyURL = getLayoutByFriendlyUrl(pGroupId, friendlyURL);
             if (layoutByFriendlyURL != null){
                 if (SitesUtil.isLayoutDeleteable(layoutByFriendlyURL)){
                     LayoutLocalServiceUtil.deleteLayout(layoutByFriendlyURL);

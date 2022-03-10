@@ -22,9 +22,8 @@ import com.vaadin.flow.portal.VaadinLiferayPortlet;
 
 @PortletConfiguration(
         portletName = "LiferayBasicPortlet",
-        dependencies = @Dependency(name = "PortletHub", scope = "javax" +
-                                                                ".portlet",
-                version = "3.0.0")
+        dependencies =
+        @Dependency(name = "PortletHub", scope = "javax.portlet", version = "3.0.0")
 )
 public class LiferayBasicPortlet extends VaadinLiferayPortlet<LiferayBasicPortletContent> {
 }

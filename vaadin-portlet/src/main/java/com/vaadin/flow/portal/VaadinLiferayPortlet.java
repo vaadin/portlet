@@ -1,6 +1,7 @@
 package com.vaadin.flow.portal;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 import javax.portlet.HeaderRequest;
 import javax.portlet.HeaderResponse;
@@ -9,6 +10,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.server.VaadinRequest;
 
 /**
  * VaadinPortlet workarounds for Liferay versions 7.2.x and 7.3.x
@@ -71,4 +73,31 @@ public abstract class VaadinLiferayPortlet<C extends Component>
     private boolean checkStaticResourcesConfiguration() {
         return getStaticResourcesPath().startsWith("/o/");
     }
+
+    // For portlets added to Liferay Content Pages we need to be sure that both
+    // PortletMethod.js and web-component scripts are loaded into the main page,
+    // and postpone the registration instruction until scripts are effectively
+    // loaded, otherwise the web-component contents are not rendered at all.
+    // See https://github.com/vaadin/portlet/issues/202 for details.
+    @Override
+    String portletElementRegistrationScript(VaadinRequest request,
+            String scriptUrl, String registrationInstruction) {
+        String portletMethodScriptUrl = getPortletScriptTag(
+                (RenderRequest) ((VaadinPortletRequest) request)
+                        .getPortletRequest(),
+                "scripts/PortletMethods.js")
+                        .replaceFirst("^.*src=\"([^\"]+)\".*", "$1");
+
+        StringBuilder initScript = new StringBuilder();
+        try (Scanner scanner = new Scanner(getPortletContext()
+                .getResourceAsStream("scripts/LiferayPortletRegistrationHelper.js"))
+                        .useDelimiter("\\A")) {
+            initScript.append(scanner.next());
+        }
+        initScript.append("(['").append(scriptUrl).append("','")
+                .append(portletMethodScriptUrl).append("'], function() { ")
+                .append(registrationInstruction).append(";})");
+        return initScript.toString();
+    }
+
 }

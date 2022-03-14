@@ -1,5 +1,20 @@
 package com.vaadin.flow.portal.liferay.deployer;
 
+import javax.portlet.GenericPortlet;
+import javax.portlet.PortletConfig;
+import javax.portlet.PortletException;
+import javax.portlet.PortletPreferences;
+import javax.portlet.ReadOnlyException;
+import javax.portlet.ValidatorException;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
@@ -20,23 +35,6 @@ import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portlet.Preference;
 import com.liferay.sites.kernel.util.SitesUtil;
-
-import javax.portlet.GenericPortlet;
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletException;
-import javax.portlet.PortletPreferences;
-import javax.portlet.ReadOnlyException;
-import javax.portlet.ValidatorException;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class PortletDeployer extends GenericPortlet {
 

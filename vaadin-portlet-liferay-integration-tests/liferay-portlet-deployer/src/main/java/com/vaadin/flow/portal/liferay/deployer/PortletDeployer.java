@@ -43,7 +43,7 @@ public class PortletDeployer extends GenericPortlet {
     private static final Map<String, Collection<Preference>> portletInfo = new HashMap<>(2);
 
     static {
-        portletInfo.put("LiferayBasicPortlet_WAR_basic",
+        portletInfo.put("basic_WAR_liferaytestsgeneric",
                 Collections.emptyList());
     }
 
@@ -62,7 +62,8 @@ public class PortletDeployer extends GenericPortlet {
 
     private void addMyPortlet(Layout layout, String portletType, int order) {
         LayoutTypePortlet layoutTypePortlet = (LayoutTypePortlet) layout.getLayoutType();
-        String newPortletId = layoutTypePortlet.addPortletId(userId, portletType, "column-2", order, false);
+        String newPortletId = layoutTypePortlet.addPortletId(userId,
+                portletType, "column-1", order, false);
         setPortletPreferences(layout, portletType, newPortletId);
         try {
             LayoutLocalServiceUtil.updateLayout(layout.getGroupId(), layout.getPrivateLayout(), layout.getLayoutId(),

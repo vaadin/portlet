@@ -31,8 +31,6 @@ public class LiferayHeartbeatHandlerIT extends AbstractLiferayPortalTest {
         TestBenchElement buttonElement = getVaadinPortletRootElement().$("*")
                 .id("click-button");
 
-        Thread.sleep(17000);
-
         // In this test, we make sure that Vaadin responds after the first
         // heartbeat request. If it doesn't respond, then the test will hang
         // because of waitForVaadin. That's why it is disabled here.
@@ -51,6 +49,6 @@ public class LiferayHeartbeatHandlerIT extends AbstractLiferayPortalTest {
 
     @Override
     protected String getFriendlyUrl() {
-        return "/test/basic";
+        return "test/basic";
     }
 }

@@ -97,12 +97,13 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
     }
 
     protected void openPortletLayout() {
-        getDriver().get(getURL(getPortalRoute() + "/" + getFriendlyUrl()));
+        waitUntil(driver -> {
+            getDriver().get(getURL(getFriendlyUrl()));
+            List<TestBenchElement> portlets = getVaadinPortletRootElements();
+            return portlets != null && !portlets.isEmpty();
+        });
 
         List<TestBenchElement> portlets = getVaadinPortletRootElements();
-        if (portlets == null || portlets.isEmpty()) {
-            throw new AssertionError("No portlet found on the page");
-        }
 
         if (portlets.size() > 1) {
             throw new AssertionError("Expected only one portlet per page");
@@ -124,7 +125,9 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
 
         WebElement submitButton = findElement(By.xpath(
                 "//button[@type='submit' and span='Sign In']"));
+        username.clear();
         username.sendKeys("test@liferay.com");
+        password.clear();
         password.sendKeys("test");
         submitButton.click();
     }

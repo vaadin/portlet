@@ -215,6 +215,10 @@
                                 </goals>
                             </execution>
                             <execution>
+                                <id>add-portlet</id>
+                                <phase>integration-test</phase>
+                            </execution>
+                            <execution>
                                 <id>stop-portal</id>
                                 <phase>post-integration-test</phase>
                                 <goals>
@@ -289,20 +293,23 @@
 <!--                                                    <untar src="${project.build.directory}/liferay.tar.gz" compression="gzip" dest="${project.build.directory}"/>-->
 <!--                                                </else>-->
 <!--                                            </if>-->
-                                            <get src="https://github.com/liferay/liferay-portal/releases/download/${liferay.version}/liferay-ce-portal-tomcat-${liferay.version}-20211221192828235.tar.gz"
-                                                 dest="${project.build.directory}/liferay.tar.gz"
-                                                 verbose="false" usetimestamp="true"/>
-                                            <untar src="${project.build.directory}/liferay.tar.gz" compression="gzip" dest="${project.build.directory}"/>
+<!--                                            <get src="https://github.com/liferay/liferay-portal/releases/download/${liferay.version}/liferay-ce-portal-tomcat-${liferay.version}-20211221192828235.tar.gz"-->
+<!--                                                 dest="${project.build.directory}/liferay.tar.gz"-->
+<!--                                                 verbose="false" usetimestamp="true"/>-->
+                                            <untar src="${project.basedir}/liferay.tar.gz" compression="gzip" dest="${project.build.directory}"/>
                                             <copy file="${project.build.directory}/${project.artifactId}.war"
                                                   todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/deploy"/>
                                             <copy file="${project.build.directory}/vaadin-portlet-static.war"
                                                   todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/deploy"/>
-                                            <copy file="${project.basedir}/../liferay-portlet-deployer/target/liferay-portlet-deployer.war"
-                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/deploy"/>
-<!--                                            <copy file="${project.basedir}/setenv.sh"-->
-<!--                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/bin"/>-->
-<!--                                            <copy file="${project.basedir}/setenv.bat"-->
-<!--                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/bin"/>-->
+<!--                                            <copy file="${project.basedir}/../liferay-portlet-deployer/target/liferay-portlet-deployer.war"-->
+<!--                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/deploy"/>-->
+
+                                            <copy file="${project.basedir}/portal-setup-wizard.properties"
+                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}"/>
+                                            <copy file="${project.basedir}/setenv.sh"
+                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/bin"/>
+                                            <copy file="${project.basedir}/setenv.bat"
+                                                  todir="${project.build.directory}/liferay-ce-portal-${liferay.version}/tomcat-${tomcat.version}/bin"/>
                                         </tasks>
                                     </configuration>
                                 </execution>

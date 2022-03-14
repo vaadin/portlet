@@ -152,6 +152,13 @@
 
                         <properties>
                             <cargo.start.jvmargs>
+                                -Xms2560m
+                                -Xmx2560m
+                                -XX:MaxNewSize=1536m
+                                -XX:MaxMetaspaceSize=768m
+                                -XX:MetaspaceSize=768m
+                                -XX:NewSize=1536m
+                                -XX:SurvivorRatio=7
                                 -Xdebug
                                 -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005
                                 -Xnoagent

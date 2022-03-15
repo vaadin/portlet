@@ -60,6 +60,7 @@ import com.vaadin.flow.server.DeploymentConfigurationFactory;
 import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.SessionExpiredException;
 import com.vaadin.flow.server.VaadinConfigurationException;
+import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.shared.communication.PushMode;
@@ -659,4 +660,13 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
             view.onPortletViewContextInit(context);
         }
     }
+
+    // By default, portlet registration instruction can be sent to the client
+    // as is, but some portlet containers (e.g. Liferay) may need to wrap or
+    // enhance it with more instructions.
+    String portletElementRegistrationScript(VaadinRequest request,
+            String scriptUrl, String registrationInstruction) {
+        return registrationInstruction;
+    }
+
 }

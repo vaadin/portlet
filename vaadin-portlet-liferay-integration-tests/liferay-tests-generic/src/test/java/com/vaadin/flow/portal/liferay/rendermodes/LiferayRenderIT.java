@@ -22,58 +22,54 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 
 import com.vaadin.flow.component.html.testbench.SelectElement;
-import com.vaadin.flow.portal.AbstractPlutoPortalTest;
+import com.vaadin.flow.portal.liferay.AbstractLiferayPortalTest;
 import com.vaadin.testbench.TestBenchElement;
 
-public class RenderIT extends AbstractPlutoPortalTest {
-
-    public RenderIT() {
-        super("tests-generic", "render");
-    }
+public class LiferayRenderIT extends AbstractLiferayPortalTest {
 
     @Test
     public void changeModeAndState_modeAndStateAreKept() {
         TestBenchElement stateChange = getVaadinPortletRootElement().$("*")
-                .id(RenderView.WINDOW_STATE_CHANGE);
+                .id(LiferayRenderView.WINDOW_STATE_CHANGE);
         TestBenchElement modeChange = getVaadinPortletRootElement().$("*")
-                .id(RenderView.PORTLET_MODE_CHANGE);
+                .id(LiferayRenderView.PORTLET_MODE_CHANGE);
 
-        Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());
-        Assert.assertEquals(RenderView.MODE_EDIT, modeChange.getText());
+        Assert.assertEquals(LiferayRenderView.STATE_MAXIMIZE, stateChange.getText());
+        Assert.assertEquals(LiferayRenderView.MODE_EDIT, modeChange.getText());
 
         stateChange.click();
 
         stateChange = getVaadinPortletRootElement().$("*")
-                .id(RenderView.WINDOW_STATE_CHANGE);
+                .id(LiferayRenderView.WINDOW_STATE_CHANGE);
         modeChange = getVaadinPortletRootElement().$("*")
-                .id(RenderView.PORTLET_MODE_CHANGE);
+                .id(LiferayRenderView.PORTLET_MODE_CHANGE);
 
-        Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
-        Assert.assertEquals(RenderView.MODE_EDIT, modeChange.getText());
+        Assert.assertEquals(LiferayRenderView.STATE_NORMALIZE, stateChange.getText());
+        Assert.assertEquals(LiferayRenderView.MODE_EDIT, modeChange.getText());
         Assert.assertEquals("VIEW", getWindowMode());
         Assert.assertFalse(isNormalWindowState());
 
         modeChange.click();
 
         stateChange = getVaadinPortletRootElement().$("*")
-                .id(RenderView.WINDOW_STATE_CHANGE);
+                .id(LiferayRenderView.WINDOW_STATE_CHANGE);
         modeChange = getVaadinPortletRootElement().$("*")
-                .id(RenderView.PORTLET_MODE_CHANGE);
+                .id(LiferayRenderView.PORTLET_MODE_CHANGE);
 
-        Assert.assertEquals(RenderView.STATE_NORMALIZE, stateChange.getText());
-        Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());
+        Assert.assertEquals(LiferayRenderView.STATE_NORMALIZE, stateChange.getText());
+        Assert.assertEquals(LiferayRenderView.MODE_VIEW, modeChange.getText());
         Assert.assertEquals("EDIT", getWindowMode());
         Assert.assertFalse(isNormalWindowState());
 
         stateChange.click();
 
         stateChange = getVaadinPortletRootElement().$("*")
-                .id(RenderView.WINDOW_STATE_CHANGE);
+                .id(LiferayRenderView.WINDOW_STATE_CHANGE);
         modeChange = getVaadinPortletRootElement().$("*")
-                .id(RenderView.PORTLET_MODE_CHANGE);
+                .id(LiferayRenderView.PORTLET_MODE_CHANGE);
 
-        Assert.assertEquals(RenderView.STATE_MAXIMIZE, stateChange.getText());
-        Assert.assertEquals(RenderView.MODE_VIEW, modeChange.getText());
+        Assert.assertEquals(LiferayRenderView.STATE_MAXIMIZE, stateChange.getText());
+        Assert.assertEquals(LiferayRenderView.MODE_VIEW, modeChange.getText());
         Assert.assertEquals("EDIT", getWindowMode());
         Assert.assertTrue(isNormalWindowState());
     }
@@ -88,4 +84,8 @@ public class RenderIT extends AbstractPlutoPortalTest {
         return findElements(By.id("portlets-left-column")).size() > 0;
     }
 
+    @Override
+    protected String getFriendlyUrl() {
+        return "test/renderer";
+    }
 }

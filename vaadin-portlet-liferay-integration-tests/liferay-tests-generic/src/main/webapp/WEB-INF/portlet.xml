@@ -4,6 +4,7 @@
              xmlns="http://xmlns.jcp.org/xml/ns/portlet"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/portlet http://xmlns.jcp.org/xml/ns/portlet/portlet-app_3_0.xsd">
+    <!-- Remember to add a new portlet to PortletDeployer -->
     <portlet>
         <portlet-name>basic</portlet-name>
         <display-name>Flow Basic Portlet with Button</display-name>
@@ -140,6 +141,30 @@
         <portlet-info>
             <title>Error Handling Portlet</title>
             <short-title>Error Handling Portlet</short-title>
+        </portlet-info>
+        <container-runtime-option>
+            <name>javax.portlet.renderHeaders</name>
+            <value>true</value>
+        </container-runtime-option>
+        <dependency>
+            <name>PortletHub</name>
+            <scope>javax.portlet</scope>
+            <version>3.0.0</version>
+        </dependency>
+    </portlet>
+
+    <portlet>
+        <portlet-name>streamresource</portlet-name>
+        <display-name>Flow Portlet for testing StreamResource functionality</display-name>
+        <portlet-class>com.vaadin.flow.portal.liferay.streamresource.LiferayStreamResourcePortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>Stream Resource Portlet</title>
+            <short-title>Stream Resource Portlet</short-title>
         </portlet-info>
         <container-runtime-option>
             <name>javax.portlet.renderHeaders</name>

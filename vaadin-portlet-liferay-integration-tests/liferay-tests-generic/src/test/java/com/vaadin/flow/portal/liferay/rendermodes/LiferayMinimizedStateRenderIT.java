@@ -22,35 +22,32 @@ import javax.portlet.WindowState;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.vaadin.flow.portal.AbstractPlutoPortalTest;
+import com.vaadin.flow.portal.liferay.AbstractLiferayPortalTest;
 import com.vaadin.testbench.TestBenchElement;
 
-public class MinimizedStateRenderIT extends AbstractPlutoPortalTest {
-    public MinimizedStateRenderIT() {
-        super("tests-generic", "minimized-state-render");
-    }
+public class LiferayMinimizedStateRenderIT extends AbstractLiferayPortalTest {
 
     @Test
     public void switchBetweenNormalAndMinimized() {
-        clickButtonAndCheckState(MinimizedStateRenderView.MINIMIZE_BUTTON_ID,
+        clickButtonAndCheckState(LiferayMinimizedStateRenderView.MINIMIZE_BUTTON_ID,
                 WindowState.MINIMIZED.toString());
-        clickButtonAndCheckState(MinimizedStateRenderView.NORMALIZE_BUTTON_ID,
+        clickButtonAndCheckState(LiferayMinimizedStateRenderView.NORMALIZE_BUTTON_ID,
                 WindowState.NORMAL.toString());
     }
 
     @Test
     public void switchBetweenMaximizedAndMinimized() {
-        clickButtonAndCheckState(MinimizedStateRenderView.MAXIMIZE_BUTTON_ID,
+        clickButtonAndCheckState(LiferayMinimizedStateRenderView.MAXIMIZE_BUTTON_ID,
                 WindowState.MAXIMIZED.toString());
-        clickButtonAndCheckState(MinimizedStateRenderView.MINIMIZE_BUTTON_ID,
+        clickButtonAndCheckState(LiferayMinimizedStateRenderView.MINIMIZE_BUTTON_ID,
                 WindowState.MINIMIZED.toString());
-        clickButtonAndCheckState(MinimizedStateRenderView.MAXIMIZE_BUTTON_ID,
+        clickButtonAndCheckState(LiferayMinimizedStateRenderView.MAXIMIZE_BUTTON_ID,
                 WindowState.MAXIMIZED.toString());
     }
 
     @Test
     public void switchBetweenViewAndEditModesInMinimizedState() {
-        clickButtonAndCheckState(MinimizedStateRenderView.MINIMIZE_BUTTON_ID,
+        clickButtonAndCheckState(LiferayMinimizedStateRenderView.MINIMIZE_BUTTON_ID,
                 WindowState.MINIMIZED.toString());
 
         clickPortletModeChangeButtonAndCheckMode(PortletMode.EDIT.toString());
@@ -59,10 +56,10 @@ public class MinimizedStateRenderIT extends AbstractPlutoPortalTest {
 
     private void clickPortletModeChangeButtonAndCheckMode(String mode) {
         TestBenchElement portletModeChangeButton = getVaadinPortletRootElement().$(
-                "*").id(MinimizedStateRenderView.PORTLET_MODE_CHANGE);
+                "*").id(LiferayMinimizedStateRenderView.PORTLET_MODE_CHANGE);
         portletModeChangeButton.click();
         TestBenchElement modeInfo = getVaadinPortletRootElement().$("*")
-                .id(MinimizedStateRenderView.MODE_INFO_ID);
+                .id(LiferayMinimizedStateRenderView.MODE_INFO_ID);
         Assert.assertEquals(mode, modeInfo.getText());
     }
 
@@ -73,7 +70,12 @@ public class MinimizedStateRenderIT extends AbstractPlutoPortalTest {
         button.click();
 
         TestBenchElement stateInfo = getVaadinPortletRootElement().$("*")
-                .id(MinimizedStateRenderView.STATE_INFO_ID);
+                .id(LiferayMinimizedStateRenderView.STATE_INFO_ID);
         Assert.assertEquals(state, stateInfo.getText());
+    }
+
+    @Override
+    protected String getFriendlyUrl() {
+        return "test/minimized-state-render";
     }
 }

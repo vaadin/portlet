@@ -8,13 +8,9 @@ import org.junit.Test;
 import org.openqa.selenium.JavascriptExecutor;
 
 import com.vaadin.flow.component.html.testbench.AnchorElement;
-import com.vaadin.flow.portal.AbstractPlutoPortalTest;
+import com.vaadin.flow.portal.liferay.AbstractLiferayPortalTest;
 
-public class StreamResourceIT extends AbstractPlutoPortalTest {
-
-    public StreamResourceIT() {
-        super("tests-generic", "streamresource");
-    }
+public class LiferayStreamResourceIT extends AbstractLiferayPortalTest {
 
     @Test
     public void downloadStreamResource_responseHeadersAreSent() {
@@ -26,7 +22,7 @@ public class StreamResourceIT extends AbstractPlutoPortalTest {
         Map<String, String> headers = downloadAndGetResponseHeaders(url);
 
         Assert.assertEquals(
-                "attachment;filename=" + StreamResourceContent.FILENAME,
+                "attachment;filename=" + LiferayStreamResourceContent.FILENAME,
                 headers.getOrDefault("content-disposition", null));
     }
 
@@ -63,5 +59,10 @@ public class StreamResourceIT extends AbstractPlutoPortalTest {
         Object response = ((JavascriptExecutor) getDriver())
                 .executeAsyncScript(script, url);
         return (Map<String, String>) response;
+    }
+
+    @Override
+    protected String getFriendlyUrl() {
+        return "test/stream-resource";
     }
 }

@@ -4,10 +4,12 @@
 <display>
     <category name="Vaadin Liferay IT">
         <portlet id="basic" />
-        <!--        <portlet id="upload" />-->
-        <!--        <portlet id="eventhandler" />-->
-        <!--        <portlet id="render" />-->
-        <!--        <portlet id="minimized-state-render" />-->
-        <!--        <portlet id="errorhandling" />-->
+        <portlet id="upload" />
+        <portlet id="eventhandler" />
+        <portlet id="render" />
+        <portlet id="minimized-state-render" />
+        <portlet id="errorhandling" />
+        <portlet id="streamresource" />
+        <!-- Remember to add a new portlet to PortletDeployer -->
     </category>
 </display>

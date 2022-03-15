@@ -21,22 +21,18 @@ import javax.portlet.WindowState;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.vaadin.flow.portal.AbstractPlutoPortalTest;
+import com.vaadin.flow.portal.liferay.AbstractLiferayPortalTest;
 import com.vaadin.testbench.TestBenchElement;
 
-public class EventHandlerIT extends AbstractPlutoPortalTest {
-
-    public EventHandlerIT() {
-        super("tests-generic", "eventhandler");
-    }
+public class LiferayEventHandlerIT extends AbstractLiferayPortalTest {
 
     @Test
     public void modeUpdatedInPortal_noWindowStateHandlerCalled() {
         setPortletModeInPortal(PortletMode.EDIT);
         waitUntil(driver -> PortletMode.EDIT.toString()
-                .equals(getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
+                .equals(getLabelContent(LiferayEventHandlerContent.MODE_LABEL_ID)));
         Assert.assertEquals("",
-                getLabelContent(EventHandlerContent.WINDOW_STATE_LABEL_ID));
+                getLabelContent(LiferayEventHandlerContent.WINDOW_STATE_LABEL_ID));
     }
 
     @Test
@@ -44,9 +40,9 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
         setWindowStateInPortal(WindowState.MAXIMIZED);
         waitUntil(driver -> WindowState.MAXIMIZED.toString()
                 .equals(getLabelContent(
-                        EventHandlerContent.WINDOW_STATE_LABEL_ID)));
+                        LiferayEventHandlerContent.WINDOW_STATE_LABEL_ID)));
         Assert.assertEquals("",
-                getLabelContent(EventHandlerContent.MODE_LABEL_ID));
+                getLabelContent(LiferayEventHandlerContent.MODE_LABEL_ID));
     }
 
     @Test
@@ -55,21 +51,21 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
 
         setPortletModeInPortal(PortletMode.EDIT);
         waitUntil(driver -> PortletMode.EDIT.toString()
-                .equals(getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
+                .equals(getLabelContent(LiferayEventHandlerContent.MODE_LABEL_ID)));
         Assert.assertEquals(PortletMode.EDIT.toString(),
                 getVaadinPortletRootElement().$("*").id("request-mode-info")
                         .getText());
 
         setPortletModeInPortal(PortletMode.HELP);
         waitUntil(driver -> PortletMode.HELP.toString()
-                .equals(getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
+                .equals(getLabelContent(LiferayEventHandlerContent.MODE_LABEL_ID)));
         Assert.assertEquals(PortletMode.HELP.toString(),
                 getVaadinPortletRootElement().$("*").id("request-mode-info")
                         .getText());
 
         setPortletModeInPortal(PortletMode.VIEW);
         waitUntil(driver -> PortletMode.VIEW.toString()
-                .equals(getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
+                .equals(getLabelContent(LiferayEventHandlerContent.MODE_LABEL_ID)));
         Assert.assertEquals(PortletMode.VIEW.toString(),
                 getVaadinPortletRootElement().$("*").id("request-mode-info")
                         .getText());
@@ -82,7 +78,7 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
         setWindowStateInPortal(WindowState.MAXIMIZED);
         waitUntil(driver -> WindowState.MAXIMIZED.toString()
                 .equals(getLabelContent(
-                        EventHandlerContent.WINDOW_STATE_LABEL_ID)));
+                        LiferayEventHandlerContent.WINDOW_STATE_LABEL_ID)));
         Assert.assertEquals(WindowState.MAXIMIZED.toString(),
                 getVaadinPortletRootElement().$("*").id("request-state-info")
                         .getText());
@@ -90,7 +86,7 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
         setWindowStateInPortal(WindowState.NORMAL);
         waitUntil(driver -> WindowState.NORMAL.toString()
                 .equals(getLabelContent(
-                        EventHandlerContent.WINDOW_STATE_LABEL_ID)));
+                        LiferayEventHandlerContent.WINDOW_STATE_LABEL_ID)));
         Assert.assertEquals(WindowState.NORMAL.toString(),
                 getVaadinPortletRootElement().$("*").id("request-state-info")
                         .getText());
@@ -104,13 +100,13 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
         setWindowStateInPortal(WindowState.MAXIMIZED);
         waitUntil(driver -> WindowState.MAXIMIZED.toString()
                 .equals(getLabelContent(
-                        EventHandlerContent.WINDOW_STATE_LABEL_ID)));
+                        LiferayEventHandlerContent.WINDOW_STATE_LABEL_ID)));
 
         driver.navigate().refresh();
 
         waitUntil(driver -> WindowState.MAXIMIZED.toString()
                 .equals(getLabelContent(
-                        EventHandlerContent.WINDOW_STATE_LABEL_ID)));
+                        LiferayEventHandlerContent.WINDOW_STATE_LABEL_ID)));
     }
 
     @Test
@@ -127,18 +123,23 @@ public class EventHandlerIT extends AbstractPlutoPortalTest {
         driver.switchTo().window(secondTab);
         waitUntil(driver -> WindowState.MAXIMIZED.toString()
                 .equals(getLabelContent(
-                        EventHandlerContent.WINDOW_STATE_LABEL_ID)));
+                        LiferayEventHandlerContent.WINDOW_STATE_LABEL_ID)));
         waitUntil(driver -> PortletMode.EDIT.toString()
-                .equals(getLabelContent(EventHandlerContent.MODE_LABEL_ID)));
+                .equals(getLabelContent(LiferayEventHandlerContent.MODE_LABEL_ID)));
 
         driver.switchTo().window(firstTab);
         waitUntil(driver -> !$(TestBenchElement.class).attribute("id",
-                EventHandlerContent.WINDOW_STATE_LABEL_ID).exists());
+                LiferayEventHandlerContent.WINDOW_STATE_LABEL_ID).exists());
         waitUntil(driver -> !$(TestBenchElement.class).attribute("id",
-                EventHandlerContent.MODE_LABEL_ID).exists());
+                LiferayEventHandlerContent.MODE_LABEL_ID).exists());
     }
 
     protected String getLabelContent(String id) {
         return getVaadinPortletRootElement().$("*").id(id).getText();
+    }
+
+    @Override
+    protected String getFriendlyUrl() {
+        return "test/eventhandler";
     }
 }

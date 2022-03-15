@@ -6,7 +6,7 @@ import org.junit.Test;
 import com.vaadin.flow.portal.liferay.AbstractLiferayPortalTest;
 import com.vaadin.testbench.TestBenchElement;
 
-public class ErrorHandlingIT extends AbstractLiferayPortalTest {
+public class LiferayErrorHandlingIT extends AbstractLiferayPortalTest {
 
     @Test
     public void exceptionIsShownInsideOfTheThrowingPortlet() {

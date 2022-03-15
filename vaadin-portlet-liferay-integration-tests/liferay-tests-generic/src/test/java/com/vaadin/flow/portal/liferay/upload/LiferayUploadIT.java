@@ -29,13 +29,9 @@ import org.openqa.selenium.remote.RemoteWebElement;
 
 import com.vaadin.flow.component.html.testbench.LabelElement;
 import com.vaadin.flow.component.upload.testbench.UploadElement;
-import com.vaadin.flow.portal.AbstractPlutoPortalTest;
+import com.vaadin.flow.portal.liferay.AbstractLiferayPortalTest;
 
-public class UploadIT extends AbstractPlutoPortalTest {
-
-    public UploadIT() {
-        super("tests-generic", "upload");
-    }
+public class LiferayUploadIT extends AbstractLiferayPortalTest {
 
     @Test
     public void fileUploaded_fileSizeIsRendered() throws Exception {
@@ -50,7 +46,7 @@ public class UploadIT extends AbstractPlutoPortalTest {
 
         // check that label indicates size of file
         LabelElement label = getVaadinPortletRootElement()
-                .$(LabelElement.class).id(UploadPortletContent.UPLOAD_LABEL_ID);
+                .$(LabelElement.class).id(LiferayUploadPortletContent.UPLOAD_LABEL_ID);
         Assert.assertEquals(Long.toString(file.length()), label.getText());
     }
 
@@ -79,5 +75,10 @@ public class UploadIT extends AbstractPlutoPortalTest {
                     "Expected argument of type RemoteWebElement, received "
                             + element.getClass().getName());
         }
+    }
+
+    @Override
+    protected String getFriendlyUrl() {
+        return "test/upload";
     }
 }

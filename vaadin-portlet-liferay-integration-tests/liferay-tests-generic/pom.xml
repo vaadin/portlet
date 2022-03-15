@@ -164,7 +164,7 @@
                                 -Xnoagent
                                 -Djava.compiler=NONE
                                 -Dvaadin.heartbeatInterval=15
-                                -Dvaadin.portlet.static.resources.mapping=/o/vaadin-portlet-static
+                                -Dvaadin.portlet.static.resources.mapping=/o/vaadin-portlet-static/
                             </cargo.start.jvmargs>
                         </properties>
 

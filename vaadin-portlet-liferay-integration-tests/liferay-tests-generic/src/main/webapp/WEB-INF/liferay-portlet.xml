@@ -20,7 +20,7 @@
         <instanceable>true</instanceable>
     </portlet>
     <portlet>
-        <portlet-name>minimized-state-render</portlet-name>
+        <portlet-name>minimizedstaterender</portlet-name>
         <instanceable>true</instanceable>
     </portlet>
     <portlet>

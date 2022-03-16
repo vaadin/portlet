@@ -15,13 +15,10 @@
  */
 package com.vaadin.flow.portal.liferay.rendermodes;
 
-import java.util.Locale;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
 
-import com.vaadin.flow.component.html.testbench.SelectElement;
 import com.vaadin.flow.portal.liferay.AbstractLiferayPortalTest;
 import com.vaadin.testbench.TestBenchElement;
 
@@ -46,7 +43,7 @@ public class LiferayRenderIT extends AbstractLiferayPortalTest {
 
         Assert.assertEquals(LiferayRenderView.STATE_NORMALIZE, stateChange.getText());
         Assert.assertEquals(LiferayRenderView.MODE_EDIT, modeChange.getText());
-        Assert.assertEquals("VIEW", getWindowMode());
+        Assert.assertEquals("VIEW", getWindowStateInPortal());
         Assert.assertFalse(isNormalWindowState());
 
         modeChange.click();
@@ -58,7 +55,7 @@ public class LiferayRenderIT extends AbstractLiferayPortalTest {
 
         Assert.assertEquals(LiferayRenderView.STATE_NORMALIZE, stateChange.getText());
         Assert.assertEquals(LiferayRenderView.MODE_VIEW, modeChange.getText());
-        Assert.assertEquals("EDIT", getWindowMode());
+        Assert.assertEquals("EDIT", getWindowStateInPortal());
         Assert.assertFalse(isNormalWindowState());
 
         stateChange.click();
@@ -70,14 +67,8 @@ public class LiferayRenderIT extends AbstractLiferayPortalTest {
 
         Assert.assertEquals(LiferayRenderView.STATE_MAXIMIZE, stateChange.getText());
         Assert.assertEquals(LiferayRenderView.MODE_VIEW, modeChange.getText());
-        Assert.assertEquals("EDIT", getWindowMode());
+        Assert.assertEquals("EDIT", getWindowStateInPortal());
         Assert.assertTrue(isNormalWindowState());
-    }
-
-    private String getWindowMode() {
-        SelectElement modeSelector = $(TestBenchElement.class).attribute("name",
-                "modeSelectionForm").first().$(SelectElement.class).first();
-        return modeSelector.getSelectedText().toUpperCase(Locale.ENGLISH);
     }
 
     private boolean isNormalWindowState() {

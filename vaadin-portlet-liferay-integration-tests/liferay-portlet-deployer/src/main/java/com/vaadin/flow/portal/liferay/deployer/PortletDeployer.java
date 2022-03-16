@@ -78,7 +78,7 @@ public class PortletDeployer extends GenericPortlet {
         portletInfo.put("upload_WAR_liferaytestsgeneric", upload);
         portletInfo.put("eventhandler_WAR_liferaytestsgeneric", eventHandler);
         portletInfo.put("render_WAR_liferaytestsgeneric", renderer);
-        portletInfo.put("minimized-state-render_WAR_liferaytestsgeneric", minimizedStateRenderer);
+        portletInfo.put("minimizedstaterender_WAR_liferaytestsgeneric", minimizedStateRenderer);
         portletInfo.put("errorhandling_WAR_liferaytestsgeneric", errorHandling);
         portletInfo.put("streamresource_WAR_liferaytestsgeneric", streamResource);
     }

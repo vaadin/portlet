@@ -105,8 +105,8 @@
     </portlet>
 
     <portlet>
-        <portlet-name>minimized-state-render</portlet-name>
-        <display-name>Flow Portlet with Minimizeed state rendering</display-name>
+        <portlet-name>minimizedstaterender</portlet-name>
+        <display-name>Flow Portlet with Minimized state rendering</display-name>
         <portlet-class>com.vaadin.flow.portal.liferay.rendermodes.LiferayMinimizedStateRenderPortlet</portlet-class>
         <expiration-cache>0</expiration-cache>
         <supports>

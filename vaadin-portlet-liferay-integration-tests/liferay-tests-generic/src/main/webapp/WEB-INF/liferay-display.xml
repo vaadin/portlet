@@ -7,7 +7,7 @@
         <portlet id="upload" />
         <portlet id="eventhandler" />
         <portlet id="render" />
-        <portlet id="minimized-state-render" />
+        <portlet id="minimizedstaterender" />
         <portlet id="errorhandling" />
         <portlet id="streamresource" />
         <!-- Remember to add a new portlet to PortletDeployer -->

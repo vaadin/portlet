@@ -24,11 +24,6 @@
             <artifactId>vaadin-portlet</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-portlet-cdi</artifactId>
-        </dependency>
-
         <!-- Test dependency from components -->
         <dependency>
             <groupId>com.vaadin</groupId>

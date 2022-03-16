@@ -19,8 +19,6 @@
         </project.reporting.outputEncoding>
         <failOnMissingWebXml>false</failOnMissingWebXml>
         <javax.validation.version>2.0.0.Final</javax.validation.version>
-        <vaadin.version>14.8.1</vaadin.version>
-        <vaadin-portlet.version>1.0.0.beta4</vaadin-portlet.version>
         <vaadin.productionMode>true</vaadin.productionMode>
     </properties>
 
@@ -51,48 +49,8 @@
     <dependencies>
         <dependency>
             <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-bom</artifactId>
-            <version>${vaadin.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <!-- Replace artifactId with vaadin-core to use only free components -->
-            <artifactId>vaadin</artifactId>
-            <version>${vaadin.version}</version>
-            <exclusions>
-                <!-- Webjars are only needed when running in Vaadin 13 compatibility mode -->
-                <exclusion>
-                    <groupId>com.vaadin.webjar</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bowergithub.insites</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bowergithub.polymer</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bowergithub.polymerelements</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bowergithub.vaadin</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.webjars.bowergithub.webcomponents</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
             <artifactId>vaadin-portlet</artifactId>
-            <version>${vaadin-portlet.version}</version>
+            <version>${project.version}</version>
             <!-- Temporal solution for vaadin-porlet-1.0.0.beta4, due to CI issue it uses snapshot dependencies -->
             <exclusions>
                 <exclusion>

@@ -25,7 +25,7 @@
         <vaadin.productionMode>true</vaadin.productionMode>
 
         <failOnMissingWebXml>false</failOnMissingWebXml>
-        <component.version>14.8-SNAPSHOT</component.version>
+        <component.version>${vaadin.version}</component.version>
     </properties>
 
     <modules>

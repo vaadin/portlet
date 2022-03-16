@@ -45,6 +45,12 @@ public class LiferayUploadIT extends AbstractLiferayPortalTest {
         input.sendKeys(file.getAbsolutePath());
 
         // check that label indicates size of file
+        waitUntil(driver -> {
+            LabelElement label = getVaadinPortletRootElement()
+                    .$(LabelElement.class).id(LiferayUploadPortletContent.UPLOAD_LABEL_ID);
+            return label != null && !"".equals(label.getText());
+        });
+
         LabelElement label = getVaadinPortletRootElement()
                 .$(LabelElement.class).id(LiferayUploadPortletContent.UPLOAD_LABEL_ID);
         Assert.assertEquals(Long.toString(file.length()), label.getText());

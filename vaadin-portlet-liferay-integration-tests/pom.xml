@@ -31,7 +31,7 @@
         <vaadin.productionMode>true</vaadin.productionMode>
 
         <failOnMissingWebXml>false</failOnMissingWebXml>
-        <component.version>14.7-SNAPSHOT</component.version>
+        <component.version>${vaadin.version}</component.version>
     </properties>
 
     <dependencyManagement>
@@ -39,12 +39,6 @@
             <dependency>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-portlet</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.vaadin</groupId>
-                <artifactId>vaadin-portlet-cdi</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -157,7 +151,7 @@
                             </goals>
                             <configuration>
                                 <warName>vaadin-portlet-static</warName>
-                                <packagingIncludes>WEB-INF/lib/flow-client*.jar,VAADIN/</packagingIncludes>
+                                <packagingIncludes>WEB-INF/lib/flow-client*.jar,WEB-INF/lib/vaadin-portlet*.jar,VAADIN/</packagingIncludes>
 
                                 <webResources>
                                     <resource>
@@ -272,27 +266,8 @@
                                     </goals>
                                     <configuration>
                                         <tasks>
-<!--                                            <if>-->
-<!--                                                <available file="${project.build.directory}/liferay.tar.gz"/>-->
-<!--                                                <then>-->
-<!--                                                    <echo>Liferay bundle already downloaded</echo>-->
-<!--                                                </then>-->
-<!--                                                <else>-->
-<!--                                                    <get src="https://github.com/liferay/liferay-portal/releases/download/${liferay.version}/liferay-ce-portal-tomcat-${liferay.version}-20211221192828235.tar.gz"-->
-<!--                                                            dest="${project.build.directory}/liferay.tar.gz"-->
-<!--                                                            verbose="false" usetimestamp="true"/>-->
-<!--                                                </else>-->
-<!--                                            </if>-->
-<!--                                            <if>-->
-<!--                                                <available-->
-<!--                                                        file="${project.build.directory}/liferay-ce-portal-${liferay.version}/"/>-->
-<!--                                                <then>-->
-<!--                                                    <echo>Liferay bundle is already unpacked</echo>-->
-<!--                                                </then>-->
-<!--                                                <else>-->
-<!--                                                    <untar src="${project.build.directory}/liferay.tar.gz" compression="gzip" dest="${project.build.directory}"/>-->
-<!--                                                </else>-->
-<!--                                            </if>-->
+                                            <!-- Uncomment this tag to enable
+                                             automatic download-->
 <!--                                            <get src="https://github.com/liferay/liferay-portal/releases/download/${liferay.version}/liferay-ce-portal-tomcat-${liferay.version}-20211221192828235.tar.gz"-->
 <!--                                                 dest="${project.build.directory}/liferay.tar.gz"-->
 <!--                                                 verbose="false" usetimestamp="true"/>-->

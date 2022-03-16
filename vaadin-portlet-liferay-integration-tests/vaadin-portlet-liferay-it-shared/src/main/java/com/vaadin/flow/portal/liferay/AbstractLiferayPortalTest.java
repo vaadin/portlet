@@ -17,9 +17,9 @@ package com.vaadin.flow.portal.liferay;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,8 +28,6 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-import com.vaadin.flow.component.html.testbench.AnchorElement;
-import com.vaadin.flow.component.html.testbench.SelectElement;
 import com.vaadin.testbench.ScreenshotOnFailureRule;
 import com.vaadin.testbench.TestBench;
 import com.vaadin.testbench.TestBenchElement;
@@ -64,13 +62,9 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
     private static final String PORTAL_ROUTE = "en/web/guest/";
     private static final String PORTAL_LOGIN = "en/c/portal/login";
 
-//    private static final String PORTLET_ID_PARAMETER_KEY = "p_p_id";
-//    private static final String PORTLET_LIFECYCLE_PARAMETER_KEY =
-//            "p_p_lifecycle";
-    private static final String PORTLET_STATE_PARAMETER_KEY =
-            "p_p_state";
-    private static final String PORTLET_MODE_PARAMETER_KEY =
-            "p_p_mode";
+    private static final String PORTLET_ID_PARAMETER_KEY = "p_p_id";
+    private static final String PORTLET_STATE_PARAMETER_KEY = "p_p_state";
+    private static final String PORTLET_MODE_PARAMETER_KEY = "p_p_mode";
 
     private static final String LOGIN_FORM_USER_LOGIN =
             "_com_liferay_login_web_portlet_LoginPortlet_login";
@@ -166,23 +160,35 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
      * Set the mode of the first portlet on page via Liferay's header dropdown.
      */
     protected void setPortletModeInPortal(PortletMode portletMode) {
-        setPortletQueryParameter(PORTLET_MODE_PARAMETER_KEY,
+        setStateInPortal(PORTLET_MODE_PARAMETER_KEY,
                 portletMode.toString().toLowerCase());
+    }
 
-//        AnchorElement dropDown = $(AnchorElement.class)
-//                .attribute("title", "Options").first();
-//        dropDown.click();
-//        WebElement preferences =
-//                findElement(By.xpath("//a[@role='menuitem' and span='Preferences']"));
-//        preferences.click();//button[@type='submit' and span='Sign In']//button[@type='submit' and span='Sign In']
+    private void setStateInPortal(String key, String value) {
+        String currentUrl = getDriver().getCurrentUrl();
+        // Exclude '_' characters around portlet id
+        String trimmedPortletId = portletId.substring(1,
+                portletId.length() - 1);
+        String url = appendPortletQueryParameter(currentUrl,
+                PORTLET_ID_PARAMETER_KEY, trimmedPortletId);
+        String newUrl = appendPortletQueryParameter(url, key, value);
+        getDriver().get(newUrl);
     }
 
     /**
      * Set the mode of the first portlet on page via Pluto's header dropdown.
      */
     protected void setWindowStateInPortal(WindowState windowState) {
-        setPortletQueryParameter(PORTLET_STATE_PARAMETER_KEY,
-                windowState.toString());
+        setStateInPortal(PORTLET_STATE_PARAMETER_KEY,
+                windowState.toString().toLowerCase());
+    }
+
+    protected String getWindowStateInPortal() {
+        return getPortletQueryParameter(PORTLET_STATE_PARAMETER_KEY);
+    }
+
+    protected String getPortletModeInPortal() {
+        return getPortletQueryParameter(PORTLET_MODE_PARAMETER_KEY);
     }
 
     /**
@@ -232,13 +238,31 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
         return isUsingHub() ? System.getenv("HOSTNAME") : "localhost";
     }
 
-    private void setPortletQueryParameter(String key, String value) {
-        String currentUrl = getDriver().getCurrentUrl();
+    private String appendPortletQueryParameter(String url, String key, String value) {
         String portletModeQueryParamRegexp = "\\b" + key + "=.*?(&|$)";
-        String newPortletModeQueryParam = key + "=" + value + "$1";
-        String newUrl = currentUrl.replaceFirst(portletModeQueryParamRegexp,
-                newPortletModeQueryParam);
-        getDriver().get(newUrl);
+        String newPortletModeQueryParam = key + "=" + value;
+        String newUrl = url.replaceFirst(portletModeQueryParamRegexp,
+                newPortletModeQueryParam + "$1");
+        if (newUrl.equals(url)) {
+            if (newUrl.contains("?")) {
+                newUrl = newUrl + "&" + newPortletModeQueryParam;
+            } else {
+                newUrl = newUrl + "?" + newPortletModeQueryParam;
+            }
+        }
+        return newUrl;
+    }
+
+    private String getPortletQueryParameter(String key) {
+        String currentUrl = getDriver().getCurrentUrl();
+        String portletModeQueryParamRegexp = key + "=(.*?)(&|$)";
+        Pattern compile = Pattern.compile(portletModeQueryParamRegexp);
+        Matcher matcher = compile.matcher(currentUrl);
+        if (matcher.find()) {
+            return matcher.group(1).toUpperCase();
+        } else {
+            return "VIEW";
+        }
     }
 
 }

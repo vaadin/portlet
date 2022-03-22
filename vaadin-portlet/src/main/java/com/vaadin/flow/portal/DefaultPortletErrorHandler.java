@@ -13,6 +13,8 @@ import com.vaadin.flow.shared.JsonConstants;
  * client-side, displaying the errors on the portlet which caused the exception.
  */
 public class DefaultPortletErrorHandler implements ErrorHandler {
+    static final String ERROR_ATTRIBUTE_NAME =
+            DefaultPortletErrorHandler.class.getName() + ".error.thrown";
     private static final Logger logger = LoggerFactory
             .getLogger(DefaultPortletErrorHandler.class);
 
@@ -36,6 +38,11 @@ public class DefaultPortletErrorHandler implements ErrorHandler {
                                 event.getThrowable().getMessage(),
                                 getCauseString(event.getThrowable()), null,
                                 getQuerySelector(response)));
+                // Liferay: tells UIDL handler not to write the sync UIDL,
+                // because it corrupts RPC response in case of exception
+                // see https://github.com/vaadin/portlet/issues/213
+                VaadinPortletRequest.getCurrentPortletRequest().setAttribute(
+                        ERROR_ATTRIBUTE_NAME, Boolean.TRUE);
             } catch (Exception e) {
                 logger.error("Failed to send critical notification!", e);
             }
@@ -47,7 +54,7 @@ public class DefaultPortletErrorHandler implements ErrorHandler {
      * error box should be added. If the element found by the
      * {@code querySelector} has a shadow root, the error will be added into the
      * shadow instead.
-     * 
+     *
      * @param response
      *            the portlet response used to write the error to the
      *            client-side

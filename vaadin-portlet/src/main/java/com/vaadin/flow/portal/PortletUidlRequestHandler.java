@@ -96,27 +96,7 @@ class PortletUidlRequestHandler extends UidlRequestHandler {
             if (noError()) {
                 return delegate.getOutputStream();
             } else {
-                return new OutputStream() {
-                    private volatile boolean closed;
-
-                    private void ensureOpen() throws IOException {
-                        if (this.closed) {
-                            throw new IOException("Stream closed");
-                        }
-                    }
-
-                    public void write(int b) throws IOException {
-                        this.ensureOpen();
-                    }
-
-                    public void write(byte[] b, int off, int len) throws IOException {
-                        this.ensureOpen();
-                    }
-
-                    public void close() {
-                        this.closed = true;
-                    }
-                };
+                return new OutputStreamWrapper();
             }
         }
 
@@ -160,6 +140,32 @@ class PortletUidlRequestHandler extends UidlRequestHandler {
         private boolean noError() {
             return request.getPortletRequest().getAttribute(
                     DefaultPortletErrorHandler.ERROR_ATTRIBUTE_NAME) == null;
+        }
+    }
+
+    /**
+     * Null output stream implementation.
+     */
+    private static class OutputStreamWrapper extends OutputStream
+            implements Serializable {
+        private volatile boolean closed;
+
+        private void ensureOpen() throws IOException {
+            if (this.closed) {
+                throw new IOException("Stream closed");
+            }
+        }
+
+        public void write(int b) throws IOException {
+            this.ensureOpen();
+        }
+
+        public void write(byte[] b, int off, int len) throws IOException {
+            this.ensureOpen();
+        }
+
+        public void close() {
+            this.closed = true;
         }
     }
 }

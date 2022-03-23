@@ -50,6 +50,7 @@ import com.vaadin.flow.server.WebBrowser;
 import com.vaadin.flow.server.WrappedSession;
 import com.vaadin.flow.server.communication.HeartbeatHandler;
 import com.vaadin.flow.server.communication.StreamRequestHandler;
+import com.vaadin.flow.server.communication.UidlRequestHandler;
 import com.vaadin.flow.server.startup.PortletApplicationRouteRegistryUtil;
 import com.vaadin.flow.shared.Registration;
 import com.vaadin.flow.theme.AbstractTheme;
@@ -117,6 +118,9 @@ public class VaadinPortletService extends VaadinService {
         handlers.add(new PortletBootstrapHandler());
         handlers.add(new PortletWebComponentProvider());
         handlers.add(new PortletWebComponentBootstrapHandler());
+
+        handlers.removeIf(
+                requestHandler -> requestHandler instanceof UidlRequestHandler);
         handlers.add(new PortletUidlRequestHandler());
 
         handlers.removeIf(

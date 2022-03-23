@@ -54,8 +54,7 @@ class PortletUidlRequestHandler extends UidlRequestHandler {
      * Specific to Liferay.
      * See https://github.com/vaadin/portlet/issues/213
      */
-    private static class VaadinResponseWrapper implements VaadinResponse,
-            Serializable {
+    private static class VaadinResponseWrapper implements VaadinResponse {
 
         private final VaadinPortletRequest request;
         private final VaadinPortletResponse delegate;

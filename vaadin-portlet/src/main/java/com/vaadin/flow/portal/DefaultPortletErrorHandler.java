@@ -38,8 +38,8 @@ public class DefaultPortletErrorHandler implements ErrorHandler {
                                 event.getThrowable().getMessage(),
                                 getCauseString(event.getThrowable()), null,
                                 getQuerySelector(response)));
-                // Liferay: tells UIDL handler not to write the sync UIDL,
-                // because it corrupts RPC response in case of exception
+                // Liferay related: tells UIDL handler not to write the sync
+                // UIDL, because it corrupts RPC response in case of exception
                 // see https://github.com/vaadin/portlet/issues/213
                 VaadinPortletRequest.getCurrentPortletRequest().setAttribute(
                         ERROR_ATTRIBUTE_NAME, Boolean.TRUE);

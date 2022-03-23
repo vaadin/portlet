@@ -19,6 +19,7 @@ import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinResponse;
@@ -53,7 +54,8 @@ class PortletUidlRequestHandler extends UidlRequestHandler {
      * Specific to Liferay.
      * See https://github.com/vaadin/portlet/issues/213
      */
-    private static class VaadinResponseWrapper implements VaadinResponse {
+    private static class VaadinResponseWrapper implements VaadinResponse,
+            Serializable {
 
         private final VaadinPortletRequest request;
         private final VaadinPortletResponse delegate;

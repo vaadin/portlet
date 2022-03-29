@@ -126,6 +126,14 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
         submitButton.click();
     }
 
+    protected String addVaadinPortlet(String layout, String portletId) {
+        return null;
+    }
+
+    protected String addPortlet(String layout, String portletId) {
+        return null;
+    }
+
     protected String openInAnotherWindow() {
         final String firstWin = getDriver().getWindowHandle();
         ((JavascriptExecutor) getDriver()).executeScript("window.open('"

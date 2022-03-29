@@ -7,6 +7,7 @@
         <module>liferay-portlet-deployer</module>
         <module>vaadin-portlet-liferay-it-shared</module>
         <module>liferay-tests-generic</module>
+        <module>liferay-portlet30</module>
     </modules>
     <parent>
         <groupId>com.vaadin</groupId>

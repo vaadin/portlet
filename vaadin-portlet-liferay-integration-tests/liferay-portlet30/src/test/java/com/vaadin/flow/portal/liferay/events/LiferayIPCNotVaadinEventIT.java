@@ -27,21 +27,18 @@ public class LiferayIPCNotVaadinEventIT extends AbstractLiferayPortalTest {
 
     @Test
     public void sendEventFromNonVaadinToVaadin() {
-        addPortlet("layout", "PlainPortlet");
-
         $(NativeButtonElement.class).attribute("id", "send-to-vaadin")
                 .waitForFirst().click();
 
-        WebElement event = getVaadinPortletRootElement().$("*")
-                .id("response-from-plain-portlet");
+        WebElement event = getVaadinPortletRootElementByStaticPart("vaadinipcportlet_WAR_liferayportlet30")
+                .$("*").attribute("id", "response-from-plain-portlet").waitForFirst();
         Assert.assertEquals("foo", event.getText());
     }
 
     @Test
-    public void sendEventFromVaadinToNonVaadin() throws InterruptedException {
-        addPortlet("layout", "PlainPortlet");
+    public void sendEventFromVaadinToNonVaadin() {
 
-        getVaadinPortletRootElement().$("*")
+        getVaadinPortletRootElementByStaticPart("vaadinipcportlet_WAR_liferayportlet30").$("*")
                 .attribute("id", "send-to-plain").waitForFirst().click();
 
         WebElement event = findElement(By.id("response-from-vaadin"));

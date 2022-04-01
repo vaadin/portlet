@@ -29,82 +29,105 @@ public class LiferayIPCEventIT extends AbstractLiferayPortalTest {
 
     @Test
     public void sendEventFromSourceToTarget() {
-        String eventSource = addVaadinPortlet("layout", "event-source");
-        String otherEventTarget = addVaadinPortlet("layout",
-                "other-event-target");
+        TestBenchElement eventSourcePortlet = getEventSourcePortlet();
 
-        TestBenchElement sendEvent = getVaadinPortletRootElement(eventSource).$(
+        TestBenchElement sendEvent = eventSourcePortlet.$(
                 "*").attribute("id", "send-event").waitForFirst();
 
         sendEvent.click();
 
-        waitUntil(driver -> getVaadinPortletRootElement().$("*")
+        TestBenchElement eventTargetPortlet = getEventTargetPortlet();
+        TestBenchElement otherEventTargetPortlet = getOtherEventTargetPortlet();
+
+        waitUntil(driver -> eventTargetPortlet.$("*")
                 .attributeContains("class", "event").exists());
 
-        WebElement event = getVaadinPortletRootElement().$("*")
+        WebElement event = eventTargetPortlet.$("*")
                 .attributeContains("class", "event").first();
         Assert.assertEquals("click[left]", event.getText());
 
-        Assert.assertFalse(getVaadinPortletRootElement(otherEventTarget).$("*")
+        Assert.assertFalse(otherEventTargetPortlet.$("*")
                 .attributeContains("class", "other-event").exists());
 
         // add an event listener programmatically
-        getVaadinPortletRootElement(otherEventTarget).$("*").id("start-listen")
-                .click();
+        otherEventTargetPortlet.$("*").id("start-listen").click();
 
         sendEvent.click();
 
+        TestBenchElement eventTargetPortlet2 = getEventTargetPortlet();
+
         waitUntil(driver ->
-                getVaadinPortletRootElement().$("*").attributeContains("class", "event").all()
-                        .size() == 2);
+                eventTargetPortlet2.$("*").attributeContains("class",
+                        "event").all().size() == 2);
+
+        TestBenchElement otherEventTargetPortlet2 =
+                getOtherEventTargetPortlet();
 
         // event should be received by a programmatic listener
-        Assert.assertTrue(getVaadinPortletRootElement(otherEventTarget).$("*")
+        Assert.assertTrue(otherEventTargetPortlet2.$("*")
                 .attributeContains("class", "other-event").exists());
 
         // once event is received the programmatic listener should remove
         // itself, so no more events
         sendEvent.click();
 
-        waitUntil(driver -> getVaadinPortletRootElement().$("*")
+        TestBenchElement eventTargetPortlet3 = getEventTargetPortlet();
+        TestBenchElement otherEventTargetPortlet3 =
+                getOtherEventTargetPortlet();
+
+        waitUntil(driver -> eventTargetPortlet3.$("*")
                 .attributeContains("class", "event").all().size() == 3);
         Assert.assertEquals(1,
-                getVaadinPortletRootElement(otherEventTarget).$("*")
+                otherEventTargetPortlet3.$("*")
                         .attributeContains("class", "other-event").all()
                         .size());
     }
 
     @Test
-    public void sendEventFromSourceToTarget_portletsOnDifferentTabsReceiveEventsIndependently()
-            throws InterruptedException {
-        String eventSource = addVaadinPortlet("layout", "event-source");
-
+    public void sendEventFromSourceToTarget_portletsOnDifferentTabsReceiveEventsIndependently() {
         String firstTab = driver.getWindowHandle();
         String secondTab = openInAnotherWindow();
 
         driver.switchTo().window(firstTab);
-        getVaadinPortletRootElement(eventSource).$(NativeButtonElement.class)
+        getEventSourcePortlet().$(NativeButtonElement.class)
                 .attribute("id", "send-event").waitForFirst().click();
 
         driver.switchTo().window(secondTab);
-        getVaadinPortletRootElement(eventSource).$(NativeButtonElement.class)
+        getEventSourcePortlet().$(NativeButtonElement.class)
                 .attribute("id", "send-event").waitForFirst().click();
 
         driver.switchTo().window(firstTab);
-        waitUntil(driver -> getVaadinPortletRootElement().$("*")
+        TestBenchElement eventTargetPortlet = getEventTargetPortlet();
+        waitUntil(driver -> eventTargetPortlet.$("*")
                 .attributeContains("class", "event").exists());
-        List<TestBenchElement> events1 = getVaadinPortletRootElement().$("*")
+        List<TestBenchElement> events1 = eventTargetPortlet.$("*")
                 .attributeContains("class", "event").all();
         Assert.assertEquals(1, events1.size());
         Assert.assertEquals("click[left]", events1.get(0).getText());
 
         driver.switchTo().window(secondTab);
-        waitUntil(driver -> getVaadinPortletRootElement().$("*")
+        TestBenchElement eventTargetPortlet2 = getEventTargetPortlet();
+        waitUntil(driver -> eventTargetPortlet2.$("*")
                 .attributeContains("class", "event").exists());
-        List<TestBenchElement> events2 = getVaadinPortletRootElement().$("*")
+        List<TestBenchElement> events2 = eventTargetPortlet2.$("*")
                 .attributeContains("class", "event").all();
         Assert.assertEquals(1, events2.size());
         Assert.assertEquals("click[left]", events2.get(0).getText());
+    }
+
+    private TestBenchElement getOtherEventTargetPortlet() {
+        return getVaadinPortletRootElementByStaticPart(
+                "othereventtarget_WAR_liferayportlet30");
+    }
+
+    private TestBenchElement getEventTargetPortlet() {
+        return getVaadinPortletRootElementByStaticPart(
+                "eventtarget_WAR_liferayportlet30");
+    }
+
+    private TestBenchElement getEventSourcePortlet() {
+        return getVaadinPortletRootElementByStaticPart(
+                "eventsource_WAR_liferayportlet30");
     }
 
     @Override

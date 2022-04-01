@@ -14,6 +14,9 @@ public class PortletDeployer extends AbstractPortletDeployer {
         // remember to update the xml config files in
         // liferay-tests-generic/src/main/webapp/WEB-INF/
         // when adding a new test portlet
+
+        // Generic tests
+
         Collection<LayoutInfo> layouts = new LinkedList<>();
 
         LayoutInfo basicLayout = new LayoutInfo("BasicPortlet", "/test/basic");
@@ -38,6 +41,7 @@ public class PortletDeployer extends AbstractPortletDeployer {
         eventHandler.setId("eventhandler_WAR_liferaytestsgeneric");
         eventHandler.setPortletName("EventHandler");
         eventHandler.setPortletFriendlyUrl("/test/eventhandler");
+        eventLayout.addPortlet(eventHandler);
         layouts.add(eventLayout);
 
         LayoutInfo stateLayout = new LayoutInfo("MinimizedStateRenderer",
@@ -46,6 +50,7 @@ public class PortletDeployer extends AbstractPortletDeployer {
         minimizedStateRenderer.setId("minimizedstaterender_WAR_liferaytestsgeneric");
         minimizedStateRenderer.setPortletName("MinimizedStateRenderer");
         minimizedStateRenderer.setPortletFriendlyUrl("/test/minimized-state-render");
+        stateLayout.addPortlet(minimizedStateRenderer);
         layouts.add(stateLayout);
 
         LayoutInfo renderLayout = new LayoutInfo("Renderer",
@@ -54,6 +59,7 @@ public class PortletDeployer extends AbstractPortletDeployer {
         renderer.setId("render_WAR_liferaytestsgeneric");
         renderer.setPortletName("Renderer");
         renderer.setPortletFriendlyUrl("/test/renderer");
+        renderLayout.addPortlet(renderer);
         layouts.add(renderLayout);
 
         LayoutInfo streamLayout = new LayoutInfo("StreamResource",
@@ -62,6 +68,7 @@ public class PortletDeployer extends AbstractPortletDeployer {
         streamResource.setId("streamresource_WAR_liferaytestsgeneric");
         streamResource.setPortletName("StreamResource");
         streamResource.setPortletFriendlyUrl("/test/stream-resource");
+        streamLayout.addPortlet(streamResource);
         layouts.add(streamLayout);
 
         LayoutInfo uploadLayout = new LayoutInfo("Upload", "/test/upload");
@@ -69,7 +76,59 @@ public class PortletDeployer extends AbstractPortletDeployer {
         upload.setId("upload_WAR_liferaytestsgeneric");
         upload.setPortletName("Upload");
         upload.setPortletFriendlyUrl("/test/upload");
+        uploadLayout.addPortlet(upload);
         layouts.add(uploadLayout);
+
+
+        // Portlet 3.0:
+
+        LayoutInfo eventSourceTargetLayout = new LayoutInfo("Events",
+                "/test/ipcevent");
+        PortletInfo eventSource = new PortletInfo();
+        eventSource.setId("eventsource_WAR_liferayportlet30");
+        eventSource.setPortletName("Event Source");
+        eventSource.setPortletFriendlyUrl("/test/ipcevent");
+        eventSourceTargetLayout.addPortlet(eventSource);
+
+        PortletInfo eventTarget = new PortletInfo();
+        eventTarget.setId("eventtarget_WAR_liferayportlet30");
+        eventTarget.setPortletName("Event Target");
+        eventTarget.setPortletFriendlyUrl("/test/ipcevent");
+        eventSourceTargetLayout.addPortlet(eventTarget);
+
+        PortletInfo otherEventTarget = new PortletInfo();
+        otherEventTarget.setId("othereventtarget_WAR_liferayportlet30");
+        otherEventTarget.setPortletName("Other Event Target");
+        otherEventTarget.setPortletFriendlyUrl("/test/ipcevent");
+        eventSourceTargetLayout.addPortlet(otherEventTarget);
+
+        layouts.add(eventSourceTargetLayout);
+
+        LayoutInfo notVaadinEventLayout = new LayoutInfo("Not Vaadin Events",
+                "/test/ipceventnotvaadin");
+        PortletInfo vaadinIpcPortlet = new PortletInfo();
+        vaadinIpcPortlet.setId("vaadinipcportlet_WAR_liferayportlet30");
+        vaadinIpcPortlet.setPortletName("Vaadin IPC Portlet");
+        vaadinIpcPortlet.setPortletFriendlyUrl("/test/ipceventnotvaadin");
+        notVaadinEventLayout.addPortlet(vaadinIpcPortlet);
+
+        PortletInfo plainIpcPortlet = new PortletInfo();
+        plainIpcPortlet.setId("plainipcportlet_WAR_liferayportlet30");
+        plainIpcPortlet.setPortletName("Event Target");
+        plainIpcPortlet.setPortletFriendlyUrl("/test/ipceventnotvaadin");
+        notVaadinEventLayout.addPortlet(plainIpcPortlet);
+
+        layouts.add(notVaadinEventLayout);
+
+        LayoutInfo render30Layout = new LayoutInfo("Render 30",
+                "/test/hubrender");
+        PortletInfo render30Portlet = new PortletInfo();
+        render30Portlet.setId("renderportlet30_WAR_liferayportlet30");
+        render30Portlet.setPortletName("Render 30 Portlet");
+        render30Portlet.setPortletFriendlyUrl("/test/hubrender");
+        render30Layout.addPortlet(render30Portlet);
+
+        layouts.add(render30Layout);
 
         return layouts;
     }

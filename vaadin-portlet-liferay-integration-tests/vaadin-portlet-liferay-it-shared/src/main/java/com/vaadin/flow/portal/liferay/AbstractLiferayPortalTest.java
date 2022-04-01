@@ -17,7 +17,10 @@ package com.vaadin.flow.portal.liferay;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,21 +36,6 @@ import com.vaadin.testbench.TestBench;
 import com.vaadin.testbench.TestBenchElement;
 import com.vaadin.testbench.parallel.ParallelTest;
 
-/**
- * Base class for ITs
- * <p>
- * The tests use Chrome driver (see pom.xml for integration-tests profile) to
- * run integration tests on a headless Chrome. If a property {@code test.use
- * .hub} is set to true, {@code AbstractViewTest} will assume that the TestBench
- * test is running in a CI environment. In order to keep the this class light,
- * it makes certain assumptions about the CI environment (such as available
- * environment variables). It is not advisable to use this class as a base class
- * for you own TestBench tests.
- * <p>
- * To learn more about TestBench, visit <a href=
- * "https://vaadin.com/docs/v10/testbench/testbench-overview.html">Vaadin
- * TestBench</a>.
- */
 public abstract class AbstractLiferayPortalTest extends ParallelTest {
 
     /**
@@ -66,12 +54,18 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
     private static final String PORTLET_STATE_PARAMETER_KEY = "p_p_state";
     private static final String PORTLET_MODE_PARAMETER_KEY = "p_p_mode";
 
+    public static final String PORTLET_ID_PATTERN_STRING =
+            "^_(.*_WAR_.*)_INSTANCE_.*_$";
+    public static final Pattern PORTLET_ID_PATTERN = Pattern.compile(PORTLET_ID_PATTERN_STRING);
+
     private static final String LOGIN_FORM_USER_LOGIN =
             "_com_liferay_login_web_portlet_LoginPortlet_login";
     public static final String LOGIN_FORM_USER_PASSWORD =
             "_com_liferay_login_web_portlet_LoginPortlet_password";
 
     private String portletId = null;
+
+    private final Map<String, String> portletIdByStaticPart = new HashMap<>();
 
     @Rule
     public ScreenshotOnFailureRule rule = new ScreenshotOnFailureRule(this,
@@ -99,12 +93,22 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
 
         List<TestBenchElement> portlets = getVaadinPortletRootElements();
 
-        if (portlets.size() > 1) {
-            throw new AssertionError("Expected only one portlet per page");
+        if (portlets.size() == 1 && portletId == null) {
+            portletId = portlets.get(0).getAttribute(PORTLET_ID_ATTRIBUTE);
         }
 
-        if (portletId == null) {
-            portletId = portlets.get(0).getAttribute(PORTLET_ID_ATTRIBUTE);
+        if (portletIdByStaticPart.isEmpty()) {
+            portlets.forEach(portlet -> {
+                String portletId = portlet.getAttribute(PORTLET_ID_ATTRIBUTE);
+                Matcher matcher = PORTLET_ID_PATTERN.matcher(portletId);
+                if (matcher.matches()) {
+                    String staticPart = matcher.group(1);
+                    portletIdByStaticPart.put(staticPart, portletId);
+                } else {
+                    throw new IllegalStateException(
+                            "Found portlet with unrecognizable ID");
+                }
+            });
         }
     }
 
@@ -126,14 +130,6 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
         submitButton.click();
     }
 
-    protected String addVaadinPortlet(String layout, String portletId) {
-        return null;
-    }
-
-    protected String addPortlet(String layout, String portletId) {
-        return null;
-    }
-
     protected String openInAnotherWindow() {
         final String firstWin = getDriver().getWindowHandle();
         ((JavascriptExecutor) getDriver()).executeScript("window.open('"
@@ -150,6 +146,11 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
                 .all();
     }
 
+    protected TestBenchElement getVaadinPortletRootElementByStaticPart(
+            String staticIdPart) {
+        return getVaadinPortletRootElement(portletIdByStaticPart.get(staticIdPart));
+    }
+
     protected TestBenchElement getVaadinPortletRootElement(
             String id) {
         return $(TestBenchElement.class).hasAttribute(PORTLET_ID_ATTRIBUTE)
@@ -159,7 +160,8 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
 
     protected TestBenchElement getVaadinPortletRootElement() {
         if (portletId == null) {
-            throw new AssertionError("no Vaadin Portlet added");
+            throw new AssertionError(
+                    "no Vaadin Portlet added or page contains multiple portlets");
         }
         return getVaadinPortletRootElement(portletId);
     }
@@ -269,7 +271,7 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
         if (matcher.find()) {
             return matcher.group(1).toUpperCase();
         } else {
-            return "VIEW";
+            return key.equals(PORTLET_MODE_PARAMETER_KEY) ? "VIEW" : "NORMAL";
         }
     }
 

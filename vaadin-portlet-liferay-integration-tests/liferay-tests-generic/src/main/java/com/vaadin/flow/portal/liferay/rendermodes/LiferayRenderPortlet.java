@@ -21,7 +21,7 @@ import javax.portlet.annotations.PortletConfiguration;
 import com.vaadin.flow.portal.VaadinLiferayPortlet;
 
 @PortletConfiguration(
-        portletName = "LiferayMiniLiferayRenderPortletmizedStateRenderPortlet",
+        portletName = "LiferayRenderPortlet",
         dependencies =
         @Dependency(name = "PortletHub", scope = "javax.portlet", version = "3.0.0")
 )

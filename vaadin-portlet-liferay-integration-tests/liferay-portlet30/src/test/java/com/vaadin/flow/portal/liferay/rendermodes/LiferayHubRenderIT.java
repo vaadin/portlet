@@ -17,25 +17,25 @@ package com.vaadin.flow.portal.liferay.rendermodes;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
-import java.util.Locale;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import com.vaadin.flow.component.button.testbench.ButtonElement;
-import com.vaadin.flow.component.html.testbench.SelectElement;
 import com.vaadin.flow.portal.liferay.AbstractLiferayPortalTest;
 import com.vaadin.testbench.TestBenchElement;
 
+@Ignore("https://github.com/vaadin/portlet/issues/214 https://issues.liferay.com/browse/LPS-150560")
 public class LiferayHubRenderIT extends AbstractLiferayPortalTest {
 
     @Test
     public void changeModeAndState_modeAndStateAreKept() {
-        TestBenchElement stateChange = getVaadinPortletRootElement().$("*")
+        TestBenchElement renderPortlet = getPortlet();
+        TestBenchElement stateChange = renderPortlet.$("*")
                 .id(LiferayPortlet30RenderView.WINDOW_STATE_CHANGE);
-        TestBenchElement modeChange = getVaadinPortletRootElement().$("*")
+        TestBenchElement modeChange = renderPortlet.$("*")
                 .id(LiferayPortlet30RenderView.PORTLET_MODE_CHANGE);
 
         Assert.assertEquals(LiferayPortlet30RenderView.STATE_MAXIMIZE, stateChange.getText());
@@ -45,55 +45,65 @@ public class LiferayHubRenderIT extends AbstractLiferayPortalTest {
 
         waitForPageRefresh();
 
-        stateChange = getVaadinPortletRootElement().$("*")
+        renderPortlet = getPortlet();
+
+        stateChange = renderPortlet.$("*")
                 .id(LiferayPortlet30RenderView.WINDOW_STATE_CHANGE);
-        modeChange = getVaadinPortletRootElement().$("*")
+        modeChange = renderPortlet.$("*")
                 .id(LiferayPortlet30RenderView.PORTLET_MODE_CHANGE);
 
-        WebElement stateInfo = getVaadinPortletRootElement().$("*")
-                .id("state-info");
+        WebElement stateInfo = renderPortlet.$("*").id("state-info");
         Assert.assertEquals(WindowState.MAXIMIZED.toString(),
                 stateInfo.getText());
 
         Assert.assertEquals(LiferayPortlet30RenderView.STATE_NORMALIZE, stateChange.getText());
         Assert.assertEquals(LiferayPortlet30RenderView.MODE_EDIT, modeChange.getText());
-        Assert.assertEquals("VIEW", getWindowMode());
+        Assert.assertEquals("VIEW", getPortletModeInPortal());
         Assert.assertFalse(isNormalWindowState());
 
         modeChange.click();
 
         waitForPageRefresh();
 
-        stateChange = getVaadinPortletRootElement().$(ButtonElement.class)
+        renderPortlet = getPortlet();
+
+        stateChange = renderPortlet.$(ButtonElement.class)
                 .id(LiferayPortlet30RenderView.WINDOW_STATE_CHANGE);
-        modeChange = getVaadinPortletRootElement().$(ButtonElement.class)
+        modeChange = renderPortlet.$(ButtonElement.class)
                 .id(LiferayPortlet30RenderView.PORTLET_MODE_CHANGE);
 
-        WebElement modeInfo = getVaadinPortletRootElement().$("*")
+        WebElement modeInfo = renderPortlet.$("*")
                 .id("mode-info");
         Assert.assertEquals(PortletMode.EDIT.toString(), modeInfo.getText());
 
         Assert.assertEquals(LiferayPortlet30RenderView.STATE_NORMALIZE, stateChange.getText());
         Assert.assertEquals(LiferayPortlet30RenderView.MODE_VIEW, modeChange.getText());
-        Assert.assertEquals("EDIT", getWindowMode());
+        Assert.assertEquals("EDIT", getPortletModeInPortal());
         Assert.assertFalse(isNormalWindowState());
 
         stateChange.click();
 
         waitForPageRefresh();
 
-        stateChange = getVaadinPortletRootElement().$("*")
+        renderPortlet = getPortlet();
+
+        stateChange = renderPortlet.$("*")
                 .id(LiferayPortlet30RenderView.WINDOW_STATE_CHANGE);
-        modeChange = getVaadinPortletRootElement().$("*")
+        modeChange = renderPortlet.$("*")
                 .id(LiferayPortlet30RenderView.PORTLET_MODE_CHANGE);
 
-        stateInfo = getVaadinPortletRootElement().$("*").id("state-info");
+        stateInfo = renderPortlet.$("*").id("state-info");
         Assert.assertEquals(WindowState.NORMAL.toString(), stateInfo.getText());
 
         Assert.assertEquals(LiferayPortlet30RenderView.STATE_MAXIMIZE, stateChange.getText());
         Assert.assertEquals(LiferayPortlet30RenderView.MODE_VIEW, modeChange.getText());
-        Assert.assertEquals("EDIT", getWindowMode());
+        Assert.assertEquals("EDIT", getWindowStateInPortal());
         Assert.assertTrue(isNormalWindowState());
+    }
+
+    private TestBenchElement getPortlet() {
+        return getVaadinPortletRootElementByStaticPart(
+                "renderportlet30_WAR_liferayportlet30");
     }
 
     private void waitForPageRefresh() {
@@ -105,14 +115,8 @@ public class LiferayHubRenderIT extends AbstractLiferayPortalTest {
         }
     }
 
-    private String getWindowMode() {
-        SelectElement modeSelector = $(TestBenchElement.class).attribute("name",
-                "modeSelectionForm").first().$(SelectElement.class).first();
-        return modeSelector.getSelectedText().toUpperCase(Locale.ENGLISH);
-    }
-
     private boolean isNormalWindowState() {
-        return findElements(By.id("portlets-left-column")).size() > 0;
+        return "NORMAL".equals(getWindowStateInPortal());
     }
 
     @Override

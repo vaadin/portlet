@@ -17,10 +17,10 @@ package com.vaadin.flow.portal.liferay;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,6 +30,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.vaadin.testbench.ScreenshotOnFailureRule;
 import com.vaadin.testbench.TestBench;
@@ -54,14 +55,12 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
     private static final String PORTLET_STATE_PARAMETER_KEY = "p_p_state";
     private static final String PORTLET_MODE_PARAMETER_KEY = "p_p_mode";
 
-    public static final String PORTLET_ID_PATTERN_STRING =
-            "^_(.*_WAR_.*)_INSTANCE_.*_$";
-    public static final Pattern PORTLET_ID_PATTERN = Pattern.compile(PORTLET_ID_PATTERN_STRING);
+    public static final String PORTLET_ID_PATTERN_STRING = "^_(.*_WAR_.*)(_INSTANCE_.*)?_$";
+    public static final Pattern PORTLET_ID_PATTERN = Pattern
+            .compile(PORTLET_ID_PATTERN_STRING);
 
-    private static final String LOGIN_FORM_USER_LOGIN =
-            "_com_liferay_login_web_portlet_LoginPortlet_login";
-    public static final String LOGIN_FORM_USER_PASSWORD =
-            "_com_liferay_login_web_portlet_LoginPortlet_password";
+    private static final String LOGIN_FORM_USER_LOGIN = "_com_liferay_login_web_portlet_LoginPortlet_login";
+    public static final String LOGIN_FORM_USER_PASSWORD = "_com_liferay_login_web_portlet_LoginPortlet_password";
 
     private String portletId = null;
 
@@ -79,17 +78,16 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
         } else {
             setDriver(TestBench.createDriver(new ChromeDriver()));
         }
-        getDriver().get(getURL(PORTAL_LOGIN));
         loginToPortal();
         openPortletLayout();
     }
 
     protected void openPortletLayout() {
+        getDriver().get(getURL(getFriendlyUrl()));
         waitUntil(driver -> {
-            getDriver().get(getURL(getFriendlyUrl()));
             List<TestBenchElement> portlets = getVaadinPortletRootElements();
             return portlets != null && !portlets.isEmpty();
-        });
+        }, 20);
 
         List<TestBenchElement> portlets = getVaadinPortletRootElements();
 
@@ -113,27 +111,35 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
     }
 
     protected void loginToPortal() {
+        getDriver().get(getURL(PORTAL_LOGIN));
         waitUntil(driver -> {
-            WebElement element = driver.findElement(By.id(LOGIN_FORM_USER_LOGIN));
+            WebElement element = driver
+                    .findElement(By.id(LOGIN_FORM_USER_LOGIN));
             return element != null;
         });
 
         final WebElement username = findElement(By.id(LOGIN_FORM_USER_LOGIN));
-        final WebElement password = findElement(By.id(LOGIN_FORM_USER_PASSWORD));
+        final WebElement password = findElement(
+                By.id(LOGIN_FORM_USER_PASSWORD));
 
-        WebElement submitButton = findElement(By.xpath(
-                "//button[@type='submit' and span='Sign In']"));
+        WebElement submitButton = findElement(
+                By.xpath("//button[@type='submit' and span='Sign In']"));
         username.clear();
         username.sendKeys("test@liferay.com");
         password.clear();
         password.sendKeys("test");
         submitButton.click();
+
+        // Wait for home page to be loaded, checking for user menu
+        waitUntil(ExpectedConditions.presenceOfElementLocated(
+                By.cssSelector("div.personal-menu-dropdown")));
     }
 
     protected String openInAnotherWindow() {
         final String firstWin = getDriver().getWindowHandle();
         ((JavascriptExecutor) getDriver()).executeScript("window.open('"
-                                                         + getURL(getPortalRoute() + "/" + getFriendlyUrl()) + "','_blank');");
+                + getURL(getPortalRoute() + "/" + getFriendlyUrl())
+                + "','_blank');");
         final String secondWin = driver.getWindowHandles().stream()
                 .filter(windowId -> !windowId.equals(firstWin)).findFirst()
                 .get();
@@ -148,14 +154,13 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
 
     protected TestBenchElement getVaadinPortletRootElementByStaticPart(
             String staticIdPart) {
-        return getVaadinPortletRootElement(portletIdByStaticPart.get(staticIdPart));
+        return getVaadinPortletRootElement(
+                portletIdByStaticPart.get(staticIdPart));
     }
 
-    protected TestBenchElement getVaadinPortletRootElement(
-            String id) {
+    protected TestBenchElement getVaadinPortletRootElement(String id) {
         return $(TestBenchElement.class).hasAttribute(PORTLET_ID_ATTRIBUTE)
-                .attribute(PORTLET_ID_ATTRIBUTE,id)
-                .waitForFirst();
+                .attribute(PORTLET_ID_ATTRIBUTE, id).waitForFirst();
     }
 
     protected TestBenchElement getVaadinPortletRootElement() {
@@ -248,7 +253,8 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
         return isUsingHub() ? System.getenv("HOSTNAME") : "localhost";
     }
 
-    private String appendPortletQueryParameter(String url, String key, String value) {
+    private String appendPortletQueryParameter(String url, String key,
+            String value) {
         String portletModeQueryParamRegexp = "\\b" + key + "=.*?(&|$)";
         String newPortletModeQueryParam = key + "=" + value;
         String newUrl = url.replaceFirst(portletModeQueryParamRegexp,

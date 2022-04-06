@@ -5,30 +5,30 @@
     <!-- Remember to add a new portlet to PortletDeployer -->
     <portlet>
         <portlet-name>basic</portlet-name>
-        <instanceable>true</instanceable>
+        <instanceable>false</instanceable>
     </portlet>
     <portlet>
         <portlet-name>upload</portlet-name>
-        <instanceable>true</instanceable>
+        <instanceable>false</instanceable>
     </portlet>
     <portlet>
         <portlet-name>eventhandler</portlet-name>
-        <instanceable>true</instanceable>
+        <instanceable>false</instanceable>
     </portlet>
     <portlet>
         <portlet-name>render</portlet-name>
-        <instanceable>true</instanceable>
+        <instanceable>false</instanceable>
     </portlet>
     <portlet>
         <portlet-name>minimizedstaterender</portlet-name>
-        <instanceable>true</instanceable>
+        <instanceable>false</instanceable>
     </portlet>
     <portlet>
         <portlet-name>errorhandling</portlet-name>
-        <instanceable>true</instanceable>
+        <instanceable>false</instanceable>
     </portlet>
     <portlet>
         <portlet-name>streamresource</portlet-name>
-        <instanceable>true</instanceable>
+        <instanceable>false</instanceable>
     </portlet>
 </liferay-portlet-app>

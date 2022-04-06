@@ -5,26 +5,26 @@
     <!-- Remember to add a new portlet to PortletDeployer -->
     <portlet>
         <portlet-name>eventsource</portlet-name>
-        <instanceable>true</instanceable>
+        <instanceable>false</instanceable>
     </portlet>
     <portlet>
         <portlet-name>eventtarget</portlet-name>
-        <instanceable>true</instanceable>
+        <instanceable>false</instanceable>
     </portlet>
     <portlet>
         <portlet-name>othereventtarget</portlet-name>
-        <instanceable>true</instanceable>
+        <instanceable>false</instanceable>
     </portlet>
     <portlet>
         <portlet-name>plainipcportlet</portlet-name>
-        <instanceable>true</instanceable>
+        <instanceable>false</instanceable>
     </portlet>
     <portlet>
         <portlet-name>vaadinipcportlet</portlet-name>
-        <instanceable>true</instanceable>
+        <instanceable>false</instanceable>
     </portlet>
     <portlet>
         <portlet-name>renderportlet30</portlet-name>
-        <instanceable>true</instanceable>
+        <instanceable>false</instanceable>
     </portlet>
 </liferay-portlet-app>

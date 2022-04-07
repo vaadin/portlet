@@ -60,7 +60,7 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
             .compile(PORTLET_ID_PATTERN_STRING);
 
     private static final String LOGIN_FORM_USER_LOGIN = "_com_liferay_login_web_portlet_LoginPortlet_login";
-    public static final String LOGIN_FORM_USER_PASSWORD = "_com_liferay_login_web_portlet_LoginPortlet_password";
+    public static final String LOGIN_FORM_USER_PASSWORD = "_com_liferay_login_web_portlet_LoginPortlet_password"; // NOSONAR
 
     private String portletId = null;
 

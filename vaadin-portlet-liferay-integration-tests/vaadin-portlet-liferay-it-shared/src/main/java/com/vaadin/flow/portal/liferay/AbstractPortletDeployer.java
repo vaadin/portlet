@@ -124,7 +124,8 @@ public abstract class AbstractPortletDeployer extends GenericPortlet {
                 LayoutLocalServiceUtil.deleteLayout(layoutByFriendlyURL);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            getLogger().warn("Failed to remove olf layout for {}", friendlyURL,
+                    e);
             return false;
         }
         return true;
@@ -139,6 +140,7 @@ public abstract class AbstractPortletDeployer extends GenericPortlet {
             List<User> users = UserLocalServiceUtil.dynamicQuery(query);
             return users.get(0);
         } catch (SystemException e) {
+            getLogger().warn("Failed to retrieve default user", e);
             return null;
         }
     }
@@ -154,6 +156,9 @@ public abstract class AbstractPortletDeployer extends GenericPortlet {
             Group g = groups.get(0);
             return g.getGroupId();
         } catch (SystemException e) {
+            getLogger().warn(
+                    "Failed to retrieve default company id, using 0 as fallback",
+                    e);
             return 0;
         }
     }

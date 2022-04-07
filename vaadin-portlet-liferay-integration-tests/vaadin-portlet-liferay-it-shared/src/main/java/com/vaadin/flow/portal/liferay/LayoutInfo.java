@@ -38,10 +38,14 @@ public class LayoutInfo implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         LayoutInfo that = (LayoutInfo) o;
-        return Objects.equals(name, that.name) && Objects.equals(portletInfos, that.portletInfos) && Objects.equals(friendlyUrl, that.friendlyUrl);
+        return Objects.equals(name, that.name)
+                && Objects.equals(portletInfos, that.portletInfos)
+                && Objects.equals(friendlyUrl, that.friendlyUrl);
     }
 
     @Override

@@ -31,10 +31,10 @@ public class LiferayEventHandlerIT extends AbstractLiferayPortalTest {
     @Test
     public void modeUpdatedInPortal_noWindowStateHandlerCalled() {
         setPortletModeInPortal(PortletMode.EDIT);
-        waitUntil(driver -> PortletMode.EDIT.toString()
-                .equals(getLabelContent(LiferayEventHandlerContent.MODE_LABEL_ID)));
-        Assert.assertEquals("",
-                getLabelContent(LiferayEventHandlerContent.WINDOW_STATE_LABEL_ID));
+        waitUntil(driver -> PortletMode.EDIT.toString().equals(
+                getLabelContent(LiferayEventHandlerContent.MODE_LABEL_ID)));
+        Assert.assertEquals("", getLabelContent(
+                LiferayEventHandlerContent.WINDOW_STATE_LABEL_ID));
     }
 
     @Test
@@ -52,22 +52,22 @@ public class LiferayEventHandlerIT extends AbstractLiferayPortalTest {
         // This test is neutral on whether an event for the initial mode is sent
 
         setPortletModeInPortal(PortletMode.EDIT);
-        waitUntil(driver -> PortletMode.EDIT.toString()
-                .equals(getLabelContent(LiferayEventHandlerContent.MODE_LABEL_ID)));
+        waitUntil(driver -> PortletMode.EDIT.toString().equals(
+                getLabelContent(LiferayEventHandlerContent.MODE_LABEL_ID)));
         Assert.assertEquals(PortletMode.EDIT.toString(),
                 getVaadinPortletRootElement().$("*").id("request-mode-info")
                         .getText());
 
         setPortletModeInPortal(PortletMode.HELP);
-        waitUntil(driver -> PortletMode.HELP.toString()
-                .equals(getLabelContent(LiferayEventHandlerContent.MODE_LABEL_ID)));
+        waitUntil(driver -> PortletMode.HELP.toString().equals(
+                getLabelContent(LiferayEventHandlerContent.MODE_LABEL_ID)));
         Assert.assertEquals(PortletMode.HELP.toString(),
                 getVaadinPortletRootElement().$("*").id("request-mode-info")
                         .getText());
 
         setPortletModeInPortal(PortletMode.VIEW);
-        waitUntil(driver -> PortletMode.VIEW.toString()
-                .equals(getLabelContent(LiferayEventHandlerContent.MODE_LABEL_ID)));
+        waitUntil(driver -> PortletMode.VIEW.toString().equals(
+                getLabelContent(LiferayEventHandlerContent.MODE_LABEL_ID)));
         Assert.assertEquals(PortletMode.VIEW.toString(),
                 getVaadinPortletRootElement().$("*").id("request-mode-info")
                         .getText());
@@ -86,8 +86,8 @@ public class LiferayEventHandlerIT extends AbstractLiferayPortalTest {
                         .getText());
 
         setWindowStateInPortal(WindowState.NORMAL);
-        waitUntil(driver -> WindowState.NORMAL.toString()
-                .equals(getLabelContent(
+        waitUntil(
+                driver -> WindowState.NORMAL.toString().equals(getLabelContent(
                         LiferayEventHandlerContent.WINDOW_STATE_LABEL_ID)));
         Assert.assertEquals(WindowState.NORMAL.toString(),
                 getVaadinPortletRootElement().$("*").id("request-state-info")
@@ -98,7 +98,7 @@ public class LiferayEventHandlerIT extends AbstractLiferayPortalTest {
     }
 
     @Test
-    public void windowStateAndModeChangedInPortal_portletStateIsPreservedtOnRefresh() {
+    public void windowStateAndModeChangedInPortal_portletStateIsPreservedOnRefresh() {
         setWindowStateInPortal(WindowState.MAXIMIZED);
         waitUntil(driver -> WindowState.MAXIMIZED.toString()
                 .equals(getLabelContent(
@@ -106,9 +106,9 @@ public class LiferayEventHandlerIT extends AbstractLiferayPortalTest {
 
         driver.navigate().refresh();
 
-        waitUntil(driver -> WindowState.MAXIMIZED.toString()
+        Assert.assertTrue(waitUntil(driver -> WindowState.MAXIMIZED.toString()
                 .equals(getLabelContent(
-                        LiferayEventHandlerContent.WINDOW_STATE_LABEL_ID)));
+                        LiferayEventHandlerContent.WINDOW_STATE_LABEL_ID))));
     }
 
     @Test
@@ -126,14 +126,17 @@ public class LiferayEventHandlerIT extends AbstractLiferayPortalTest {
         waitUntil(driver -> WindowState.MAXIMIZED.toString()
                 .equals(getLabelContent(
                         LiferayEventHandlerContent.WINDOW_STATE_LABEL_ID)));
-        waitUntil(driver -> PortletMode.EDIT.toString()
-                .equals(getLabelContent(LiferayEventHandlerContent.MODE_LABEL_ID)));
+        waitUntil(driver -> PortletMode.EDIT.toString().equals(
+                getLabelContent(LiferayEventHandlerContent.MODE_LABEL_ID)));
 
         driver.switchTo().window(firstTab);
-        waitUntil(driver -> !$(TestBenchElement.class).attribute("id",
-                LiferayEventHandlerContent.WINDOW_STATE_LABEL_ID).exists());
-        waitUntil(driver -> !$(TestBenchElement.class).attribute("id",
-                LiferayEventHandlerContent.MODE_LABEL_ID).exists());
+        waitUntil(driver -> !$(TestBenchElement.class)
+                .attribute("id",
+                        LiferayEventHandlerContent.WINDOW_STATE_LABEL_ID)
+                .exists());
+        waitUntil(driver -> !$(TestBenchElement.class)
+                .attribute("id", LiferayEventHandlerContent.MODE_LABEL_ID)
+                .exists());
     }
 
     protected String getLabelContent(String id) {

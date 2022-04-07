@@ -53,10 +53,14 @@ public class PortletInfo implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         PortletInfo that = (PortletInfo) o;
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(friendlyUrl, that.friendlyUrl) && Objects.equals(preferences, that.preferences);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name)
+                && Objects.equals(friendlyUrl, that.friendlyUrl)
+                && Objects.equals(preferences, that.preferences);
     }
 
     @Override

@@ -32,7 +32,8 @@ public class LiferayRenderView extends VerticalLayout implements PortletView {
     public static final String WINDOW_STATE_CHANGE = "window-state-change";
     public static final String PORTLET_MODE_CHANGE = "portlet-mode-change";
 
-    private Button windowState, portletMode;
+    private Button windowState;
+    private Button portletMode;
 
     private PortletViewContext context;
 

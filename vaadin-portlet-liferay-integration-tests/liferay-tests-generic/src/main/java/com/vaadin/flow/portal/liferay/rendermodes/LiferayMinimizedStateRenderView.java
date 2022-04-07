@@ -43,8 +43,6 @@ public class LiferayMinimizedStateRenderView extends VerticalLayout
     private Button portletMode;
 
     private PortletViewContext context;
-    private Div stateInfo;
-    private Div modeInfo;
 
     @Override
     public void onPortletViewContextInit(PortletViewContext context) {
@@ -62,9 +60,9 @@ public class LiferayMinimizedStateRenderView extends VerticalLayout
                 event -> switchPortletMode());
         portletMode.setId(PORTLET_MODE_CHANGE);
 
-        stateInfo = new Div();
+        Div stateInfo = new Div();
         stateInfo.setId(STATE_INFO_ID);
-        modeInfo = new Div();
+        Div modeInfo = new Div();
         modeInfo.setId(MODE_INFO_ID);
 
         context.addPortletModeChangeListener(

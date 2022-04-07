@@ -6,7 +6,7 @@ import com.vaadin.flow.component.html.Div;
 public class LiferayErrorPortletContent extends Div {
     public LiferayErrorPortletContent() {
         Button button = new Button("Click me!", event -> {
-            throw new RuntimeException("Exception!");
+            throw new RuntimeException("Exception!"); // NOSONAR
         });
         button.setId("error-button");
         add(button);

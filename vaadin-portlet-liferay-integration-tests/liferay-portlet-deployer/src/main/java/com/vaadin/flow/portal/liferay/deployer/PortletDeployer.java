@@ -82,40 +82,42 @@ public class PortletDeployer extends AbstractPortletDeployer {
 
         // Portlet 3.0:
 
+        String ipcEventFriendlyUrl = "/test/ipcevent";
         LayoutInfo eventSourceTargetLayout = new LayoutInfo("Events",
-                "/test/ipcevent");
+                ipcEventFriendlyUrl);
         PortletInfo eventSource = new PortletInfo();
         eventSource.setId("eventsource_WAR_liferayportlet30");
         eventSource.setPortletName("Event Source");
-        eventSource.setPortletFriendlyUrl("/test/ipcevent");
+        eventSource.setPortletFriendlyUrl(ipcEventFriendlyUrl);
         eventSourceTargetLayout.addPortlet(eventSource);
 
         PortletInfo eventTarget = new PortletInfo();
         eventTarget.setId("eventtarget_WAR_liferayportlet30");
         eventTarget.setPortletName("Event Target");
-        eventTarget.setPortletFriendlyUrl("/test/ipcevent");
+        eventTarget.setPortletFriendlyUrl(ipcEventFriendlyUrl);
         eventSourceTargetLayout.addPortlet(eventTarget);
 
         PortletInfo otherEventTarget = new PortletInfo();
         otherEventTarget.setId("othereventtarget_WAR_liferayportlet30");
         otherEventTarget.setPortletName("Other Event Target");
-        otherEventTarget.setPortletFriendlyUrl("/test/ipcevent");
+        otherEventTarget.setPortletFriendlyUrl(ipcEventFriendlyUrl);
         eventSourceTargetLayout.addPortlet(otherEventTarget);
 
         layouts.add(eventSourceTargetLayout);
 
+        String ipcEventNotVaadinFriedlyUrl = "/test/ipceventnotvaadin";
         LayoutInfo notVaadinEventLayout = new LayoutInfo("Not Vaadin Events",
-                "/test/ipceventnotvaadin");
+                ipcEventNotVaadinFriedlyUrl);
         PortletInfo vaadinIpcPortlet = new PortletInfo();
         vaadinIpcPortlet.setId("vaadinipcportlet_WAR_liferayportlet30");
         vaadinIpcPortlet.setPortletName("Vaadin IPC Portlet");
-        vaadinIpcPortlet.setPortletFriendlyUrl("/test/ipceventnotvaadin");
+        vaadinIpcPortlet.setPortletFriendlyUrl(ipcEventNotVaadinFriedlyUrl);
         notVaadinEventLayout.addPortlet(vaadinIpcPortlet);
 
         PortletInfo plainIpcPortlet = new PortletInfo();
         plainIpcPortlet.setId("plainipcportlet_WAR_liferayportlet30");
         plainIpcPortlet.setPortletName("Event Target");
-        plainIpcPortlet.setPortletFriendlyUrl("/test/ipceventnotvaadin");
+        plainIpcPortlet.setPortletFriendlyUrl(ipcEventNotVaadinFriedlyUrl);
         notVaadinEventLayout.addPortlet(plainIpcPortlet);
 
         layouts.add(notVaadinEventLayout);

@@ -60,7 +60,7 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
             .compile(PORTLET_ID_PATTERN_STRING);
 
     private static final String LOGIN_FORM_USER_LOGIN = "_com_liferay_login_web_portlet_LoginPortlet_login";
-    public static final String LOGIN_FORM_USER_PASSWORD = "_com_liferay_login_web_portlet_LoginPortlet_password";
+    public static final String LOGIN_FORM_USER_PASSWORD = "_com_liferay_login_web_portlet_LoginPortlet_password"; // NOSONAR
 
     private String portletId = null;
 
@@ -97,11 +97,13 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
 
         if (portletIdByStaticPart.isEmpty()) {
             portlets.forEach(portlet -> {
-                String portletId = portlet.getAttribute(PORTLET_ID_ATTRIBUTE);
-                Matcher matcher = PORTLET_ID_PATTERN.matcher(portletId);
+                String portletIdAttribute = portlet
+                        .getAttribute(PORTLET_ID_ATTRIBUTE);
+                Matcher matcher = PORTLET_ID_PATTERN
+                        .matcher(portletIdAttribute);
                 if (matcher.matches()) {
                     String staticPart = matcher.group(1);
-                    portletIdByStaticPart.put(staticPart, portletId);
+                    portletIdByStaticPart.put(staticPart, portletIdAttribute);
                 } else {
                     throw new IllegalStateException(
                             "Found portlet with unrecognizable ID");
@@ -142,7 +144,8 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
                 + "','_blank');");
         final String secondWin = driver.getWindowHandles().stream()
                 .filter(windowId -> !windowId.equals(firstWin)).findFirst()
-                .get();
+                .orElseThrow(
+                        () -> new AssertionError("Secoond window not found"));
         driver.switchTo().window(secondWin);
         return secondWin;
     }

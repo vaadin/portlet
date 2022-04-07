@@ -24,7 +24,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.portal.PortletView;
 import com.vaadin.flow.portal.PortletViewContext;
 
-public class LiferayPortlet30RenderView extends VerticalLayout implements PortletView {
+public class LiferayPortlet30RenderView extends VerticalLayout
+        implements PortletView {
 
     public static final String STATE_MAXIMIZE = "Maximize";
     public static final String STATE_NORMALIZE = "Normalize";
@@ -33,10 +34,8 @@ public class LiferayPortlet30RenderView extends VerticalLayout implements Portle
     public static final String WINDOW_STATE_CHANGE = "window-state-change";
     public static final String PORTLET_MODE_CHANGE = "portlet-mode-change";
 
-    private Button windowState, portletMode;
-
-    private Div stateInfo;
-    private Div modeInfo;
+    private Button windowState;
+    private Button portletMode;
 
     private PortletViewContext context;
 
@@ -56,20 +55,18 @@ public class LiferayPortlet30RenderView extends VerticalLayout implements Portle
                 event -> switchPortletMode());
         portletMode.setId(PORTLET_MODE_CHANGE);
 
-        stateInfo = new Div();
+        Div stateInfo = new Div();
         stateInfo.setId("state-info");
-        modeInfo = new Div();
+        Div modeInfo = new Div();
         modeInfo.setId("mode-info");
 
         add(windowState, portletMode);
         add(stateInfo, modeInfo);
 
-        context.addPortletModeChangeListener(event -> {
-            modeInfo.setText(event.getPortletMode().toString());
-        });
-        context.addWindowStateChangeListener(event -> {
-            stateInfo.setText(event.getWindowState().toString());
-        });
+        context.addPortletModeChangeListener(
+                event -> modeInfo.setText(event.getPortletMode().toString()));
+        context.addWindowStateChangeListener(
+                event -> stateInfo.setText(event.getWindowState().toString()));
     }
 
     private void switchWindowState() {

@@ -25,7 +25,7 @@ public class LiferayBasicPortletContent extends VerticalLayout {
     public static final String GREETING_MESSAGE_ID = "greeting-message";
 
     public LiferayBasicPortletContent() {
-        VaadinPortlet portlet = VaadinPortlet.getCurrent();
+        VaadinPortlet<?> portlet = VaadinPortlet.getCurrent();
         String name = portlet.getPortletName();
         String serverInfo = portlet.getPortletContext().getServerInfo();
         Div message = new Div();

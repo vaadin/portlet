@@ -33,10 +33,8 @@ public class LiferayOtherEventTargetView extends Div implements PortletView {
         add(div);
 
         NativeButton button = new NativeButton("Start listening events",
-                event -> {
-                    registration = context.addEventChangeListener("click",
-                            this::handleEvent);
-                });
+                event -> registration = context.addEventChangeListener("click",
+                        this::handleEvent));
         button.setId("start-listen");
         add(button);
     }

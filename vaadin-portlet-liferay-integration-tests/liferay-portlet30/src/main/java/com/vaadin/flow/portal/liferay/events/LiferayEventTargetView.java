@@ -18,7 +18,6 @@ package com.vaadin.flow.portal.liferay.events;
 import java.util.Arrays;
 
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.portal.PortletViewContext;
 import com.vaadin.flow.portal.lifecycle.EventHandler;
 import com.vaadin.flow.portal.lifecycle.PortletEvent;
 

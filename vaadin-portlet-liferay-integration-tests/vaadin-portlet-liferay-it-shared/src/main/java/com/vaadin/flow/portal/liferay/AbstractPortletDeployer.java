@@ -68,7 +68,7 @@ public abstract class AbstractPortletDeployer extends GenericPortlet {
                     layout.getPrivateLayout(), layout.getLayoutId(),
                     layout.getTypeSettings());
         } catch (PortalException e) {
-            throw new RuntimeException(e);
+            throw new PortletDeployerException(e);
         }
     }
 
@@ -84,12 +84,12 @@ public abstract class AbstractPortletDeployer extends GenericPortlet {
                 try {
                     prefs.setValue(key, value);
                 } catch (ReadOnlyException e) {
-                    throw new RuntimeException(e);
+                    throw new PortletDeployerException(e);
                 }
             });
             prefs.store();
         } catch (IOException | ValidatorException e) {
-            throw new RuntimeException(e);
+            throw new PortletDeployerException(e);
         }
     }
 
@@ -109,7 +109,7 @@ public abstract class AbstractPortletDeployer extends GenericPortlet {
                     layoutInfo.getName(), LayoutConstants.TYPE_PORTLET, false,
                     layoutInfo.getFriendlyUrl(), serviceContext);
         } catch (PortalException e) {
-            throw new RuntimeException(e);
+            throw new PortletDeployerException(e);
         }
 
         return layout;
@@ -119,11 +119,9 @@ public abstract class AbstractPortletDeployer extends GenericPortlet {
         try {
             Layout layoutByFriendlyURL = getLayoutByFriendlyUrl(pGroupId,
                     friendlyURL);
-            if (layoutByFriendlyURL != null) {
-                if (SitesUtil.isLayoutDeleteable(layoutByFriendlyURL)) {
-                    LayoutLocalServiceUtil.deleteLayout(layoutByFriendlyURL);
-                }
-
+            if (layoutByFriendlyURL != null
+                    && SitesUtil.isLayoutDeleteable(layoutByFriendlyURL)) {
+                LayoutLocalServiceUtil.deleteLayout(layoutByFriendlyURL);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -134,7 +132,8 @@ public abstract class AbstractPortletDeployer extends GenericPortlet {
 
     private User getDefaultUserId() {
         try {
-            DynamicQuery query = DynamicQueryFactoryUtil.forClass(User.class)
+            DynamicQuery query = DynamicQueryFactoryUtil
+                    .forClass(User.class, getClass().getClassLoader())
                     .add(PropertyFactoryUtil.forName("defaultUser")
                             .eq(Boolean.TRUE));
             List<User> users = UserLocalServiceUtil.dynamicQuery(query);
@@ -146,7 +145,8 @@ public abstract class AbstractPortletDeployer extends GenericPortlet {
 
     private long getGroupFromDefaultCompanyId() {
         try {
-            DynamicQuery query = DynamicQueryFactoryUtil.forClass(Group.class);
+            DynamicQuery query = DynamicQueryFactoryUtil.forClass(Group.class,
+                    getClass().getClassLoader());
             query.add(PropertyFactoryUtil.forName("site").eq(Boolean.TRUE));
             query.add(PropertyFactoryUtil.forName("type").eq(1));
 
@@ -167,5 +167,15 @@ public abstract class AbstractPortletDeployer extends GenericPortlet {
 
     private Logger getLogger() {
         return LoggerFactory.getLogger(getClass());
+    }
+
+    private static class PortletDeployerException extends RuntimeException {
+
+        public PortletDeployerException() {
+        }
+
+        public PortletDeployerException(Throwable cause) {
+            super(cause);
+        }
     }
 }

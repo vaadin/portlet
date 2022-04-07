@@ -16,6 +16,7 @@
 
 package com.vaadin.flow.portal.liferay.requesthandlers;
 
+import net.jcip.annotations.NotThreadSafe;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -23,6 +24,7 @@ import com.vaadin.flow.portal.liferay.AbstractLiferayPortalTest;
 import com.vaadin.flow.portal.liferay.basic.LiferayBasicPortletContent;
 import com.vaadin.testbench.TestBenchElement;
 
+@NotThreadSafe
 public class LiferayHeartbeatHandlerIT extends AbstractLiferayPortalTest {
 
     @Test

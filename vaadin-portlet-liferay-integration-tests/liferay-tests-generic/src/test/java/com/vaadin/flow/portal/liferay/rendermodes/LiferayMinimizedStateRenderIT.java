@@ -19,12 +19,14 @@ package com.vaadin.flow.portal.liferay.rendermodes;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
+import net.jcip.annotations.NotThreadSafe;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.vaadin.flow.portal.liferay.AbstractLiferayPortalTest;
 import com.vaadin.testbench.TestBenchElement;
 
+@NotThreadSafe
 public class LiferayMinimizedStateRenderIT extends AbstractLiferayPortalTest {
 
     @Test

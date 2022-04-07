@@ -103,6 +103,14 @@
                 <artifactId>vaadin-lumo-theme</artifactId>
                 <version>${flow.version}</version>
             </dependency>
+
+            <!-- Test dependencies -->
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>annotations</artifactId>
+                <version>3.0.1</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -277,9 +285,12 @@
                                 </goals>
                                 <configuration>
                                     <target name="wait-liferay">
-                                        <echo>Wait for liferay start...</echo>
-                                        <get src="http://localhost:8080/" ignoreerrors="true" dest="${project.build.directory}/liferay_home.html" />
-                                        <sleep seconds="15" />
+                                        <echo>Wait for Liferay to be fully ready...</echo>
+                                        <sleep seconds="15"/>
+                                        <!-- Warm up liferay with a first call -->
+                                        <get src="http://localhost:8080/"
+                                             ignoreerrors="true"
+                                             dest="${project.build.directory}/liferay_home.html"/>
                                     </target>
                                 </configuration>
                             </execution>

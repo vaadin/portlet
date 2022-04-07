@@ -1,11 +1,13 @@
 package com.vaadin.flow.portal.liferay.errorhandling;
 
+import net.jcip.annotations.NotThreadSafe;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.vaadin.flow.portal.liferay.AbstractLiferayPortalTest;
 import com.vaadin.testbench.TestBenchElement;
 
+@NotThreadSafe
 public class LiferayErrorHandlingIT extends AbstractLiferayPortalTest {
 
     @Test

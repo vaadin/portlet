@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import net.jcip.annotations.NotThreadSafe;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.WebElement;
@@ -31,6 +32,7 @@ import com.vaadin.flow.component.html.testbench.LabelElement;
 import com.vaadin.flow.component.upload.testbench.UploadElement;
 import com.vaadin.flow.portal.liferay.AbstractLiferayPortalTest;
 
+@NotThreadSafe
 public class LiferayUploadIT extends AbstractLiferayPortalTest {
 
     @Test

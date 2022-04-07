@@ -17,6 +17,7 @@ package com.vaadin.flow.portal.liferay.events;
 
 import java.util.List;
 
+import net.jcip.annotations.NotThreadSafe;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.WebElement;
@@ -25,6 +26,7 @@ import com.vaadin.flow.component.html.testbench.NativeButtonElement;
 import com.vaadin.flow.portal.liferay.AbstractLiferayPortalTest;
 import com.vaadin.testbench.TestBenchElement;
 
+@NotThreadSafe
 public class LiferayIPCEventIT extends AbstractLiferayPortalTest {
 
     @Test

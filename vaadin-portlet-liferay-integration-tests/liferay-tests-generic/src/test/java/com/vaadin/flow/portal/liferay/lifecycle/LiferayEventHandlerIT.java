@@ -18,12 +18,14 @@ package com.vaadin.flow.portal.liferay.lifecycle;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
+import net.jcip.annotations.NotThreadSafe;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.vaadin.flow.portal.liferay.AbstractLiferayPortalTest;
 import com.vaadin.testbench.TestBenchElement;
 
+@NotThreadSafe
 public class LiferayEventHandlerIT extends AbstractLiferayPortalTest {
 
     @Test

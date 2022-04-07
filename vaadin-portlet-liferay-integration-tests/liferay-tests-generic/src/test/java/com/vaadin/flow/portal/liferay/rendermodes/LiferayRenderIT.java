@@ -15,6 +15,7 @@
  */
 package com.vaadin.flow.portal.liferay.rendermodes;
 
+import net.jcip.annotations.NotThreadSafe;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -24,6 +25,7 @@ import com.vaadin.flow.portal.liferay.AbstractLiferayPortalTest;
 import com.vaadin.testbench.TestBenchElement;
 
 @Ignore("https://github.com/vaadin/portlet/issues/214 https://issues.liferay.com/browse/LPS-150560")
+@NotThreadSafe
 public class LiferayRenderIT extends AbstractLiferayPortalTest {
 
     @Test

@@ -3,6 +3,7 @@ package com.vaadin.flow.portal.liferay.streamresource;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import net.jcip.annotations.NotThreadSafe;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.JavascriptExecutor;
@@ -10,6 +11,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import com.vaadin.flow.component.html.testbench.AnchorElement;
 import com.vaadin.flow.portal.liferay.AbstractLiferayPortalTest;
 
+@NotThreadSafe
 public class LiferayStreamResourceIT extends AbstractLiferayPortalTest {
 
     @Test

@@ -14,6 +14,12 @@
 
     <properties>
         <pluto.version>3.1.1</pluto.version>
+        <pluto.home.directory>${project.build.directory}/pluto-${pluto.version}</pluto.home.directory>
+        <bundle.download.directory>${project.build.directory}
+        </bundle.download.directory>
+        <cargo.debug.port>5005</cargo.debug.port>
+        <cargo.timeout>120000</cargo.timeout>
+        <cargo.additional.jvmargs></cargo.additional.jvmargs>
 
         <javax.validation.version>2.0.0.Final</javax.validation.version>
 
@@ -106,14 +112,27 @@
             <plugins>
                 <plugin>
                     <groupId>org.codehaus.cargo</groupId>
-                    <artifactId>cargo-maven2-plugin</artifactId>
-                    <version>1.7.7</version>
+                    <artifactId>cargo-maven3-plugin</artifactId>
+                    <version>1.9.10</version>
                     <configuration>
                         <container>
                             <containerId>tomcat8x</containerId>
-	                        <home>${project.build.directory}/pluto-${pluto.version}</home>
+	                        <home>${pluto.home.directory}</home>
+                            <timeout>${cargo.timeout}</timeout>
                         </container>
-                        <type>existing</type>
+                        <configuration>
+                            <type>existing</type>
+                            <home>${pluto.home.directory}</home>
+                            <properties>
+                                <cargo.start.jvmargs>
+                                    -Xdebug
+                                    -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=${cargo.debug.port}
+                                    -Xnoagent
+                                    -Djava.compiler=NONE
+                                    ${cargo.additional.jvmargs}
+                                </cargo.start.jvmargs>
+                            </properties>
+                        </configuration>
                         <!-- Set an empty deployer so that cargo does not try to add the
                         current project's artifact to the container (as this was already
                         done by maven) -->
@@ -176,6 +195,11 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -207,8 +231,7 @@
                     </plugin>
                     <plugin>
                         <groupId>org.codehaus.cargo</groupId>
-                        <artifactId>cargo-maven2-plugin</artifactId>
-
+                        <artifactId>cargo-maven3-plugin</artifactId>
                         <executions>
                             <execution>
                                 <id>start-portal</id>
@@ -271,18 +294,18 @@
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <tasks>
+                                    <target name="setup-pluto">
                                         <get src="ftp://ftp.funet.fi/pub/mirrors/apache.org/portals/pluto/pluto-bundle-${pluto.version}.zip"
-                                             dest="${project.build.directory}/pluto.zip"
-                                             verbose="false" usetimestamp="true"/>
+                                             dest="${bundle.download.directory}/pluto.zip"
+                                             verbose="false" skipexisting="true"/>
                                         <unzip
-                                                src="${project.build.directory}/pluto.zip"
+                                                src="${bundle.download.directory}/pluto.zip"
                                                 dest="${project.build.directory}"/>
                                         <copy file="${project.build.directory}/${project.artifactId}.war"
-                                              todir="${project.build.directory}/pluto-${pluto.version}/webapps"/>
+                                              todir="${pluto.home.directory}/webapps"/>
                                         <copy file="${project.build.directory}/vaadin-portlet-static.war"
-                                              todir="${project.build.directory}/pluto-${pluto.version}/webapps"/>
-                                    </tasks>
+                                              todir="${pluto.home.directory}/webapps"/>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
@@ -310,9 +333,9 @@
                                 <configuration>
                                     <tasks>
                                         <copy file="${project.build.directory}/${project.artifactId}.war"
-                                              todir="${project.build.directory}/pluto-${pluto.version}/webapps"/>
+                                              todir="${pluto.home.directory}/webapps"/>
                                         <copy file="${project.build.directory}/vaadin-portlet-static.war"
-                                              todir="${project.build.directory}/pluto-${pluto.version}/webapps"/>
+                                              todir="${pluto.home.directory}/webapps"/>
                                     </tasks>
                                 </configuration>
                             </execution>

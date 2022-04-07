@@ -24,8 +24,6 @@ import com.vaadin.flow.portal.lifecycle.PortletEvent;
 
 public class LiferayEventTargetView extends Div implements EventHandler {
 
-    private PortletViewContext context;
-
     public LiferayEventTargetView() {
         Div div = new Div();
         div.setText("Target");

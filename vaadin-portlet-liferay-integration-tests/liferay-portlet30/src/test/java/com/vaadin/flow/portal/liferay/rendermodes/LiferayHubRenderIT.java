@@ -40,8 +40,10 @@ public class LiferayHubRenderIT extends AbstractLiferayPortalTest {
         TestBenchElement modeChange = renderPortlet.$("*")
                 .id(LiferayPortlet30RenderView.PORTLET_MODE_CHANGE);
 
-        Assert.assertEquals(LiferayPortlet30RenderView.STATE_MAXIMIZE, stateChange.getText());
-        Assert.assertEquals(LiferayPortlet30RenderView.MODE_EDIT, modeChange.getText());
+        Assert.assertEquals(LiferayPortlet30RenderView.STATE_MAXIMIZE,
+                stateChange.getText());
+        Assert.assertEquals(LiferayPortlet30RenderView.MODE_EDIT,
+                modeChange.getText());
 
         stateChange.click();
 
@@ -58,8 +60,10 @@ public class LiferayHubRenderIT extends AbstractLiferayPortalTest {
         Assert.assertEquals(WindowState.MAXIMIZED.toString(),
                 stateInfo.getText());
 
-        Assert.assertEquals(LiferayPortlet30RenderView.STATE_NORMALIZE, stateChange.getText());
-        Assert.assertEquals(LiferayPortlet30RenderView.MODE_EDIT, modeChange.getText());
+        Assert.assertEquals(LiferayPortlet30RenderView.STATE_NORMALIZE,
+                stateChange.getText());
+        Assert.assertEquals(LiferayPortlet30RenderView.MODE_EDIT,
+                modeChange.getText());
         Assert.assertEquals("VIEW", getPortletModeInPortal());
         Assert.assertFalse(isNormalWindowState());
 
@@ -74,12 +78,13 @@ public class LiferayHubRenderIT extends AbstractLiferayPortalTest {
         modeChange = renderPortlet.$(ButtonElement.class)
                 .id(LiferayPortlet30RenderView.PORTLET_MODE_CHANGE);
 
-        WebElement modeInfo = renderPortlet.$("*")
-                .id("mode-info");
+        WebElement modeInfo = renderPortlet.$("*").id("mode-info");
         Assert.assertEquals(PortletMode.EDIT.toString(), modeInfo.getText());
 
-        Assert.assertEquals(LiferayPortlet30RenderView.STATE_NORMALIZE, stateChange.getText());
-        Assert.assertEquals(LiferayPortlet30RenderView.MODE_VIEW, modeChange.getText());
+        Assert.assertEquals(LiferayPortlet30RenderView.STATE_NORMALIZE,
+                stateChange.getText());
+        Assert.assertEquals(LiferayPortlet30RenderView.MODE_VIEW,
+                modeChange.getText());
         Assert.assertEquals("EDIT", getPortletModeInPortal());
         Assert.assertFalse(isNormalWindowState());
 
@@ -97,8 +102,10 @@ public class LiferayHubRenderIT extends AbstractLiferayPortalTest {
         stateInfo = renderPortlet.$("*").id("state-info");
         Assert.assertEquals(WindowState.NORMAL.toString(), stateInfo.getText());
 
-        Assert.assertEquals(LiferayPortlet30RenderView.STATE_MAXIMIZE, stateChange.getText());
-        Assert.assertEquals(LiferayPortlet30RenderView.MODE_VIEW, modeChange.getText());
+        Assert.assertEquals(LiferayPortlet30RenderView.STATE_MAXIMIZE,
+                stateChange.getText());
+        Assert.assertEquals(LiferayPortlet30RenderView.MODE_VIEW,
+                modeChange.getText());
         Assert.assertEquals("EDIT", getWindowStateInPortal());
         Assert.assertTrue(isNormalWindowState());
     }
@@ -111,7 +118,7 @@ public class LiferayHubRenderIT extends AbstractLiferayPortalTest {
     private void waitForPageRefresh() {
         // Wait for a moment so the page refresh is done before continuing
         try {
-            Thread.sleep(250);
+            Thread.sleep(250); // NOSONAR
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

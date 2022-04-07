@@ -97,11 +97,13 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
 
         if (portletIdByStaticPart.isEmpty()) {
             portlets.forEach(portlet -> {
-                String portletId = portlet.getAttribute(PORTLET_ID_ATTRIBUTE);
-                Matcher matcher = PORTLET_ID_PATTERN.matcher(portletId);
+                String portletIdAttribute = portlet
+                        .getAttribute(PORTLET_ID_ATTRIBUTE);
+                Matcher matcher = PORTLET_ID_PATTERN
+                        .matcher(portletIdAttribute);
                 if (matcher.matches()) {
                     String staticPart = matcher.group(1);
-                    portletIdByStaticPart.put(staticPart, portletId);
+                    portletIdByStaticPart.put(staticPart, portletIdAttribute);
                 } else {
                     throw new IllegalStateException(
                             "Found portlet with unrecognizable ID");
@@ -142,7 +144,8 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
                 + "','_blank');");
         final String secondWin = driver.getWindowHandles().stream()
                 .filter(windowId -> !windowId.equals(firstWin)).findFirst()
-                .get();
+                .orElseThrow(
+                        () -> new AssertionError("Secoond window not found"));
         driver.switchTo().window(secondWin);
         return secondWin;
     }

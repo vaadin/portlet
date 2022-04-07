@@ -278,6 +278,7 @@
                                 <configuration>
                                     <target name="wait-liferay">
                                         <echo>Wait for liferay start...</echo>
+                                        <get src="http://localhost:8080/" ignoreerrors="true" dest="${project.build.directory}/liferay_home.html" />
                                         <sleep seconds="15" />
                                     </target>
                                 </configuration>

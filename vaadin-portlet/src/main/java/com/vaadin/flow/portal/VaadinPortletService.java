@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URL;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -40,14 +39,12 @@ import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.Version;
-import com.vaadin.flow.server.WebBrowser;
 import com.vaadin.flow.server.WrappedSession;
 import com.vaadin.flow.server.communication.HeartbeatHandler;
 import com.vaadin.flow.server.communication.StreamRequestHandler;
 import com.vaadin.flow.server.communication.UidlRequestHandler;
 import com.vaadin.flow.server.startup.PortletApplicationRouteRegistryUtil;
 import com.vaadin.flow.shared.Registration;
-import com.vaadin.flow.theme.AbstractTheme;
 
 /**
  * An implementation of {@link com.vaadin.flow.server.VaadinService} for JSR-362
@@ -315,31 +312,21 @@ public class VaadinPortletService extends VaadinService {
     }
 
     @Override
-    public URL getResource(String url, WebBrowser browser,
-            AbstractTheme theme) {
+    public URL getResource(String url) {
         getLogger().debug(SERVLET_RESOURCES_SERVER_MESSAGE);
         return null;
     }
 
     @Override
-    public InputStream getResourceAsStream(String url, WebBrowser browser,
-            AbstractTheme theme) {
+    public InputStream getResourceAsStream(String url) {
         getLogger().debug(SERVLET_RESOURCES_SERVER_MESSAGE);
         return null;
     }
 
     @Override
-    public String resolveResource(String url, WebBrowser browser) {
+    public String resolveResource(String url) {
         getLogger().debug(SERVLET_RESOURCES_SERVER_MESSAGE);
         return null;
-    }
-
-    @Override
-    public Optional<String> getThemedUrl(String url, WebBrowser browser,
-            AbstractTheme theme) {
-        getLogger().debug(
-                "Theme is present in the bundle. No theme resolution is done for portlets.");
-        return Optional.empty();
     }
 
     @Override

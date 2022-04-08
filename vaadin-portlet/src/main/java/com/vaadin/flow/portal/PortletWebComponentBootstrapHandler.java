@@ -9,22 +9,22 @@
  */
 package com.vaadin.flow.portal;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-
 import javax.portlet.PortletResponse;
-
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.jsoup.nodes.Element;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.base.devserver.AbstractDevServerRunner;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.function.DeploymentConfiguration;
-import com.vaadin.flow.server.DevModeHandler;
+import com.vaadin.flow.internal.DevModeHandler;
+import com.vaadin.flow.internal.DevModeHandlerManager;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinResponse;
+import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.communication.WebComponentBootstrapHandler;
 import com.vaadin.pro.licensechecker.LicenseChecker;
@@ -38,38 +38,36 @@ import com.vaadin.pro.licensechecker.LicenseChecker;
 class PortletWebComponentBootstrapHandler
         extends WebComponentBootstrapHandler {
 
-    // TODO: Update WebComponentBootstrapHandler API to pass also
-    // current VaadinReponse instance, to avoid having to rely on
-    // VaadinPortletResponse.getCurrentPortletResponse() here.
     @Override
     protected String getServiceUrl(VaadinRequest request,
             VaadinResponse response) {
         final String namespace = ((VaadinPortletResponse) response)
                 .getPortletResponse().getNamespace();
         VaadinPortletSession session = VaadinPortletSession.getCurrent();
-        return VaadinPortlet.getCurrent()
+        return Objects.requireNonNull(VaadinPortlet.getCurrent())
                 .getWebComponentUIDLRequestHandlerURL(session, namespace);
     }
 
     @Override
-    protected String modifyPath(String basePath, String path)
-            throws UnsupportedEncodingException {
+    protected String modifyPath(String basePath, String path) {
         // Require that the static files are available from the server root
         path = path.replaceFirst("^.VAADIN/", "./VAADIN/");
         if (path.startsWith("./VAADIN/")) {
-            DeploymentConfiguration deploymentConfiguration = VaadinPortletService
-                    .getCurrent().getDeploymentConfiguration();
+            VaadinService vaadinService = VaadinPortletService.getCurrent();
+            DeploymentConfiguration deploymentConfiguration =
+                    vaadinService.getDeploymentConfiguration();
+            Optional<DevModeHandler> devModeHandler =
+                    DevModeHandlerManager.getDevModeHandler(vaadinService);
             if (deploymentConfiguration.isProductionMode()
                     || !deploymentConfiguration.enableDevServer()) {
                 // Without dev server we serve static files from the
                 // dedicated URI
                 return getStaticResourcesMappingURI(deploymentConfiguration)
                         + path;
-            } else if (DevModeHandler.getDevModeHandler() != null
-                    && checkWebpackConnection()) {
+            } else if (devModeHandler.isPresent() && checkWebpackConnection()) {
                 // With dev server running request directly from dev server
                 return String.format("http://localhost:%s/%s",
-                        DevModeHandler.getDevModeHandler().getPort(), path);
+                        ((AbstractDevServerRunner) devModeHandler.get()).getPort(), path);
             }
             return "/" + path;
         }
@@ -141,11 +139,18 @@ class PortletWebComponentBootstrapHandler
                     .getAttribute(DevModeHandler.class.getName());
         }
         try {
-            DevModeHandler.getDevModeHandler().prepareConnection("/", "GET")
-                    .getResponseCode();
-            VaadinPortlet.getCurrent().getPortletContext()
-                    .setAttribute(DevModeHandler.class.getName(), true);
-            return true;
+            VaadinService vaadinService = VaadinPortletService.getCurrent();
+            Optional<DevModeHandler> devModeHandler =
+                    DevModeHandlerManager.getDevModeHandler(vaadinService);
+            if (devModeHandler.isPresent()) {
+                devModeHandler.get().prepareConnection("/", "GET")
+                        .getResponseCode();
+                VaadinPortlet.getCurrent().getPortletContext()
+                        .setAttribute(DevModeHandler.class.getName(), true);
+                return true;
+            } else {
+                return false;
+            }
         } catch (IOException e) {
             LoggerFactory.getLogger(getClass())
                     .debug("Error checking webpack dev server connection", e);

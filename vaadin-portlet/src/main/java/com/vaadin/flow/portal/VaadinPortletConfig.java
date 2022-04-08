@@ -14,10 +14,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-import com.vaadin.flow.server.Constants;
 import com.vaadin.flow.server.VaadinConfig;
 import com.vaadin.flow.server.VaadinContext;
 import com.vaadin.flow.server.VaadinService;
@@ -31,13 +29,6 @@ import com.vaadin.flow.server.VaadinService;
 public class VaadinPortletConfig implements VaadinConfig {
 
     private transient PortletConfig config;
-    static Map<String, String> forcedParameters;
-
-    static {
-        forcedParameters = Collections.singletonMap(
-                Constants.SERVLET_PARAMETER_COMPATIBILITY_MODE,
-                Boolean.FALSE.toString());
-    }
 
     /**
      * Creates an instance of this context with given {@link PortletConfig}.
@@ -77,20 +68,13 @@ public class VaadinPortletConfig implements VaadinConfig {
         ensurePortletConfig();
         Set<String> initParameterNames = new HashSet<>(
                 Collections.list(config.getInitParameterNames()));
-        initParameterNames.addAll(forcedParameters.keySet());
         return Collections.enumeration(initParameterNames);
     }
 
     @Override
     public String getConfigParameter(String name) {
         ensurePortletConfig();
-        String initParameter;
-        if (forcedParameters.containsKey(name)) {
-            initParameter = forcedParameters.get(name);
-        } else {
-            initParameter = config.getInitParameter(name);
-        }
-        return initParameter;
+        return config.getInitParameter(name);
     }
 
     private void writeObject(java.io.ObjectOutputStream out)

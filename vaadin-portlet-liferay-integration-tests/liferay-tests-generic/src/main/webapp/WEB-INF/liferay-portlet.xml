@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE liferay-portlet-app PUBLIC "-//Liferay//DTD Portlet Application 7.1.0//EN" "http://www.liferay.com/dtd/liferay-portlet-app_7_1_0.dtd">
+
+<liferay-portlet-app>
+    <!-- Remember to add a new portlet to PortletDeployer -->
+    <portlet>
+        <portlet-name>basic</portlet-name>
+        <instanceable>false</instanceable>
+    </portlet>
+    <portlet>
+        <portlet-name>upload</portlet-name>
+        <instanceable>false</instanceable>
+    </portlet>
+    <portlet>
+        <portlet-name>eventhandler</portlet-name>
+        <instanceable>false</instanceable>
+    </portlet>
+    <portlet>
+        <portlet-name>render</portlet-name>
+        <instanceable>false</instanceable>
+    </portlet>
+    <portlet>
+        <portlet-name>minimizedstaterender</portlet-name>
+        <instanceable>false</instanceable>
+    </portlet>
+    <portlet>
+        <portlet-name>errorhandling</portlet-name>
+        <instanceable>false</instanceable>
+    </portlet>
+    <portlet>
+        <portlet-name>streamresource</portlet-name>
+        <instanceable>false</instanceable>
+    </portlet>
+</liferay-portlet-app>

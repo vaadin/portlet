@@ -42,7 +42,7 @@ import com.vaadin.testbench.TestBenchElement;
 import com.vaadin.testbench.parallel.ParallelTest;
 
 /**
- * Base class for ITs
+ * Base class for ITs running in the Apache Pluto container.
  * <p>
  * The tests use Chrome driver (see pom.xml for integration-tests profile) to
  * run integration tests on a headless Chrome. If a property {@code test.use

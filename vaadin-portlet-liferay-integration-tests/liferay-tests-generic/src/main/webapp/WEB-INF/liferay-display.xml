@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE display PUBLIC "-//Liferay//DTD Display 6.2.0//EN" "http://www.liferay.com/dtd/liferay-display_6_2_0.dtd">
+
+<display>
+    <category name="Vaadin Liferay Generic IT">
+        <portlet id="basic" />
+        <portlet id="upload" />
+        <portlet id="eventhandler" />
+        <portlet id="render" />
+        <portlet id="minimizedstaterender" />
+        <portlet id="errorhandling" />
+        <portlet id="streamresource" />
+        <!-- Remember to add a new portlet to PortletDeployer -->
+    </category>
+</display>

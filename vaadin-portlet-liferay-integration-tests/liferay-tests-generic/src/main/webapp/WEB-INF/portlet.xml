@@ -1,0 +1,180 @@
+<?xml version="1.0"?>
+
+<portlet-app version="3.0"
+             xmlns="http://xmlns.jcp.org/xml/ns/portlet"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/portlet http://xmlns.jcp.org/xml/ns/portlet/portlet-app_3_0.xsd">
+    <!-- Remember to add a new portlet to PortletDeployer -->
+    <portlet>
+        <portlet-name>basic</portlet-name>
+        <display-name>Flow Basic Portlet with Button</display-name>
+        <portlet-class>com.vaadin.flow.portal.liferay.basic.LiferayBasicPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>Basic Portlet</title>
+            <short-title>Basic Portlet</short-title>
+        </portlet-info>
+        <container-runtime-option>
+            <name>javax.portlet.renderHeaders</name>
+            <value>true</value>
+        </container-runtime-option>
+        <dependency>
+            <name>PortletHub</name>
+            <scope>javax.portlet</scope>
+            <version>3.0.0</version>
+        </dependency>
+    </portlet>
+
+    <portlet>
+        <portlet-name>upload</portlet-name>
+        <display-name>Flow Portlet with Upload</display-name>
+        <portlet-class>com.vaadin.flow.portal.liferay.upload.LiferayUploadPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>Upload Portlet</title>
+            <short-title>Upload Portlet</short-title>
+        </portlet-info>
+        <container-runtime-option>
+            <name>javax.portlet.renderHeaders</name>
+            <value>true</value>
+        </container-runtime-option>
+        <dependency>
+            <name>PortletHub</name>
+            <scope>javax.portlet</scope>
+            <version>3.0.0</version>
+        </dependency>
+    </portlet>
+
+    <portlet>
+        <portlet-name>eventhandler</portlet-name>
+        <display-name>Flow Portlet with Mode and Window State Change Handler</display-name>
+        <portlet-class>com.vaadin.flow.portal.liferay.lifecycle.LiferayEventHandlerPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode>
+            <portlet-mode>HELP</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>Event Handler Portlet</title>
+            <short-title>Event Handler Portlet</short-title>
+        </portlet-info>
+        <container-runtime-option>
+            <name>javax.portlet.renderHeaders</name>
+            <value>true</value>
+        </container-runtime-option>
+        <dependency>
+            <name>PortletHub</name>
+            <scope>javax.portlet</scope>
+            <version>3.0.0</version>
+        </dependency>
+    </portlet>
+
+    <portlet>
+        <portlet-name>render</portlet-name>
+        <display-name>Flow Portlet with RenderStateChange</display-name>
+        <portlet-class>com.vaadin.flow.portal.liferay.rendermodes.LiferayRenderPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>Render State Change Portlet</title>
+            <short-title>Render State Change Portlet</short-title>
+        </portlet-info>
+        <container-runtime-option>
+            <name>javax.portlet.renderHeaders</name>
+            <value>true</value>
+        </container-runtime-option>
+        <dependency>
+            <name>PortletHub</name>
+            <scope>javax.portlet</scope>
+            <version>3.0.0</version>
+        </dependency>
+    </portlet>
+
+    <portlet>
+        <portlet-name>minimizedstaterender</portlet-name>
+        <display-name>Flow Portlet with Minimized state rendering</display-name>
+        <portlet-class>com.vaadin.flow.portal.liferay.rendermodes.LiferayMinimizedStateRenderPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+            <portlet-mode>EDIT</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>Minimized State Render Portlet</title>
+            <short-title>Minimized State Render Portlet</short-title>
+        </portlet-info>
+        <container-runtime-option>
+            <name>javax.portlet.renderHeaders</name>
+            <value>true</value>
+        </container-runtime-option>
+        <dependency>
+            <name>PortletHub</name>
+            <scope>javax.portlet</scope>
+            <version>3.0.0</version>
+        </dependency>
+    </portlet>
+
+    <portlet>
+        <portlet-name>errorhandling</portlet-name>
+        <display-name>Flow Portlet that throws and exception</display-name>
+        <portlet-class>com.vaadin.flow.portal.liferay.errorhandling.LiferayErrorPortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>Error Handling Portlet</title>
+            <short-title>Error Handling Portlet</short-title>
+        </portlet-info>
+        <container-runtime-option>
+            <name>javax.portlet.renderHeaders</name>
+            <value>true</value>
+        </container-runtime-option>
+        <dependency>
+            <name>PortletHub</name>
+            <scope>javax.portlet</scope>
+            <version>3.0.0</version>
+        </dependency>
+    </portlet>
+
+    <portlet>
+        <portlet-name>streamresource</portlet-name>
+        <display-name>Flow Portlet for testing StreamResource functionality</display-name>
+        <portlet-class>com.vaadin.flow.portal.liferay.streamresource.LiferayStreamResourcePortlet</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>Stream Resource Portlet</title>
+            <short-title>Stream Resource Portlet</short-title>
+        </portlet-info>
+        <container-runtime-option>
+            <name>javax.portlet.renderHeaders</name>
+            <value>true</value>
+        </container-runtime-option>
+        <dependency>
+            <name>PortletHub</name>
+            <scope>javax.portlet</scope>
+            <version>3.0.0</version>
+        </dependency>
+    </portlet>
+
+</portlet-app>

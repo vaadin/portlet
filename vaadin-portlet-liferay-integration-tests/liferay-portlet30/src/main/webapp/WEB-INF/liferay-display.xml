@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE display PUBLIC "-//Liferay//DTD Display 6.2.0//EN" "http://www.liferay.com/dtd/liferay-display_6_2_0.dtd">
+
+<display>
+    <category name="Vaadin Liferay Portlet30 IT">
+        <portlet id="eventsource" />
+        <portlet id="eventtarget" />
+        <portlet id="othereventtarget" />
+        <portlet id="plainipcportlet" />
+        <portlet id="vaadinipcportlet" />
+        <portlet id="renderportlet30" />
+        <!-- Remember to add a new portlet to PortletDeployer -->
+    </category>
+</display>

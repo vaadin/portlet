@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<portlet-app xmlns="http://xmlns.jcp.org/xml/ns/portlet"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/portlet http://xmlns.jcp.org/xml/ns/portlet/portlet-app_3_0.xsd"
+             version="3.0">
+
+    <portlet>
+        <portlet-name>my-portlet-deployer</portlet-name>
+        <display-name>my-portlet-deployer</display-name>
+        <portlet-class>com.vaadin.flow.portal.liferay.deployer.PortletDeployer</portlet-class>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <portlet-info>
+            <title>my-portlet-deployer</title>
+            <short-title>my-portlet-deployer</short-title>
+            <keywords></keywords>
+        </portlet-info>
+        <container-runtime-option>
+            <name>javax.portlet.renderHeaders</name>
+            <value>true</value>
+        </container-runtime-option>
+        <dependency>
+            <name>PortletHub</name>
+            <scope>javax.portlet</scope>
+            <version>3.0.0</version>
+        </dependency>
+    </portlet>
+
+</portlet-app>

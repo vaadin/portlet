@@ -3,30 +3,42 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <modules>
+        <module>liferay-portlet-deployer</module>
+        <module>vaadin-portlet-liferay-it-shared</module>
+        <module>liferay-tests-generic</module>
+        <module>liferay-portlet30</module>
+    </modules>
     <parent>
         <groupId>com.vaadin</groupId>
         <artifactId>vaadin-portlet-parent</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>vaadin-portlet-integration-tests</artifactId>
-    <name>Portlet Integration Tests</name>
+    <artifactId>vaadin-portlet-liferay-integration-tests</artifactId>
+    <name>Liferay Integration Tests</name>
     <packaging>pom</packaging>
 
     <properties>
-        <pluto.version>3.1.1</pluto.version>
-        <pluto.home.directory>${project.build.directory}/pluto-${pluto.version}</pluto.home.directory>
+        <liferay.version>7.4.3.5-ga5</liferay.version>
+        <tomcat.version>9.0.56</tomcat.version>
+        <liferay.home.directory>
+            ${project.build.directory}/liferay-ce-portal-${liferay.version}
+        </liferay.home.directory>
+        <tomcat.home.directory>
+            ${liferay.home.directory}/tomcat-${tomcat.version}
+        </tomcat.home.directory>
         <bundle.download.directory>${project.build.directory}
         </bundle.download.directory>
         <cargo.debug.port>5005</cargo.debug.port>
         <cargo.timeout>120000</cargo.timeout>
-        <cargo.additional.jvmargs></cargo.additional.jvmargs>
 
         <javax.validation.version>2.0.0.Final</javax.validation.version>
 
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <project.reporting.outputEncoding>UTF-8
+        </project.reporting.outputEncoding>
 
         <vaadin.productionMode>true</vaadin.productionMode>
 
@@ -34,24 +46,11 @@
         <component.version>${vaadin.version}</component.version>
     </properties>
 
-    <modules>
-        <module>shared</module>
-        <module>portlet30</module>
-        <module>tests-generic</module>
-        <module>cdi</module>
-    </modules>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-portlet</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.vaadin</groupId>
-                <artifactId>vaadin-portlet-cdi</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -104,6 +103,14 @@
                 <artifactId>vaadin-lumo-theme</artifactId>
                 <version>${flow.version}</version>
             </dependency>
+
+            <!-- Test dependencies -->
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>annotations</artifactId>
+                <version>3.0.1</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -116,27 +123,40 @@
                     <version>1.9.10</version>
                     <configuration>
                         <container>
-                            <containerId>tomcat8x</containerId>
-	                        <home>${pluto.home.directory}</home>
+                            <containerId>tomcat9x</containerId>
+                            <home>${tomcat.home.directory}</home>
                             <timeout>${cargo.timeout}</timeout>
                         </container>
                         <configuration>
                             <type>existing</type>
-                            <home>${pluto.home.directory}</home>
+                            <home>${tomcat.home.directory}</home>
                             <properties>
                                 <cargo.start.jvmargs>
                                     -Xdebug
                                     -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=${cargo.debug.port}
                                     -Xnoagent
+                                    -Dfile.encoding=UTF-8
+                                    -Djava.locale.providers=JRE,COMPAT,CLDR
+                                    -Djava.net.preferIPv4Stack=true
+                                    -Duser.timezone=GMT
+                                    -Xms2560m
+                                    -Xmx2560m
+                                    -XX:MaxNewSize=1536m
+                                    -XX:MaxMetaspaceSize=768m
+                                    -XX:MetaspaceSize=768m
+                                    -XX:NewSize=1536m
+                                    -XX:SurvivorRatio=7
                                     -Djava.compiler=NONE
-                                    ${cargo.additional.jvmargs}
+                                    -Dvaadin.heartbeatInterval=15
+                                    -Dvaadin.portlet.static.resources.mapping=/o/vaadin-portlet-static/
                                 </cargo.start.jvmargs>
                             </properties>
                         </configuration>
+
                         <!-- Set an empty deployer so that cargo does not try to add the
                         current project's artifact to the container (as this was already
                         done by maven) -->
-                        <deployer />
+                        <deployer/>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -167,7 +187,9 @@
                                 <goal>war</goal>
                             </goals>
                             <configuration>
-                                <packagingExcludes>WEB-INF/classes/META-INF/VAADIN/build/**,VAADIN/</packagingExcludes>
+                                <packagingExcludes>
+                                    WEB-INF/classes/META-INF/VAADIN/build/**,VAADIN/
+                                </packagingExcludes>
                             </configuration>
                         </execution>
                         <execution>
@@ -177,12 +199,15 @@
                             </goals>
                             <configuration>
                                 <warName>vaadin-portlet-static</warName>
-                                <packagingIncludes>WEB-INF/lib/flow-client*.jar,VAADIN/</packagingIncludes>
+                                <packagingIncludes>
+                                    WEB-INF/lib/flow-client*.jar,WEB-INF/lib/vaadin-portlet*.jar,VAADIN/
+                                </packagingIncludes>
 
                                 <webResources>
                                     <resource>
                                         <!-- this is relative to the pom.xml directory -->
-                                        <directory>target/classes/META-INF/</directory>
+                                        <directory>target/classes/META-INF/
+                                        </directory>
                                         <includes>
                                             <include>**</include>
                                         </includes>
@@ -216,7 +241,6 @@
             </activation>
             <build>
                 <plugins>
-
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
@@ -249,19 +273,40 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>wait-for-liferay-start</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target name="wait-liferay">
+                                        <echo>Wait for Liferay to be fully ready...</echo>
+                                        <sleep seconds="15"/>
+                                        <!-- Warm up liferay with a first call -->
+                                        <get src="http://localhost:8080/"
+                                             ignoreerrors="true"
+                                             dest="${project.build.directory}/liferay_home.html"/>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
         <profile>
             <id>production</id>
-
             <dependencies>
                 <dependency>
                     <groupId>com.vaadin</groupId>
                     <artifactId>flow-server-production-mode</artifactId>
                 </dependency>
             </dependencies>
-
             <build>
                 <plugins>
                     <plugin>
@@ -282,69 +327,74 @@
             <id>autosetup</id>
             <build>
                 <pluginManagement>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>download-files</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target name="setup-pluto">
-                                        <get src="ftp://ftp.funet.fi/pub/mirrors/apache.org/portals/pluto/pluto-bundle-${pluto.version}.zip"
-                                             dest="${bundle.download.directory}/pluto.zip"
-                                             verbose="false" skipexisting="true"/>
-                                        <unzip
-                                                src="${bundle.download.directory}/pluto.zip"
-                                                dest="${project.build.directory}"/>
-                                        <copy file="${project.build.directory}/${project.artifactId}.war"
-                                              todir="${pluto.home.directory}/webapps"/>
-                                        <copy file="${project.build.directory}/vaadin-portlet-static.war"
-                                              todir="${pluto.home.directory}/webapps"/>
-                                    </target>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </pluginManagement>
-            </build>
-        </profile>
-
-        <profile>
-            <id>autocopy</id>
-            <build>
-                <pluginManagement>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>download-files</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <tasks>
-                                        <copy file="${project.build.directory}/${project.artifactId}.war"
-                                              todir="${pluto.home.directory}/webapps"/>
-                                        <copy file="${project.build.directory}/vaadin-portlet-static.war"
-                                              todir="${pluto.home.directory}/webapps"/>
-                                    </tasks>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-antrun-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <id>download-files</id>
+                                    <phase>package</phase>
+                                    <goals>
+                                        <goal>run</goal>
+                                    </goals>
+                                    <configuration>
+                                        <target name="setup-liferay">
+                                            <get src="https://github.com/liferay/liferay-portal/releases/download/${liferay.version}/liferay-ce-portal-tomcat-${liferay.version}-20211221192828235.tar.gz"
+                                                 dest="${bundle.download.directory}/liferay.tar.gz"
+                                                 verbose="false"
+                                                 usetimestamp="true"/>
+                                            <untar src="${bundle.download.directory}/liferay.tar.gz"
+                                                   compression="gzip"
+                                                   dest="${project.build.directory}"/>
+                                            <copy file="${project.basedir}/../liferay-portlet-deployer/target/liferay-portlet-deployer.war"
+                                                  todir="${liferay.home.directory}/osgi/war"/>
+                                            <copy file="${project.build.directory}/${project.artifactId}.war"
+                                                  todir="${liferay.home.directory}/osgi/war"/>
+                                            <copy file="${project.build.directory}/vaadin-portlet-static.war"
+                                                  todir="${liferay.home.directory}/osgi/war"/>
+                                        </target>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-resources-plugin</artifactId>
+                            <version>3.2.0</version>
+                            <executions>
+                                <execution>
+                                    <id>setup-liferay-env</id>
+                                    <phase>package</phase>
+                                    <goals>
+                                        <goal>copy-resources</goal>
+                                    </goals>
+                                    <configuration>
+                                        <outputDirectory>
+                                            ${liferay.home.directory}
+                                        </outputDirectory>
+                                        <propertiesEncoding>ISO-8859-1
+                                        </propertiesEncoding>
+                                        <resources>
+                                            <resource>
+                                                <directory>
+                                                    ${project.basedir}/src/test/liferay
+                                                </directory>
+                                                <filtering>true</filtering>
+                                                <includes>
+                                                    <include>
+                                                        portal-setup-wizard.properties
+                                                    </include>
+                                                </includes>
+                                            </resource>
+                                        </resources>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
                 </pluginManagement>
             </build>
         </profile>
-
     </profiles>
 </project>

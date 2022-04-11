@@ -1,3 +1,18 @@
+/*
+ * Copyright 2000-2022 Vaadin Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.vaadin.flow.portal.liferay;
 
 import javax.portlet.GenericPortlet;
@@ -33,6 +48,13 @@ import com.liferay.sites.kernel.util.SitesUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A Generic Portlet which creates Liferay layouts and adds test portlets to the
+ * corresponding layouts once deployed to Liferay container.
+ * Uses Liferay API and simplifies preparation of portlets before running
+ * integration tests.
+ * Layouts to be added should be defined in child class.
+ */
 public abstract class AbstractPortletDeployer extends GenericPortlet {
 
     private long userId;
@@ -168,6 +190,11 @@ public abstract class AbstractPortletDeployer extends GenericPortlet {
                 friendlyURL);
     }
 
+    /**
+     * Gets the collection of Liferay layouts (including portlets) to be added
+     * onto the page.
+     * @return collection of layouts to be added.
+     */
     protected abstract Collection<LayoutInfo> getLayouts();
 
     private Logger getLogger() {

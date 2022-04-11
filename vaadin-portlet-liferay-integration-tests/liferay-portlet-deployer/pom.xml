@@ -51,17 +51,6 @@
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-portlet</artifactId>
             <version>${project.version}</version>
-            <!-- Temporal solution for vaadin-porlet-1.0.0.beta4, due to CI issue it uses snapshot dependencies -->
-            <exclusions>
-                <exclusion>
-                    <groupId>com.vaadin</groupId>
-                    <artifactId>flow-server</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.vaadin</groupId>
-                    <artifactId>flow-client</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>

@@ -1,3 +1,12 @@
+/*
+ * Copyright (C) 2019-2022 Vaadin Ltd
+ *
+ * This program is available under Commercial Vaadin Developer License
+ * 4.0 (CVDLv4).
+ *
+ *
+ * For the full License, see <https://vaadin.com/license/cvdl-4.0>.
+ */
 //<![CDATA[
 // Liferay parses this file as XML, so make it appear as a CDATA section
 window.Vaadin = window.Vaadin || {};

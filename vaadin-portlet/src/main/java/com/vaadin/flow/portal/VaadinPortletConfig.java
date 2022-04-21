@@ -34,9 +34,7 @@ public class VaadinPortletConfig implements VaadinConfig {
     static Map<String, String> forcedParameters;
 
     static {
-        forcedParameters = Collections.singletonMap(
-                Constants.SERVLET_PARAMETER_COMPATIBILITY_MODE,
-                Boolean.FALSE.toString());
+        forcedParameters = Collections.emptyMap();
     }
 
     /**

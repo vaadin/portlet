@@ -10,19 +10,18 @@
 package com.vaadin.flow.portal;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import javax.portlet.PortletResponse;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import org.jsoup.nodes.Element;
 import org.slf4j.LoggerFactory;
 
+import com.vaadin.base.devserver.AbstractDevServerRunner;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.function.DeploymentConfiguration;
-import com.vaadin.flow.server.DevModeHandler;
+import com.vaadin.flow.internal.DevModeHandler;
+import com.vaadin.flow.internal.DevModeHandlerManager;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.server.VaadinSession;
@@ -52,8 +51,7 @@ class PortletWebComponentBootstrapHandler
     }
 
     @Override
-    protected String modifyPath(String basePath, String path)
-            throws UnsupportedEncodingException {
+    protected String modifyPath(String basePath, String path) {
         // Require that the static files are available from the server root
         path = path.replaceFirst("^.VAADIN/", "./VAADIN/");
         if (path.startsWith("./VAADIN/")) {
@@ -65,11 +63,13 @@ class PortletWebComponentBootstrapHandler
                 // dedicated URI
                 return getStaticResourcesMappingURI(deploymentConfiguration)
                         + path;
-            } else if (DevModeHandler.getDevModeHandler() != null
+            } else if (DevModeHandlerManager.getDevModeHandler(VaadinPortletService
+                    .getCurrent()).isPresent()
                     && checkWebpackConnection()) {
                 // With dev server running request directly from dev server
                 return String.format("http://localhost:%s/%s",
-                        DevModeHandler.getDevModeHandler().getPort(), path);
+                        ((AbstractDevServerRunner) DevModeHandlerManager.getDevModeHandler(VaadinPortletService
+                                .getCurrent()).get()).getPort(), path);
             }
             return "/" + path;
         }
@@ -141,7 +141,8 @@ class PortletWebComponentBootstrapHandler
                     .getAttribute(DevModeHandler.class.getName());
         }
         try {
-            DevModeHandler.getDevModeHandler().prepareConnection("/", "GET")
+            DevModeHandlerManager.getDevModeHandler(VaadinPortletService
+                    .getCurrent()).get().prepareConnection("/", "GET")
                     .getResponseCode();
             VaadinPortlet.getCurrent().getPortletContext()
                     .setAttribute(DevModeHandler.class.getName(), true);

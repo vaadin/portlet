@@ -15,10 +15,12 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
+import javax.servlet.ServletContext;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
@@ -315,31 +317,20 @@ public class VaadinPortletService extends VaadinService {
     }
 
     @Override
-    public URL getResource(String url, WebBrowser browser,
-            AbstractTheme theme) {
-        getLogger().debug(SERVLET_RESOURCES_SERVER_MESSAGE);
-        return null;
+    public URL getResource(String s) {
+        ClassLoader classLoader = getPortletClassLoader();
+        return classLoader.getResource(s);
     }
 
     @Override
-    public InputStream getResourceAsStream(String url, WebBrowser browser,
-            AbstractTheme theme) {
-        getLogger().debug(SERVLET_RESOURCES_SERVER_MESSAGE);
-        return null;
+    public InputStream getResourceAsStream(String s) {
+        ClassLoader classLoader = getPortletClassLoader();
+        return classLoader.getResourceAsStream(s);
     }
 
     @Override
-    public String resolveResource(String url, WebBrowser browser) {
-        getLogger().debug(SERVLET_RESOURCES_SERVER_MESSAGE);
+    public String resolveResource(String s) {
         return null;
-    }
-
-    @Override
-    public Optional<String> getThemedUrl(String url, WebBrowser browser,
-            AbstractTheme theme) {
-        getLogger().debug(
-                "Theme is present in the bundle. No theme resolution is done for portlets.");
-        return Optional.empty();
     }
 
     @Override
@@ -348,14 +339,7 @@ public class VaadinPortletService extends VaadinService {
     }
 
     private static Properties loadPropertiesFile() {
-        ClassLoader classLoader;
-        VaadinPortletService currentService = (VaadinPortletService) VaadinPortletService
-                .getCurrent();
-        if (currentService != null) {
-            classLoader = currentService.getClassLoader();
-        } else {
-            classLoader = VaadinPortletService.class.getClassLoader();
-        }
+        ClassLoader classLoader = getPortletClassLoader();
 
         Properties properties = new Properties();
         try {
@@ -367,6 +351,18 @@ public class VaadinPortletService extends VaadinService {
                     VERSION_PROPERTIES_NAME), e);
         }
         return properties;
+    }
+
+    private static ClassLoader getPortletClassLoader() {
+        ClassLoader classLoader;
+        VaadinPortletService currentService = (VaadinPortletService) VaadinPortletService
+                .getCurrent();
+        if (currentService != null) {
+            classLoader = currentService.getClassLoader();
+        } else {
+            classLoader = VaadinPortletService.class.getClassLoader();
+        }
+        return classLoader;
     }
 
     private static Logger getLogger() {

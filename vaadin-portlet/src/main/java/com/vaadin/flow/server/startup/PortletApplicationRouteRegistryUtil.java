@@ -47,6 +47,6 @@ public class PortletApplicationRouteRegistryUtil {
 
     private static ApplicationRouteRegistry createRegistry(
             VaadinContext context) {
-        return new ApplicationRouteRegistry();
+        return new ApplicationRouteRegistry(context);
     }
 }

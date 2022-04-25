@@ -101,7 +101,7 @@ class PortletStreamResourceRegistry extends StreamResourceRegistry {
                 return uri;
             } catch (URISyntaxException e) {
                 // should not happen
-                throw new RuntimeException(e);
+                throw new VaadinPortletException(e);
             }
         } else {
             return super.getTargetURI(resource);

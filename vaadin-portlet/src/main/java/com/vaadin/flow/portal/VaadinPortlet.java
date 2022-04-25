@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -628,12 +629,13 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         VaadinSession session = ui.getSession();
         PortletViewContext context;
 
-        VaadinPortlet<C> portlet = (VaadinPortlet<C>) getCurrent();
+        VaadinPortlet<C> portlet =
+                (VaadinPortlet<C>) Objects.requireNonNull(getCurrent());
 
         try {
             context = portlet.getViewContext(session, namespace, windowName);
         } catch (PortletException exception) {
-            throw new RuntimeException("Unable to initialize component, "
+            throw new VaadinPortletException("Unable to initialize component, "
                     + "PortletException raised", exception);
         }
         PortletRequest request = VaadinPortletRequest

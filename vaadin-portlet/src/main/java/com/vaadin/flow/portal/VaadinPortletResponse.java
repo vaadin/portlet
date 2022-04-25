@@ -83,7 +83,7 @@ public class VaadinPortletResponse implements VaadinResponse {
         if (response instanceof MimeResponse) {
             ((MimeResponse) response).setContentType(type);
         } else {
-            throw new RuntimeException(
+            throw new VaadinPortletException(
                     "Content type cannot be set for response of type "
                             + response.getClass().getName());
         }

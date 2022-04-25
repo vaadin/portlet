@@ -143,7 +143,7 @@ class PortletStreamRequestHandler extends StreamRequestHandler {
             return Optional.of(uri);
         } catch (UnsupportedEncodingException e) {
             // UTF8 has to be supported
-            throw new RuntimeException(e);
+            throw new VaadinPortletException(e);
         } catch (URISyntaxException e) {
             getLogger().info(
                     "Path '{}' is not correct URI (it violates RFC 2396)", path,

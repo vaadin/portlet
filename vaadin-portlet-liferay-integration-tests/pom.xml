@@ -351,8 +351,7 @@
                                             <copy file="${project.build.directory}/${project.artifactId}.war"
                                                   todir="${liferay.home.directory}/osgi/war"/>
                                             <copy file="${project.build.directory}/vaadin-portlet-static.war"
-                                                  todir="${liferay.home.directory}/osgi/war"
-                                                  failonerror="false"/>
+                                                  todir="${liferay.home.directory}/osgi/war"/>
                                         </target>
                                     </configuration>
                                 </execution>

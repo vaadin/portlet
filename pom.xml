@@ -18,6 +18,9 @@
     <modules>
         <module>vaadin-portlet</module>
         <module>vaadin-portlet-cdi</module>
+        <!-- Pluto Java 11 compatibility is coming perhaps December 2022 -->
+        <!-- see https://www.mail-archive.com/pluto-dev@portals.apache.org/msg05719.html -->
+        <!-- and https://github.com/vaadin/portlet/issues/226-->
 <!--        <module>vaadin-portlet-integration-tests</module>-->
         <module>vaadin-portlet-liferay-integration-tests</module>
     </modules>

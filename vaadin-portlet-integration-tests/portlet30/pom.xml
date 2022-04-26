@@ -41,7 +41,7 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-button-testbench</artifactId>
-            <version>${vaadin.version}</version>
+            <version>${component.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

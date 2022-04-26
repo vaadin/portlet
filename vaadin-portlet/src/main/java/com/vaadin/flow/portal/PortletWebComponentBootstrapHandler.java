@@ -64,7 +64,8 @@ class PortletWebComponentBootstrapHandler
                 // dedicated URI
                 return getStaticResourcesMappingURI(deploymentConfiguration)
                         + path;
-            } else if (devModeHandler.isPresent() && checkWebpackConnection()) {
+            } else if (devModeHandler.isPresent() && checkWebpackConnection(
+                    devModeHandler.get())) {
                 // With dev server running request directly from dev server
                 return String.format("http://localhost:%s/%s",
                         ((AbstractDevServerRunner) devModeHandler.get()).getPort(), path);
@@ -132,25 +133,17 @@ class PortletWebComponentBootstrapHandler
         return super.createAndInitUI(uiClass, request, response, session);
     }
 
-    private boolean checkWebpackConnection() {
-        if (VaadinPortlet.getCurrent().getPortletContext()
+    private boolean checkWebpackConnection(DevModeHandler devModeHandler) {
+        if (Objects.requireNonNull(VaadinPortlet.getCurrent()).getPortletContext()
                 .getAttribute(DevModeHandler.class.getName()) != null) {
             return (Boolean) VaadinPortlet.getCurrent().getPortletContext()
                     .getAttribute(DevModeHandler.class.getName());
         }
         try {
-            VaadinService vaadinService = VaadinPortletService.getCurrent();
-            Optional<DevModeHandler> devModeHandler =
-                    DevModeHandlerManager.getDevModeHandler(vaadinService);
-            if (devModeHandler.isPresent()) {
-                devModeHandler.get().prepareConnection("/", "GET")
-                        .getResponseCode();
-                VaadinPortlet.getCurrent().getPortletContext()
-                        .setAttribute(DevModeHandler.class.getName(), true);
-                return true;
-            } else {
-                return false;
-            }
+            devModeHandler.prepareConnection("/", "GET").getResponseCode();
+            VaadinPortlet.getCurrent().getPortletContext()
+                    .setAttribute(DevModeHandler.class.getName(), true);
+            return true;
         } catch (IOException e) {
             LoggerFactory.getLogger(getClass())
                     .debug("Error checking webpack dev server connection", e);

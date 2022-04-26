@@ -182,7 +182,7 @@
                                 <webResources>
                                     <resource>
                                         <!-- this is relative to the pom.xml directory -->
-                                        <directory>target/classes/META-INF/</directory>
+                                        <directory>target/classes/META-INF/VAADIN/webapp/</directory>
                                         <includes>
                                             <include>**</include>
                                         </includes>

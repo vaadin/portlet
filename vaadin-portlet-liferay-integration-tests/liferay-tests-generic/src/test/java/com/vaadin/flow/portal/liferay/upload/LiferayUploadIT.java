@@ -36,9 +36,7 @@ public class LiferayUploadIT extends AbstractLiferayPortalTest {
 
         UploadElement upload = getVaadinPortletRootElement()
                 .$(UploadElement.class).waitForFirst();
-        WebElement input = upload.$("*").id("fileInput");
-        setLocalFileDetector(input);
-        input.sendKeys(file.getAbsolutePath());
+        upload.upload(file);
 
         // check that label indicates size of file
         waitUntil(driver -> {

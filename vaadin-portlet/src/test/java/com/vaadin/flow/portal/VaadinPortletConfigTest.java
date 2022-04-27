@@ -52,7 +52,6 @@ public class VaadinPortletConfigTest {
                 .setAttribute(Mockito.anyString(), Mockito.any());
 
         properties = new HashMap<>();
-        properties.put(Constants.SERVLET_PARAMETER_COMPATIBILITY_MODE, "true");
         properties.put(Constants.SERVLET_PARAMETER_PRODUCTION_MODE, "true");
         properties.put(Constants.SERVLET_PARAMETER_ENABLE_DEV_SERVER, "false");
 
@@ -71,16 +70,9 @@ public class VaadinPortletConfigTest {
                 "Context should return only keys defined in PortletContext",
                 properties.size(), list.size());
         for (String key : properties.keySet()) {
-            if (config.forcedParameters.containsKey(key)) {
-                Assert.assertEquals(
-                        "Any forced parameter should be overridden by the VaadinPortletConfiguration",
-                        config.forcedParameters.get(key),
-                        config.getConfigParameter(key));
-            } else {
-                Assert.assertEquals(String.format(
-                        "Value should be same from context for key '%s'", key),
-                        properties.get(key), config.getConfigParameter(key));
-            }
+            Assert.assertEquals(String.format(
+                    "Value should be same from context for key '%s'", key),
+                    properties.get(key), config.getConfigParameter(key));
         }
     }
 

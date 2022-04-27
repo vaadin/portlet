@@ -15,6 +15,9 @@ import com.vaadin.flow.server.startup.ApplicationRouteRegistry.ApplicationRouteR
 
 public class PortletApplicationRouteRegistryUtil {
 
+    private PortletApplicationRouteRegistryUtil() {
+    }
+
     /**
      * Gets the route registry for the given Vaadin context. If the Vaadin
      * context has no route registry, a new instance is created and assigned to
@@ -47,6 +50,6 @@ public class PortletApplicationRouteRegistryUtil {
 
     private static ApplicationRouteRegistry createRegistry(
             VaadinContext context) {
-        return new ApplicationRouteRegistry();
+        return new ApplicationRouteRegistry(context);
     }
 }

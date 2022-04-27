@@ -140,7 +140,7 @@ public abstract class AbstractPortletDeployer extends GenericPortlet {
                 LayoutLocalServiceUtil.deleteLayout(layoutByFriendlyURL);
             }
         } catch (Exception e) {
-            getLogger().warn("Failed to remove olf layout for {}", friendlyURL,
+            getLogger().warn("Failed to remove old layout for {}", friendlyURL,
                     e);
             return false;
         }

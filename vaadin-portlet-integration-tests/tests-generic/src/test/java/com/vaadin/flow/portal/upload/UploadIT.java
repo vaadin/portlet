@@ -38,9 +38,7 @@ public class UploadIT extends AbstractPlutoPortalTest {
 
         UploadElement upload = getVaadinPortletRootElement()
                 .$(UploadElement.class).waitForFirst();
-        WebElement input = upload.$("*").id("fileInput");
-        setLocalFileDetector(input);
-        input.sendKeys(file.getAbsolutePath());
+        upload.upload(file);
 
         // check that label indicates size of file
         LabelElement label = getVaadinPortletRootElement()

@@ -19,3 +19,9 @@
 
 # JS
 /**/node_modules/*
+**/frontend/generated
+**/tsconfig.json
+**/types.d.ts
+**/index.html
+**/web-component.html
+

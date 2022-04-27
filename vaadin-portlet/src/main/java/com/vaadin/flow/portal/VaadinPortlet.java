@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -53,7 +54,6 @@ import com.vaadin.flow.server.Command;
 import com.vaadin.flow.server.DeploymentConfigurationFactory;
 import com.vaadin.flow.server.ServiceException;
 import com.vaadin.flow.server.SessionExpiredException;
-import com.vaadin.flow.server.VaadinConfigurationException;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
@@ -203,9 +203,9 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     protected DeploymentConfiguration createDeploymentConfiguration(
             PortletConfig config) throws PortletException {
         try {
-            return DeploymentConfigurationFactory.createDeploymentConfiguration(
-                    getClass(), new VaadinPortletConfig(config));
-        } catch (VaadinConfigurationException e) {
+            return new DeploymentConfigurationFactory().createDeploymentConfiguration(
+                            getClass(), new VaadinPortletConfig(config));
+        } catch (Exception e) {
             throw new PortletException(
                     "Failed to construct DeploymentConfiguration.", e);
         }
@@ -629,12 +629,13 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         VaadinSession session = ui.getSession();
         PortletViewContext context;
 
-        VaadinPortlet<C> portlet = (VaadinPortlet<C>) getCurrent();
+        VaadinPortlet<C> portlet =
+                (VaadinPortlet<C>) Objects.requireNonNull(getCurrent());
 
         try {
             context = portlet.getViewContext(session, namespace, windowName);
         } catch (PortletException exception) {
-            throw new RuntimeException("Unable to initialize component, "
+            throw new VaadinPortletException("Unable to initialize component, "
                     + "PortletException raised", exception);
         }
         PortletRequest request = VaadinPortletRequest

@@ -17,7 +17,6 @@ import java.util.Optional;
 import org.jsoup.nodes.Element;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.base.devserver.AbstractDevServerRunner;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.DevModeHandler;
@@ -68,7 +67,7 @@ class PortletWebComponentBootstrapHandler
                     devModeHandler.get())) {
                 // With dev server running request directly from dev server
                 return String.format("http://localhost:%s/%s",
-                        ((AbstractDevServerRunner) devModeHandler.get()).getPort(), path);
+                        devModeHandler.get().getPort(), path);
             }
             return "/" + path;
         }

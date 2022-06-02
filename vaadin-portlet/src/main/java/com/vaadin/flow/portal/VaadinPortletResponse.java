@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import com.vaadin.flow.server.VaadinResponse;
+import com.vaadin.flow.server.VaadinServletResponse;
 
 /**
  * Wrapper for {@link PortletResponse} and its subclasses.
@@ -127,17 +128,7 @@ public class VaadinPortletResponse implements VaadinResponse {
 
     @Override
     public void setCacheTime(long milliseconds) {
-        // FIXME This is copy paste
-        if (milliseconds <= 0) {
-            setHeader("Cache-Control", "no-cache");
-            setHeader("Pragma", "no-cache");
-            setDateHeader("Expires", 0);
-        } else {
-            setHeader("Cache-Control", "max-age=" + milliseconds / 1000);
-            setDateHeader("Expires", System.currentTimeMillis() + milliseconds);
-            // Required to apply caching in some Tomcats
-            setHeader("Pragma", "cache");
-        }
+        VaadinServletResponse.doSetCacheTime(this, milliseconds);
     }
 
     @Override

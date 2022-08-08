@@ -11,6 +11,8 @@ package com.vaadin.flow.portal;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+import java.io.File;
+import java.lang.management.ManagementFactory;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -18,13 +20,16 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.vaadin.flow.component.html.testbench.AnchorElement;
@@ -78,17 +83,46 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     public ScreenshotOnFailureRule rule = new ScreenshotOnFailureRule(this,
             false);
 
+    /**
+     * Sets up the chrome driver path in a system variable.
+     */
+    @BeforeClass
+    public static void setChromeDriverPath() {
+        if (isUsingHub()) {
+            return;
+        }
+        String chromedriverProperty = System
+                .getProperty("webdriver.chrome.driver");
+        if (chromedriverProperty == null
+                || !new File(chromedriverProperty).exists()) {
+            // This sets the same property
+            WebDriverManager.chromedriver().setup();
+        } else {
+            System.out
+                    .println("Using chromedriver from " + chromedriverProperty);
+        }
+    }
+
     @Override
     @Before
     public void setup() throws Exception {
         if (isUsingHub()) {
             super.setup();
         } else {
-            setDriver(TestBench.createDriver(new ChromeDriver()));
+            ChromeOptions options = new ChromeOptions();
+            if (!isJavaInDebugMode()) {
+                options.addArguments("--headless", "--disable-gpu");
+            }
+            setDriver(TestBench.createDriver(new ChromeDriver(options)));
         }
         getDriver().get(getURL(PORTAL_ROUTE));
         loginToPortal();
         addVaadinPortlet(portletName);
+    }
+
+    static boolean isJavaInDebugMode() {
+        return ManagementFactory.getRuntimeMXBean().getInputArguments()
+                .toString().contains("jdwp");
     }
 
     protected void loginToPortal() {

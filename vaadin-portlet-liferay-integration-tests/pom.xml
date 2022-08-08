@@ -29,7 +29,7 @@
         </tomcat.home.directory>
         <bundle.download.directory>${project.build.directory}
         </bundle.download.directory>
-        <cargo.debug.port>5005</cargo.debug.port>
+        <cargo.debug.port>5015</cargo.debug.port>
         <cargo.timeout>120000</cargo.timeout>
 
         <javax.validation.version>2.0.0.Final</javax.validation.version>

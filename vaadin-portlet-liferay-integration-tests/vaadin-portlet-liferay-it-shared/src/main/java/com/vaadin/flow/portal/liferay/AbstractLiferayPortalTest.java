@@ -11,19 +11,23 @@ package com.vaadin.flow.portal.liferay;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
-
+import java.io.File;
+import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.vaadin.testbench.ScreenshotOnFailureRule;
@@ -67,16 +71,45 @@ public abstract class AbstractLiferayPortalTest extends ParallelTest {
     public ScreenshotOnFailureRule rule = new ScreenshotOnFailureRule(this,
             false);
 
+    /**
+     * Sets up the chrome driver path in a system variable.
+     */
+    @BeforeClass
+    public static void setChromeDriverPath() {
+        if (isUsingHub()) {
+            return;
+        }
+        String chromedriverProperty = System
+                .getProperty("webdriver.chrome.driver");
+        if (chromedriverProperty == null
+                || !new File(chromedriverProperty).exists()) {
+            // This sets the same property
+            WebDriverManager.chromedriver().setup();
+        } else {
+            System.out
+                    .println("Using chromedriver from " + chromedriverProperty);
+        }
+    }
+
     @Override
     @Before
     public void setup() throws Exception {
         if (isUsingHub()) {
             super.setup();
         } else {
-            setDriver(TestBench.createDriver(new ChromeDriver()));
+            ChromeOptions options = new ChromeOptions();
+            if (!isJavaInDebugMode()) {
+                options.addArguments("--headless", "--disable-gpu");
+            }
+            setDriver(TestBench.createDriver(new ChromeDriver(options)));
         }
         loginToPortal();
         openPortletLayout();
+    }
+
+    static boolean isJavaInDebugMode() {
+        return ManagementFactory.getRuntimeMXBean().getInputArguments()
+                .toString().contains("jdwp");
     }
 
     protected void openPortletLayout() {

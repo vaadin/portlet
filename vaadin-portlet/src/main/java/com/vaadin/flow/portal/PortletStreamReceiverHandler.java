@@ -15,13 +15,13 @@ import java.util.Collection;
 
 import javax.portlet.ClientDataRequest;
 import javax.portlet.PortletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Part;
 
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.RequestContext;
-import org.apache.commons.fileupload.portlet.PortletFileUpload;
+import org.apache.commons.fileupload2.FileItemIterator;
+import org.apache.commons.fileupload2.FileUploadException;
+import org.apache.commons.fileupload2.RequestContext;
+import org.apache.commons.fileupload2.portlet.PortletFileUpload;
 
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.communication.StreamReceiverHandler;

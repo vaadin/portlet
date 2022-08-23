@@ -64,6 +64,11 @@ public class VaadinPortletRequest extends PortletRequestWrapper
     }
 
     @Override
+    public long getContentLengthLong() {
+        return 0;
+    }
+
+    @Override
     public InputStream getInputStream() throws IOException {
         try {
             return ((ClientDataRequest) getRequest()).getPortletInputStream();

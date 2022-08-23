@@ -10,7 +10,7 @@
 package com.vaadin.flow.portal;
 
 import javax.portlet.PortletContext;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.OutputStream;

@@ -10,7 +10,7 @@
 package com.vaadin.flow.portal;
 
 import javax.portlet.PortletRequest;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -138,7 +138,7 @@ public class VaadinLiferayRequest extends VaadinHttpAndPortletRequest {
                 // PortalUtil.getOriginalServletRequest(httpRequest);
                 httpRequest = (HttpServletRequest) invokeStaticLiferayMethod(
                         portalUtilClass, "getOriginalServletRequest",
-                        httpRequest, "javax.servlet.http.HttpServletRequest");
+                        httpRequest, "jakarta.servlet.http.HttpServletRequest");
                 return httpRequest;
             }
 

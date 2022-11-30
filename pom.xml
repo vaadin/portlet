@@ -37,7 +37,7 @@
         </license>
     </licenses>
 
-    <inceptionYear>2000</inceptionYear>
+    <inceptionYear>2019</inceptionYear>
 
     <scm>
         <connection>scm:https:https://github.com/vaadin/portlet.git</connection>

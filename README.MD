@@ -13,3 +13,4 @@ This is the official Portlet 3.0 (JSR 362) integration for [Vaadin Flow](https:/
 ## Documentation
 
 Read the documentation [here](https://github.com/vaadin/flow-and-components-documentation/tree/master/documentation/portlet-support).
+

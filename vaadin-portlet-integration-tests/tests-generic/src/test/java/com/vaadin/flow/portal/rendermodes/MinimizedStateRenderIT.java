@@ -13,9 +13,7 @@ import javax.portlet.WindowState;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openqa.selenium.By;
 
-import com.vaadin.flow.component.button.testbench.ButtonElement;
 import com.vaadin.flow.portal.AbstractPlutoPortalTest;
 import com.vaadin.testbench.TestBenchElement;
 
@@ -52,11 +50,12 @@ public class MinimizedStateRenderIT extends AbstractPlutoPortalTest {
     }
 
     private void clickPortletModeChangeButtonAndCheckMode(String mode) {
-        TestBenchElement portletModeChangeButton = getVaadinPortletRootElement().$(
-                "*").id(MinimizedStateRenderView.PORTLET_MODE_CHANGE);
+        TestBenchElement portletModeChangeButton = getVaadinPortletRootElement()
+                .$("*").id(MinimizedStateRenderView.PORTLET_MODE_CHANGE);
         portletModeChangeButton.click();
-        TestBenchElement modeInfo = getVaadinPortletRootElement().$("*")
-                .id(MinimizedStateRenderView.MODE_INFO_ID);
+        TestBenchElement modeInfo = waitUntil(
+                driver -> getVaadinPortletRootElement().$("*")
+                        .id(MinimizedStateRenderView.MODE_INFO_ID));
         Assert.assertEquals(mode, modeInfo.getText());
     }
 
@@ -66,8 +65,9 @@ public class MinimizedStateRenderIT extends AbstractPlutoPortalTest {
 
         button.click();
 
-        TestBenchElement stateInfo = getVaadinPortletRootElement().$("*")
-                .id(MinimizedStateRenderView.STATE_INFO_ID);
+        TestBenchElement stateInfo = waitUntil(
+                driver -> getVaadinPortletRootElement().$("*")
+                        .id(MinimizedStateRenderView.STATE_INFO_ID));
         Assert.assertEquals(state, stateInfo.getText());
     }
 }

@@ -214,6 +214,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         waitUntil(d -> {
             try {
                 d.get(url);
+                return true;
             } catch (WebDriverException ex) {
                 if (ex.getMessage()
                         .contains("cannot determine loading status")) {
@@ -221,7 +222,6 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
                 }
                 throw ex;
             }
-            return true;
         });
     }
 

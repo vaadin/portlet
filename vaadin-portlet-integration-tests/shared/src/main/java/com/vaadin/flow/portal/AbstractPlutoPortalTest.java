@@ -213,7 +213,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     protected void waitForPageLoaded(String url) {
         waitUntil(d -> {
             try {
-                d.get(getURL(url));
+                d.get(url);
             } catch (WebDriverException ex) {
                 if (ex.getMessage()
                         .contains("cannot determine loading status")) {

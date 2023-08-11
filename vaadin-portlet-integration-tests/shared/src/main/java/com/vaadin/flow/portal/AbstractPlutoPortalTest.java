@@ -222,7 +222,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
                 }
                 throw ex;
             }
-        });
+        },  20);
     }
 
     protected void removePortletPage() {

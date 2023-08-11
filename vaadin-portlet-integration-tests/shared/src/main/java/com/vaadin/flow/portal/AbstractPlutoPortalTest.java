@@ -115,7 +115,6 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
             }
             setDriver(TestBench.createDriver(new ChromeDriver(options)));
         }
-        //getDriver().get(getURL(PORTAL_ROUTE));
         waitForPageLoaded(getURL(PORTAL_ROUTE));
         loginToPortal();
         addVaadinPortlet(portletName);
@@ -199,7 +198,6 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         createTestPageIfNotExists();
 
         // Go to admin
-        //getDriver().get(getURL(PORTAL_ROUTE + "/" + ADMIN_PAGE_FRAGMENT));
         waitForPageLoaded(getURL(PORTAL_ROUTE + "/" + ADMIN_PAGE_FRAGMENT));
 
         // Add the portlet
@@ -213,7 +211,6 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         nameMap.get("availablePortlets").selectByText(portlet);
         findElement(By.id("addButton")).click();
 
-        //getDriver().get(getURL(getPortalRoute() + "/" + getPage()));
         waitForPageLoaded(getURL(getPortalRoute() + "/" + getPage()));
 
         // Wait for the portlet to appear on the page
@@ -224,7 +221,6 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     protected void createTestPageIfNotExists() {
         if (testPage == null) {
             // Go to admin
-            //getDriver().get(getURL(PORTAL_ROUTE + "/" + ADMIN_PAGE_FRAGMENT));
             waitForPageLoaded(getURL(PORTAL_ROUTE + "/" + ADMIN_PAGE_FRAGMENT));
 
             testPage = String.format("IT-%d",
@@ -259,7 +255,6 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     }
 
     protected void removePortletPage() {
-        //getDriver().get(getURL(PORTAL_ROUTE + "/" + ADMIN_PAGE_FRAGMENT));
         waitForPageLoaded(getURL(PORTAL_ROUTE + "/" + ADMIN_PAGE_FRAGMENT));
         Map<String, SelectElement> nameMap = $(SelectElement.class).all()
                 .stream()

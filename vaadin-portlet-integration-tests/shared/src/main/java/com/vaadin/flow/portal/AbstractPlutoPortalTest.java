@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -115,7 +116,19 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         createTestPageIfNotExists();
 
         // Go to the page and collect the portlet names
-        getDriver().get(getURL(getPortalRoute() + "/" + getPage()));
+        waitUntil(d -> {
+            try {
+                d.get(getURL(getPortalRoute() + "/" + getPage()));
+            } catch (WebDriverException ex) {
+                if (ex.getMessage()
+                        .contains("cannot determine loading status")) {
+                    return false;
+                }
+                throw ex;
+            }
+            return true;
+        });
+
         final Set<String> portletIds = getVaadinPortletRootElements().stream()
                 .map(we -> we.getAttribute(PORTLET_ID_ATTRIBUTE))
                 .collect(Collectors.toSet());
@@ -211,11 +224,9 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
                 .all();
     }
 
-    protected TestBenchElement getVaadinPortletRootElement(
-            String id) {
+    protected TestBenchElement getVaadinPortletRootElement(String id) {
         return $(TestBenchElement.class).hasAttribute(PORTLET_ID_ATTRIBUTE)
-                .attribute(PORTLET_ID_ATTRIBUTE,id)
-                .waitForFirst();
+                .attribute(PORTLET_ID_ATTRIBUTE, id).waitForFirst();
     }
 
     protected TestBenchElement getVaadinPortletRootElement() {

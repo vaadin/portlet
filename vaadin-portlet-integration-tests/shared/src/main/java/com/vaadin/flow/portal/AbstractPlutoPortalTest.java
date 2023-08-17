@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -86,7 +87,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         } else {
             setDriver(TestBench.createDriver(new ChromeDriver()));
         }
-        getDriver().get(getURL(PORTAL_ROUTE));
+        waitForPageLoaded(getURL(PORTAL_ROUTE));
         loginToPortal();
         addVaadinPortlet(portletName);
     }
@@ -115,7 +116,19 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         createTestPageIfNotExists();
 
         // Go to the page and collect the portlet names
-        getDriver().get(getURL(getPortalRoute() + "/" + getPage()));
+        waitUntil(d -> {
+            try {
+                d.get(getURL(getPortalRoute() + "/" + getPage()));
+            } catch (WebDriverException ex) {
+                if (ex.getMessage()
+                        .contains("cannot determine loading status")) {
+                    return false;
+                }
+                throw ex;
+            }
+            return true;
+        });
+
         final Set<String> portletIds = getVaadinPortletRootElements().stream()
                 .map(we -> we.getAttribute(PORTLET_ID_ATTRIBUTE))
                 .collect(Collectors.toSet());
@@ -152,7 +165,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         createTestPageIfNotExists();
 
         // Go to admin
-        getDriver().get(getURL(PORTAL_ROUTE + "/" + ADMIN_PAGE_FRAGMENT));
+        waitForPageLoaded(getURL(PORTAL_ROUTE + "/" + ADMIN_PAGE_FRAGMENT));
 
         // Add the portlet
         Map<String, SelectElement> nameMap = $(SelectElement.class).all()
@@ -165,7 +178,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         nameMap.get("availablePortlets").selectByText(portlet);
         findElement(By.id("addButton")).click();
 
-        getDriver().get(getURL(getPortalRoute() + "/" + getPage()));
+        waitForPageLoaded(getURL(getPortalRoute() + "/" + getPage()));
 
         // Wait for the portlet to appear on the page
         waitUntil(ExpectedConditions.presenceOfElementLocated(
@@ -175,7 +188,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
     protected void createTestPageIfNotExists() {
         if (testPage == null) {
             // Go to admin
-            getDriver().get(getURL(PORTAL_ROUTE + "/" + ADMIN_PAGE_FRAGMENT));
+            waitForPageLoaded(getURL(PORTAL_ROUTE + "/" + ADMIN_PAGE_FRAGMENT));
 
             testPage = String.format("IT-%d",
                     new Random().nextInt(Integer.MAX_VALUE));
@@ -184,8 +197,32 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         }
     }
 
+    /**
+     * Workaround for remote webdriver error "unknown error: cannot determine
+     * loading status from no such window".
+     *
+     * Screenshots show that the page has been loaded, but WebDriver seems to
+     * not be able to detect it.
+     *
+     * A subsequent page load attempt usually works.
+     */
+    protected void waitForPageLoaded(String url) {
+        waitUntil(d -> {
+            try {
+                d.get(url);
+                return true;
+            } catch (WebDriverException ex) {
+                if (ex.getMessage()
+                        .contains("cannot determine loading status")) {
+                    return false;
+                }
+                throw ex;
+            }
+        },  20);
+    }
+
     protected void removePortletPage() {
-        getDriver().get(getURL(PORTAL_ROUTE + "/" + ADMIN_PAGE_FRAGMENT));
+        waitForPageLoaded(getURL(PORTAL_ROUTE + "/" + ADMIN_PAGE_FRAGMENT));
         Map<String, SelectElement> nameMap = $(SelectElement.class).all()
                 .stream()
                 .collect(Collectors.toMap(
@@ -211,11 +248,9 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
                 .all();
     }
 
-    protected TestBenchElement getVaadinPortletRootElement(
-            String id) {
+    protected TestBenchElement getVaadinPortletRootElement(String id) {
         return $(TestBenchElement.class).hasAttribute(PORTLET_ID_ATTRIBUTE)
-                .attribute(PORTLET_ID_ATTRIBUTE,id)
-                .waitForFirst();
+                .attribute(PORTLET_ID_ATTRIBUTE, id).waitForFirst();
     }
 
     protected TestBenchElement getVaadinPortletRootElement() {

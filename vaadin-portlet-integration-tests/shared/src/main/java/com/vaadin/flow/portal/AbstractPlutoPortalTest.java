@@ -173,10 +173,16 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
                 .collect(Collectors.toMap(
                         selectElement -> selectElement.getAttribute("name"),
                         Function.identity(), (oldValue, newValue) -> oldValue));
+
         nameMap.get("page").selectByText(testPage);
         nameMap.get("applications").selectByText("/" + warName);
+
+        waitUntil(d -> nameMap.get("availablePortlets"));
         nameMap.get("availablePortlets").selectByText(portlet);
-        findElement(By.id("addButton")).click();
+
+        WebElement addButton = findElement(By.id("addButton"));
+        waitUntil(d -> addButton.isEnabled());
+        addButton.click();
 
         waitForPageLoaded(getURL(getPortalRoute() + "/" + getPage()));
 

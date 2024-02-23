@@ -183,6 +183,9 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
         waitUntil(d -> addButton.isEnabled());
         addButton.click();
 
+        // Wait for admin page to be reloaded after form submission
+        waitUntil(d -> !findElement(By.id("addButton")).isEnabled());
+
         waitForPageLoaded(getURL(getPortalRoute() + "/" + getPage()));
 
         // Wait for the portlet to appear on the page

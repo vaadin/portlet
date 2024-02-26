@@ -11,6 +11,7 @@ package com.vaadin.flow.portal;
 
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -18,7 +19,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.openqa.selenium.By;
@@ -30,7 +30,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.vaadin.flow.component.html.testbench.AnchorElement;
 import com.vaadin.flow.component.html.testbench.SelectElement;
-import com.vaadin.testbench.ElementQuery;
 import com.vaadin.testbench.ScreenshotOnFailureRule;
 import com.vaadin.testbench.TestBench;
 import com.vaadin.testbench.TestBenchElement;
@@ -173,10 +172,19 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
                 .collect(Collectors.toMap(
                         selectElement -> selectElement.getAttribute("name"),
                         Function.identity(), (oldValue, newValue) -> oldValue));
+
         nameMap.get("page").selectByText(testPage);
         nameMap.get("applications").selectByText("/" + warName);
+
+        waitUntil(d -> nameMap.get("availablePortlets"));
         nameMap.get("availablePortlets").selectByText(portlet);
-        findElement(By.id("addButton")).click();
+
+        WebElement addButton = findElement(By.id("addButton"));
+        waitUntil(d -> addButton.isEnabled());
+        addButton.click();
+
+        // Wait for admin page to be reloaded after form submission
+        waitUntil(d -> !findElement(By.id("addButton")).isEnabled());
 
         waitForPageLoaded(getURL(getPortalRoute() + "/" + getPage()));
 
@@ -194,6 +202,10 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
                     new Random().nextInt(Integer.MAX_VALUE));
             findElement(By.name("newPage")).sendKeys(testPage);
             findElement(By.id("addPageButton")).click();
+
+            // Wait for page to be accessible
+            waitUntil(d -> findElement(By.id("navigation"))
+                    .findElement(By.linkText(testPage)));
         }
     }
 
@@ -218,7 +230,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
                 }
                 throw ex;
             }
-        },  20);
+        }, 20);
     }
 
     protected void removePortletPage() {

@@ -39,7 +39,7 @@
         <dependency>
             <groupId>com.liferay.portal</groupId>
             <artifactId>com.liferay.portal.kernel</artifactId>
-            <version>9.30.0</version>
+            <version>38.0.0</version>
             <scope>provided</scope>
         </dependency>
 

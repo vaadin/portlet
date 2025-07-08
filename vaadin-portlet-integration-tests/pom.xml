@@ -305,6 +305,8 @@
                                               todir="${pluto.home.directory}/webapps"/>
                                         <copy file="${project.build.directory}/vaadin-portlet-static.war"
                                               todir="${pluto.home.directory}/webapps"/>
+                                        <copy file="${project.basedir}/../tomcat-users.xml"
+                                              todir="${pluto.home.directory}/conf" />
                                     </target>
                                 </configuration>
                             </execution>

@@ -12,6 +12,7 @@ package com.vaadin.flow.portal;
 import javax.portlet.PortletMode;
 import javax.portlet.WindowState;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -26,6 +27,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.vaadin.flow.component.html.testbench.AnchorElement;
@@ -97,7 +99,7 @@ public abstract class AbstractPlutoPortalTest extends ParallelTest {
             final WebElement password = findElement(By.id("j_password"));
             final WebElement login = findElement(By.id("j_login"));
             username.sendKeys("pluto");
-            password.sendKeys("pluto");
+            password.sendKeys("04499401-85af");
             login.click();
         }
     }

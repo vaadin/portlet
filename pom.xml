@@ -72,7 +72,7 @@
 
         <testbench.version>6.2.0</testbench.version>
         <vaadin.version>14.10-SNAPSHOT</vaadin.version>
-        <flow.version>2.9-SNAPSHOT</flow.version>
+        <flow.version>2.12-SNAPSHOT</flow.version>
         <flow.cdi.version>11.3-SNAPSHOT</flow.cdi.version>
         <jetty.version>9.4.9.v20180320</jetty.version>
 

@@ -8,8 +8,8 @@
  */
 package com.vaadin.flow.portal.liferay.streamresource;
 
+import java.time.Duration;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import net.jcip.annotations.NotThreadSafe;
 import org.junit.Assert;
@@ -27,7 +27,7 @@ public class LiferayStreamResourceIT extends AbstractLiferayPortalTest {
         AnchorElement link = getVaadinPortletRootElement()
                 .$(AnchorElement.class).id("downloadLink");
         String url = link.getAttribute("href");
-        getDriver().manage().timeouts().setScriptTimeout(15, TimeUnit.SECONDS);
+        getDriver().manage().timeouts().scriptTimeout(Duration.ofSeconds(15));
 
         Map<String, String> headers = downloadAndGetResponseHeaders(url);
 

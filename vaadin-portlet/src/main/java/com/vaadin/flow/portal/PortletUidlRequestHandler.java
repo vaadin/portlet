@@ -41,6 +41,12 @@ class PortletUidlRequestHandler extends UidlRequestHandler {
         return super.synchronizedHandleRequest(session, request, vaadinResponseWrapper);
     }
 
+    @Override
+    public boolean isReadAndWriteOutsideSessionLock() {
+        // special VaadinResponseWrapper is not compatible with returning true.
+        return false;
+    }
+
     /**
      * Wraps the portlet response to stub the writing actions so as to not
      * write the UIDL sync message, when the error occurs during RPC handling.

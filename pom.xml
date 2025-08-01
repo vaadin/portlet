@@ -74,7 +74,7 @@
         <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
 
         <testbench.version>8.3.0</testbench.version>
-        <vaadin.version>23.3-SNAPSHOT</vaadin.version>
+        <vaadin.version>23.6-SNAPSHOT</vaadin.version>
         <flow.version>23.6-SNAPSHOT</flow.version>
         <flow.cdi.version>14.0-SNAPSHOT</flow.cdi.version>
         <jetty.version>10.0.9</jetty.version>

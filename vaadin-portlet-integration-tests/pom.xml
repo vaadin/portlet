@@ -295,7 +295,7 @@
                                 </goals>
                                 <configuration>
                                     <target name="setup-pluto">
-                                        <get src="https://dlcdn.apache.org/portals/pluto/pluto-bundle-${pluto.version}.zip"
+                                        <get src="https://archive.apache.org/dist/portals/pluto/pluto-bundle-${pluto.version}.zip"
                                              dest="${bundle.download.directory}/pluto.zip"
                                              verbose="false" skipexisting="true"/>
                                         <unzip

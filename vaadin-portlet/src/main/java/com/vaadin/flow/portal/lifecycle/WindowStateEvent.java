@@ -8,7 +8,7 @@
  */
 package com.vaadin.flow.portal.lifecycle;
 
-import javax.portlet.WindowState;
+import jakarta.portlet.WindowState;
 import java.io.Serializable;
 
 /**

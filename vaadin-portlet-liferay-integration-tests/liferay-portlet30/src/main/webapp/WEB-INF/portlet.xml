@@ -19,12 +19,12 @@
             <short-title>Render 30 Portlet</short-title>
         </portlet-info>
         <container-runtime-option>
-            <name>javax.portlet.renderHeaders</name>
+            <name>jakarta.portlet.renderHeaders</name>
             <value>true</value>
         </container-runtime-option>
         <dependency>
             <name>PortletHub</name>
-            <scope>javax.portlet</scope>
+            <scope>jakarta.portlet</scope>
             <version>3.0.0</version>
         </dependency>
     </portlet>
@@ -43,12 +43,12 @@
             <short-title>Event Source Portlet</short-title>
         </portlet-info>
         <container-runtime-option>
-            <name>javax.portlet.renderHeaders</name>
+            <name>jakarta.portlet.renderHeaders</name>
             <value>true</value>
         </container-runtime-option>
         <dependency>
             <name>PortletHub</name>
-            <scope>javax.portlet</scope>
+            <scope>jakarta.portlet</scope>
             <version>3.0.0</version>
         </dependency>
     </portlet>
@@ -67,12 +67,12 @@
             <short-title>Event Target Portlet</short-title>
         </portlet-info>
         <container-runtime-option>
-            <name>javax.portlet.renderHeaders</name>
+            <name>jakarta.portlet.renderHeaders</name>
             <value>true</value>
         </container-runtime-option>
         <dependency>
             <name>PortletHub</name>
-            <scope>javax.portlet</scope>
+            <scope>jakarta.portlet</scope>
             <version>3.0.0</version>
         </dependency>
     </portlet>
@@ -91,12 +91,12 @@
             <short-title>Other Event Target Portlet</short-title>
         </portlet-info>
         <container-runtime-option>
-            <name>javax.portlet.renderHeaders</name>
+            <name>jakarta.portlet.renderHeaders</name>
             <value>true</value>
         </container-runtime-option>
         <dependency>
             <name>PortletHub</name>
-            <scope>javax.portlet</scope>
+            <scope>jakarta.portlet</scope>
             <version>3.0.0</version>
         </dependency>
     </portlet>
@@ -115,12 +115,12 @@
             <short-title>Vaadin IPC Portlet</short-title>
         </portlet-info>
         <container-runtime-option>
-            <name>javax.portlet.renderHeaders</name>
+            <name>jakarta.portlet.renderHeaders</name>
             <value>true</value>
         </container-runtime-option>
         <dependency>
             <name>PortletHub</name>
-            <scope>javax.portlet</scope>
+            <scope>jakarta.portlet</scope>
             <version>3.0.0</version>
         </dependency>
     </portlet>
@@ -139,12 +139,12 @@
             <short-title>Plain IPC Portlet</short-title>
         </portlet-info>
         <container-runtime-option>
-            <name>javax.portlet.renderHeaders</name>
+            <name>jakarta.portlet.renderHeaders</name>
             <value>true</value>
         </container-runtime-option>
         <dependency>
             <name>PortletHub</name>
-            <scope>javax.portlet</scope>
+            <scope>jakarta.portlet</scope>
             <version>3.0.0</version>
         </dependency>
     </portlet>

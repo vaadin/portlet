@@ -11,11 +11,11 @@ package com.vaadin.flow.portal;
 import java.io.IOException;
 import java.util.Scanner;
 
-import javax.portlet.HeaderRequest;
-import javax.portlet.HeaderResponse;
-import javax.portlet.PortletException;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
+import jakarta.portlet.HeaderRequest;
+import jakarta.portlet.HeaderResponse;
+import jakarta.portlet.PortletException;
+import jakarta.portlet.RenderRequest;
+import jakarta.portlet.RenderResponse;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.server.VaadinRequest;
@@ -40,7 +40,7 @@ public abstract class VaadinLiferayPortlet<C extends Component>
         // -> do the injection in doHeaders instead
 
         // Calling this probably won't help (see above)
-        response.addDependency("PortletHub", "javax.portlet", "3.0.0");
+        response.addDependency("PortletHub", "jakarta.portlet", "3.0.0");
     }
 
     @Override

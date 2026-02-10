@@ -8,7 +8,7 @@
  */
 package com.vaadin.flow.portal.cdi;
 
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.BeanManager;
 
 import com.vaadin.cdi.AbstractCdiInstantiator;
 import com.vaadin.cdi.CdiVaadinServletService;

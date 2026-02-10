@@ -8,7 +8,7 @@
  */
 package com.vaadin.flow.portal;
 
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;

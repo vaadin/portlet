@@ -8,8 +8,8 @@
  */
 package com.vaadin.flow.portal;
 
-import javax.portlet.PortletRequest;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.portlet.PortletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Enumeration;
 import java.util.Map;
 

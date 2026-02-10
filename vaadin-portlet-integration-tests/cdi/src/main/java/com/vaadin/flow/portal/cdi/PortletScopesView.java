@@ -8,11 +8,11 @@
  */
 package com.vaadin.flow.portal.cdi;
 
-import javax.inject.Inject;
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
-import javax.portlet.annotations.PortletRequestScoped;
-import javax.portlet.annotations.PortletSessionScoped;
+import jakarta.inject.Inject;
+import jakarta.portlet.PortletMode;
+import jakarta.portlet.WindowState;
+import jakarta.portlet.annotations.PortletRequestScoped;
+import jakarta.portlet.annotations.PortletSessionScoped;
 
 import java.io.Serializable;
 

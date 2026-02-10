@@ -8,8 +8,8 @@
  */
 package com.vaadin.flow.portal;
 
-import javax.portlet.MimeResponse;
-import javax.portlet.PortletRequest;
+import jakarta.portlet.MimeResponse;
+import jakarta.portlet.PortletRequest;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

@@ -12,9 +12,9 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.portlet.PortletMode;
-import javax.portlet.PortletResponse;
-import javax.portlet.WindowState;
+import jakarta.portlet.PortletMode;
+import jakarta.portlet.PortletResponse;
+import jakarta.portlet.WindowState;
 
 import org.hamcrest.Matchers;
 import org.junit.After;

@@ -8,12 +8,12 @@
  */
 package com.vaadin.flow.portal;
 
-import javax.portlet.ClientDataRequest;
-import javax.portlet.PortletPreferences;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletSession;
-import javax.portlet.ResourceRequest;
-import javax.portlet.filter.PortletRequestWrapper;
+import jakarta.portlet.ClientDataRequest;
+import jakarta.portlet.PortletPreferences;
+import jakarta.portlet.PortletRequest;
+import jakarta.portlet.PortletSession;
+import jakarta.portlet.ResourceRequest;
+import jakarta.portlet.filter.PortletRequestWrapper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;

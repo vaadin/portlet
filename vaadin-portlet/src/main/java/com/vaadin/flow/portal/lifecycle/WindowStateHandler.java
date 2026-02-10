@@ -13,7 +13,7 @@ import java.io.Serializable;
 /**
  * Add this interface to a {@link com.vaadin.flow.portal.VaadinPortlet} view
  * (the {@link com.vaadin.flow.component.Component} subclass passed for the type
- * parameter {@code C}) to handle changes in {@link javax.portlet.WindowState}.
+ * parameter {@code C}) to handle changes in {@link jakarta.portlet.WindowState}.
  *
  * @see WindowStateListener
  * @author Vaadin Ltd

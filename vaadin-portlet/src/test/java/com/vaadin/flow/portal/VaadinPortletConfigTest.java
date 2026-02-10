@@ -8,8 +8,8 @@
  */
 package com.vaadin.flow.portal;
 
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletContext;
+import jakarta.portlet.PortletConfig;
+import jakarta.portlet.PortletContext;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;

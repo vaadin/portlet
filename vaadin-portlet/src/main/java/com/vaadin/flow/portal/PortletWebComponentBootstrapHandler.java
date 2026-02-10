@@ -8,7 +8,7 @@
  */
 package com.vaadin.flow.portal;
 
-import javax.portlet.PortletResponse;
+import jakarta.portlet.PortletResponse;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;

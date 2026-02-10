@@ -8,14 +8,14 @@
  */
 package com.vaadin.flow.portal.liferay.events;
 
-import javax.portlet.annotations.Dependency;
-import javax.portlet.annotations.PortletConfiguration;
+import jakarta.portlet.annotations.Dependency;
+import jakarta.portlet.annotations.PortletConfiguration;
 
 import com.vaadin.flow.portal.VaadinLiferayPortlet;
 
 @PortletConfiguration(
         portletName = "LiferayVaadinIpcPortlet", publicParams = "param",
-        dependencies = @Dependency(name = "PortletHub", scope = "javax.portlet",
+        dependencies = @Dependency(name = "PortletHub", scope = "jakarta.portlet",
                 version = "3.0.0"))
 public class LiferayVaadinIpcPortlet extends VaadinLiferayPortlet<LiferayVaadinIPCView> {
 

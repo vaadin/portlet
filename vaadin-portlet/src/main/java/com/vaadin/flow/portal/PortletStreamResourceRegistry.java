@@ -8,9 +8,9 @@
  */
 package com.vaadin.flow.portal;
 
-import javax.portlet.MimeResponse;
-import javax.portlet.PortletResponse;
-import javax.portlet.ResourceURL;
+import jakarta.portlet.MimeResponse;
+import jakarta.portlet.PortletResponse;
+import jakarta.portlet.ResourceURL;
 
 import java.net.URI;
 import java.net.URISyntaxException;

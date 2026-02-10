@@ -20,12 +20,12 @@
             <keywords></keywords>
         </portlet-info>
         <container-runtime-option>
-            <name>javax.portlet.renderHeaders</name>
+            <name>jakarta.portlet.renderHeaders</name>
             <value>true</value>
         </container-runtime-option>
         <dependency>
             <name>PortletHub</name>
-            <scope>javax.portlet</scope>
+            <scope>jakarta.portlet</scope>
             <version>3.0.0</version>
         </dependency>
     </portlet>

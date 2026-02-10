@@ -8,7 +8,7 @@
  */
 package com.vaadin.flow.portal.lifecycle;
 
-import javax.portlet.PortletMode;
+import jakarta.portlet.PortletMode;
 import java.io.Serializable;
 
 /**

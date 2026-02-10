@@ -8,15 +8,15 @@
  */
 package com.vaadin.flow.portal.liferay.events;
 
-import javax.portlet.annotations.Dependency;
-import javax.portlet.annotations.PortletConfiguration;
+import jakarta.portlet.annotations.Dependency;
+import jakarta.portlet.annotations.PortletConfiguration;
 
 import com.vaadin.flow.portal.VaadinLiferayPortlet;
 
 @PortletConfiguration(
         portletName = "LiferayEventSourcePortlet",
         dependencies =
-        @Dependency(name = "PortletHub", scope = "javax.portlet", version = "3.0.0")
+        @Dependency(name = "PortletHub", scope = "jakarta.portlet", version = "3.0.0")
 )
 public class LiferayEventSourcePortlet extends VaadinLiferayPortlet<LiferayEventSourceView> {
 

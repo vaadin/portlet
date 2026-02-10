@@ -8,14 +8,14 @@
  */
 package com.vaadin.flow.portal.liferay.rendermodes;
 
-import javax.portlet.annotations.Dependency;
-import javax.portlet.annotations.PortletConfiguration;
+import jakarta.portlet.annotations.Dependency;
+import jakarta.portlet.annotations.PortletConfiguration;
 
 import com.vaadin.flow.portal.VaadinLiferayPortlet;
 
 @PortletConfiguration(
         portletName = "LiferayRenderPortlet30", publicParams = "param",
-        dependencies = @Dependency(name = "PortletHub", scope = "javax.portlet",
+        dependencies = @Dependency(name = "PortletHub", scope = "jakarta.portlet",
                 version = "3.0.0"))
 public class LiferayRenderPortlet30 extends VaadinLiferayPortlet<LiferayPortlet30RenderView> {
 }

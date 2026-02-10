@@ -8,8 +8,8 @@
  */
 package com.vaadin.flow.portal.lifecycle;
 
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
+import jakarta.portlet.PortletMode;
+import jakarta.portlet.WindowState;
 
 import org.junit.Assert;
 import org.junit.Test;

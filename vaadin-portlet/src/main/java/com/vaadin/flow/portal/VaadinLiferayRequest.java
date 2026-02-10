@@ -8,8 +8,8 @@
  */
 package com.vaadin.flow.portal;
 
-import javax.portlet.PortletRequest;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.portlet.PortletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -31,7 +31,7 @@ public class VaadinLiferayRequest extends VaadinHttpAndPortletRequest {
     private static final String LIFERAY_6_PORTAL_UTIL = "com.liferay.portal.util.PortalUtil";
     private static final String LIFERAY_7_PORTAL_UTIL = "com.liferay.portal.kernel.util.PortalUtil";
     private static final String LIFERAY_7_PORTLET_UTIL = "com.liferay.portlet.LiferayPortletUtil";
-    private static final String PORTLET_REQUEST_CLASS = "javax.portlet.PortletRequest";
+    private static final String PORTLET_REQUEST_CLASS = "jakarta.portlet.PortletRequest";
 
     public VaadinLiferayRequest(PortletRequest request,
             VaadinPortletService vaadinService) {
@@ -137,7 +137,7 @@ public class VaadinLiferayRequest extends VaadinHttpAndPortletRequest {
                 // PortalUtil.getOriginalServletRequest(httpRequest);
                 httpRequest = (HttpServletRequest) invokeStaticLiferayMethod(
                         portalUtilClass, "getOriginalServletRequest",
-                        httpRequest, "javax.servlet.http.HttpServletRequest");
+                        httpRequest, "jakarta.servlet.http.HttpServletRequest");
                 return httpRequest;
             }
 

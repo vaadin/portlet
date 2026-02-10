@@ -8,8 +8,8 @@
  */
 package com.vaadin.flow.portal.cdi;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import java.util.Random;
 
 import com.vaadin.flow.component.html.Div;

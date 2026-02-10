@@ -8,7 +8,7 @@
  */
 package com.vaadin.flow.portal.cdi;
 
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.BeanManager;
 import java.util.Optional;
 
 import org.apache.deltaspike.core.api.provider.BeanManagerProvider;

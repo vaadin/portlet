@@ -8,9 +8,9 @@
  */
 package com.vaadin.flow.portal;
 
-import javax.portlet.MimeResponse;
-import javax.portlet.ResourceURL;
-import javax.portlet.filter.ResourceURLWrapper;
+import jakarta.portlet.MimeResponse;
+import jakarta.portlet.ResourceURL;
+import jakarta.portlet.filter.ResourceURLWrapper;
 import java.net.URI;
 
 import org.junit.Assert;

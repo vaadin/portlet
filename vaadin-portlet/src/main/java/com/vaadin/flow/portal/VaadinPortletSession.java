@@ -8,9 +8,9 @@
  */
 package com.vaadin.flow.portal;
 
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletResponse;
-import javax.portlet.PortletSession;
+import jakarta.portlet.PortletConfig;
+import jakarta.portlet.PortletResponse;
+import jakarta.portlet.PortletSession;
 
 import com.vaadin.flow.internal.CurrentInstance;
 import com.vaadin.flow.server.StreamResourceRegistry;

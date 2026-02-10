@@ -13,7 +13,7 @@ import java.io.Serializable;
 /**
  * Add this interface to a {@link com.vaadin.flow.portal.VaadinPortlet} view
  * (the {@link com.vaadin.flow.component.Component} subclass passed for the type
- * parameter {@code C}) to handle changes in {@link javax.portlet.PortletMode}.
+ * parameter {@code C}) to handle changes in {@link jakarta.portlet.PortletMode}.
  *
  * @see PortletModeListener
  * @author Vaadin Ltd

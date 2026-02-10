@@ -8,13 +8,13 @@
  */
 package com.vaadin.flow.portal;
 
-import javax.portlet.ActionURL;
-import javax.portlet.MimeResponse;
-import javax.portlet.PortletMode;
-import javax.portlet.PortletModeException;
-import javax.portlet.PortletResponse;
-import javax.portlet.WindowState;
-import javax.portlet.WindowStateException;
+import jakarta.portlet.ActionURL;
+import jakarta.portlet.MimeResponse;
+import jakarta.portlet.PortletMode;
+import jakarta.portlet.PortletModeException;
+import jakarta.portlet.PortletResponse;
+import jakarta.portlet.WindowState;
+import jakarta.portlet.WindowStateException;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -108,7 +108,7 @@ public final class PortletViewContext implements Serializable {
      * <p>
      * The event will be sent to the server as an action event for any
      * {@link VaadinPortlet}. The event is handled by the
-     * {@link VaadinPortlet#processAction(javax.portlet.ActionRequest, javax.portlet.ActionResponse)}
+     * {@link VaadinPortlet#processAction(jakarta.portlet.ActionRequest, jakarta.portlet.ActionResponse)}
      * method.
      * <p>
      * By default {@link VaadinPortlet} calls

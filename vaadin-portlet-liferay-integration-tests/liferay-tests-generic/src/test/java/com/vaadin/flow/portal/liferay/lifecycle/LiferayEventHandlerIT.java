@@ -8,8 +8,8 @@
  */
 package com.vaadin.flow.portal.liferay.lifecycle;
 
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
+import jakarta.portlet.PortletMode;
+import jakarta.portlet.WindowState;
 
 import net.jcip.annotations.NotThreadSafe;
 import org.junit.Assert;

@@ -8,12 +8,12 @@
  */
 package com.vaadin.flow.portal.cdi;
 
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletException;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
+import jakarta.portlet.PortletConfig;
+import jakarta.portlet.PortletException;
+import jakarta.portlet.RenderRequest;
+import jakarta.portlet.RenderResponse;
 
 import java.io.IOException;
 
@@ -33,7 +33,7 @@ public abstract class CdiVaadinPortlet<C extends Component>
 
     @Override
     public void init(PortletConfig config)
-            throws javax.portlet.PortletException {
+            throws jakarta.portlet.PortletException {
         try {
             portletName.set(config.getPortletName());
             super.init(config);

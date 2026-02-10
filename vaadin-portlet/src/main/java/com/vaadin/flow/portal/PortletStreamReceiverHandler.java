@@ -12,10 +12,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 
-import javax.portlet.ClientDataRequest;
-import javax.portlet.PortletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
+import jakarta.portlet.ClientDataRequest;
+import jakarta.portlet.PortletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Part;
 
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileUploadException;

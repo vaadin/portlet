@@ -8,7 +8,7 @@
  */
 package com.vaadin.flow.portal.rendermodes;
 
-import javax.portlet.Portlet;
+import jakarta.portlet.Portlet;
 
 import com.vaadin.flow.portal.VaadinPortlet;
 

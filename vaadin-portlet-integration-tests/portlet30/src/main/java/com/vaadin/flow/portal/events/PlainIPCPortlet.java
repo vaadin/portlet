@@ -8,15 +8,15 @@
  */
 package com.vaadin.flow.portal.events;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.GenericPortlet;
-import javax.portlet.PortletException;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-import javax.portlet.annotations.Dependency;
-import javax.portlet.annotations.LocaleString;
-import javax.portlet.annotations.PortletConfiguration;
+import jakarta.portlet.ActionRequest;
+import jakarta.portlet.ActionResponse;
+import jakarta.portlet.GenericPortlet;
+import jakarta.portlet.PortletException;
+import jakarta.portlet.RenderRequest;
+import jakarta.portlet.RenderResponse;
+import jakarta.portlet.annotations.Dependency;
+import jakarta.portlet.annotations.LocaleString;
+import jakarta.portlet.annotations.PortletConfiguration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 
-@PortletConfiguration(portletName = "PlainPortlet", publicParams = "param", dependencies = @Dependency(name = "PortletHub", scope = "javax.portlet", version = "3.0.0"))
+@PortletConfiguration(portletName = "PlainPortlet", publicParams = "param", dependencies = @Dependency(name = "PortletHub", scope = "jakarta.portlet", version = "3.0.0"))
 public class PlainIPCPortlet extends GenericPortlet {
 
     private static final String PARAM = "param";

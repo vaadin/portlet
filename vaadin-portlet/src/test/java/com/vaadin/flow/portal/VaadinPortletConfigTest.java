@@ -20,7 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.vaadin.flow.server.Constants;
+import com.vaadin.flow.server.InitParameters;
 
 /**
  * Test VaadinServletConfig property handling and function with VaadinContext.
@@ -51,8 +51,8 @@ public class VaadinPortletConfigTest {
                 .setAttribute(Mockito.anyString(), Mockito.any());
 
         properties = new HashMap<>();
-        properties.put(Constants.SERVLET_PARAMETER_PRODUCTION_MODE, "true");
-        properties.put(Constants.SERVLET_PARAMETER_ENABLE_DEV_SERVER, "false");
+        properties.put(InitParameters.SERVLET_PARAMETER_PRODUCTION_MODE, "true");
+        properties.put(InitParameters.SERVLET_PARAMETER_ENABLE_DEV_SERVER, "false");
 
         Mockito.when(portletConfig.getInitParameterNames())
                 .thenReturn(Collections.enumeration(properties.keySet()));

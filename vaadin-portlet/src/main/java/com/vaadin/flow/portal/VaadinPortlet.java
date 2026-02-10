@@ -275,7 +275,8 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     protected void doDispatch(RenderRequest request, RenderResponse response)
             throws PortletException, IOException {
         try {
-            if (getService().getDeploymentConfiguration().enableDevServer()) {
+            if (!getService().getDeploymentConfiguration()
+                    .isProductionMode()) {
                 response.getWriter().println(DEV_MODE_ERROR_MESSAGE);
                 return;
             }

@@ -87,6 +87,13 @@
         </dependency>
 
         <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <version>4.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>com.liferay.jakarta.portlet</groupId>
             <artifactId>com.liferay.jakarta.portlet-api</artifactId>
             <version>4.0.0</version>

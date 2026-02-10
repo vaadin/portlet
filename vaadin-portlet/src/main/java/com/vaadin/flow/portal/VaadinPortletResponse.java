@@ -93,7 +93,13 @@ public class VaadinPortletResponse implements VaadinResponse {
         if (response instanceof ResourceResponse) {
             ((ResourceResponse) response).setContentLength(len);
         }
+    }
 
+    @Override
+    public void setContentLengthLong(long len) {
+        if (response instanceof ResourceResponse) {
+            ((ResourceResponse) response).setContentLengthLong(len);
+        }
     }
 
     @Override

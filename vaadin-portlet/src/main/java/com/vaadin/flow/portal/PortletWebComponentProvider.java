@@ -10,6 +10,7 @@ package com.vaadin.flow.portal;
 
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinResponse;
+import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.communication.WebComponentProvider;
 
 /**
@@ -38,6 +39,7 @@ class PortletWebComponentProvider extends WebComponentProvider {
         String webcomponentBootstrapUrl = VaadinPortlet.getCurrent()
                 .getWebComponentBootstrapHandlerURL(session, namespace);
         return "var bootstrapAddress='" + webcomponentBootstrapUrl + "';\n"
-                + bootstrapNpm();
+                + bootstrapNpm(VaadinService.getCurrent()
+                        .getDeploymentConfiguration().isProductionMode());
     }
 }

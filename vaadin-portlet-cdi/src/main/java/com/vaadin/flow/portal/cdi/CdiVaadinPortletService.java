@@ -33,12 +33,12 @@ public class CdiVaadinPortletService extends VaadinPortletService {
     public CdiVaadinPortletService(CdiVaadinPortlet portlet,
             DeploymentConfiguration configuration, BeanManager beanManager) {
         super(portlet, configuration);
-        this.delegate = new CdiVaadinServiceDelegate(this, beanManager);
+        this.delegate = new CdiVaadinServiceDelegate(beanManager);
     }
 
     @Override
     public void init() throws ServiceException {
-        delegate.init();
+        delegate.init(this);
         super.init();
     }
 
@@ -56,8 +56,7 @@ public class CdiVaadinPortletService extends VaadinPortletService {
     @Override
     public Optional<Instantiator> loadInstantiators() throws ServiceException {
         final PortletCdiInstantiator instantiator = new PortletCdiInstantiator(
-                delegate);
-        instantiator.init(this);
+                this, delegate);
         return Optional.of(instantiator);
     }
 

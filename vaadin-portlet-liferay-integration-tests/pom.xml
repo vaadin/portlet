@@ -20,6 +20,7 @@
 
     <properties>
         <liferay.version>7.4.3.5-ga5</liferay.version>
+        <liferay.kernel.version>178.0.1</liferay.kernel.version>
         <tomcat.version>9.0.56</tomcat.version>
         <liferay.home.directory>
             ${project.build.directory}/liferay-ce-portal-${liferay.version}

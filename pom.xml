@@ -73,11 +73,11 @@
         <maven.resources.plugin.version>3.0.2</maven.resources.plugin.version>
         <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
 
-        <testbench.version>8.3.0</testbench.version>
-        <vaadin.version>23.6-SNAPSHOT</vaadin.version>
-        <flow.version>23.6-SNAPSHOT</flow.version>
-        <flow.cdi.version>14.0-SNAPSHOT</flow.cdi.version>
-        <jetty.version>10.0.9</jetty.version>
+        <testbench.version>9.3.2</testbench.version>
+        <vaadin.version>24.9.10</vaadin.version>
+        <flow.version>24.9.10</flow.version>
+        <flow.cdi.version>15.2.1</flow.cdi.version>
+        <jetty.version>12.0.16</jetty.version>
         <webdrivermanager.version>5.2.3</webdrivermanager.version>
 
         <maven.test.skip>false</maven.test.skip>
@@ -85,25 +85,40 @@
 
     <repositories>
         <repository>
-            <id>vaadin-prereleases</id>
-            <url>https://maven.vaadin.com/vaadin-prereleases/</url>
             <snapshots>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </snapshots>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
         </repository>
         <repository>
-            <id>vaadin-addons</id>
-            <url>https://maven.vaadin.com/vaadin-addons/</url>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>vaadin-prereleases</id>
-            <url>https://maven.vaadin.com/vaadin-prereleases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
+            <id>vaadin-prereleases</id>
+            <url>https://maven.vaadin.com/vaadin-prereleases</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </pluginRepository>
+        <pluginRepository>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <id>vaadin-prereleases</id>
+            <url>https://maven.vaadin.com/vaadin-prereleases</url>
         </pluginRepository>
     </pluginRepositories>
 
@@ -111,8 +126,8 @@
         <dependencies>
             <dependency>
                 <groupId>org.mockito</groupId>
-                <artifactId>mockito-all</artifactId>
-                <version>1.10.19</version>
+                <artifactId>mockito-core</artifactId>
+                <version>5.11.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

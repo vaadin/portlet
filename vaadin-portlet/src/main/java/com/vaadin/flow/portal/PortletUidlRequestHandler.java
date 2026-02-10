@@ -131,6 +131,13 @@ class PortletUidlRequestHandler extends UidlRequestHandler {
         }
 
         @Override
+        public void setContentLengthLong(long len) {
+            if (noError()) {
+                delegate.setContentLengthLong(len);
+            }
+        }
+
+        @Override
         public void setNoCacheHeaders() {
             delegate.setNoCacheHeaders();
         }

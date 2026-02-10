@@ -348,7 +348,7 @@ public class VaadinPortletTest {
             IllegalAccessException {
         DeploymentConfiguration configuration = Mockito
                 .mock(DeploymentConfiguration.class);
-        Mockito.when(configuration.enableDevServer()).thenReturn(true);
+        Mockito.when(configuration.isProductionMode()).thenReturn(false);
 
         Mockito.when(service.getDeploymentConfiguration())
                 .thenReturn(configuration);

@@ -67,8 +67,8 @@
 
         <dependency>
             <groupId>com.liferay.portal</groupId>
-            <artifactId>release.portal.api</artifactId>
-            <version>${liferay.version}</version>
+            <artifactId>com.liferay.portal.kernel</artifactId>
+            <version>${liferay.kernel.version}</version>
             <scope>provided</scope>
         </dependency>
 

@@ -13,6 +13,7 @@ import jakarta.enterprise.inject.spi.BeanManager;
 import com.vaadin.cdi.AbstractCdiInstantiator;
 import com.vaadin.cdi.CdiVaadinServletService;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.di.DefaultInstantiator;
 import com.vaadin.flow.server.VaadinService;
 
 /**
@@ -23,9 +24,17 @@ import com.vaadin.flow.server.VaadinService;
 public class PortletCdiInstantiator extends AbstractCdiInstantiator {
 
     private final CdiVaadinServletService.CdiVaadinServiceDelegate delegate;
+    private final DefaultInstantiator defaultInstantiator;
 
-    public PortletCdiInstantiator(CdiVaadinServletService.CdiVaadinServiceDelegate delegate) {
+    public PortletCdiInstantiator(VaadinService service,
+            CdiVaadinServletService.CdiVaadinServiceDelegate delegate) {
         this.delegate = delegate;
+        this.defaultInstantiator = new DefaultInstantiator(service);
+    }
+
+    @Override
+    protected DefaultInstantiator getDelegate() {
+        return defaultInstantiator;
     }
 
     @Override
@@ -36,10 +45,5 @@ public class PortletCdiInstantiator extends AbstractCdiInstantiator {
     @Override
     public <T extends Component> T createComponent(Class<T> componentClass) {
         return getOrCreate(componentClass);
-    }
-
-    @Override
-    public Class<? extends VaadinService> getServiceClass() {
-        return CdiVaadinPortletService.class;
     }
 }

@@ -37,7 +37,6 @@ import com.liferay.portal.kernel.service.PortletPreferencesLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.PortletKeys;
-import com.liferay.sites.kernel.util.SitesUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,13 +77,7 @@ public abstract class AbstractPortletDeployer extends GenericPortlet {
         String newPortletId = layoutTypePortlet.addPortletId(userId,
                 portlet.getId(), "column-1", order, false);
         setPortletPreferences(layout, portlet, newPortletId);
-        try {
-            LayoutLocalServiceUtil.updateLayout(layout.getGroupId(),
-                    layout.getPrivateLayout(), layout.getLayoutId(),
-                    layout.getTypeSettings());
-        } catch (PortalException e) {
-            throw new PortletDeployerException(e);
-        }
+        LayoutLocalServiceUtil.updateLayout(layout);
     }
 
     private void setPortletPreferences(Layout layout, PortletInfo portlet,
@@ -119,8 +112,8 @@ public abstract class AbstractPortletDeployer extends GenericPortlet {
 
             ServiceContext serviceContext = new ServiceContext();
 
-            layout = LayoutLocalServiceUtil.addLayout(userId, groupId, false, 0,
-                    layoutInfo.getName(), layoutInfo.getName(),
+            layout = LayoutLocalServiceUtil.addLayout(null, userId, groupId,
+                    false, 0L, layoutInfo.getName(), layoutInfo.getName(),
                     layoutInfo.getName(), LayoutConstants.TYPE_PORTLET, false,
                     layoutInfo.getFriendlyUrl(), serviceContext);
         } catch (PortalException e) {
@@ -134,8 +127,7 @@ public abstract class AbstractPortletDeployer extends GenericPortlet {
         try {
             Layout layoutByFriendlyURL = getLayoutByFriendlyUrl(pGroupId,
                     friendlyURL);
-            if (layoutByFriendlyURL != null
-                    && SitesUtil.isLayoutDeleteable(layoutByFriendlyURL)) {
+            if (layoutByFriendlyURL != null) {
                 LayoutLocalServiceUtil.deleteLayout(layoutByFriendlyURL);
             }
         } catch (Exception e) {

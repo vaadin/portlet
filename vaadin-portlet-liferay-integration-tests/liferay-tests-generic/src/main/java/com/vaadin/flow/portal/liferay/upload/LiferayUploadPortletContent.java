@@ -14,7 +14,7 @@ import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
@@ -24,7 +24,7 @@ public class LiferayUploadPortletContent extends VerticalLayout {
     public static final String UPLOAD_LABEL_ID = "uploadLabel";
 
     public LiferayUploadPortletContent() {
-        Label uploadInfo = new Label();
+        Span uploadInfo = new Span();
         uploadInfo.setId(UPLOAD_LABEL_ID);
         add(uploadInfo);
 

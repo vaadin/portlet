@@ -46,12 +46,12 @@
     </scm>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <jsinterop.version>1.0.1</jsinterop.version>
-        <sonar.java.source>17</sonar.java.source>
+        <sonar.java.source>21</sonar.java.source>
         <sonar.analysis.mode>preview</sonar.analysis.mode>
         <sonar.issuesReport.console.enable>true
         </sonar.issuesReport.console.enable>
@@ -74,9 +74,9 @@
         <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
 
         <testbench.version>9.3.2</testbench.version>
-        <vaadin.version>24.9.10</vaadin.version>
-        <flow.version>24.9.10</flow.version>
-        <flow.cdi.version>15.2.1</flow.cdi.version>
+        <vaadin.version>25.0.5</vaadin.version>
+        <flow.version>25.0.5</flow.version>
+        <flow.cdi.version>16.0.0</flow.cdi.version>
         <jetty.version>12.0.16</jetty.version>
         <webdrivermanager.version>5.2.3</webdrivermanager.version>
 
@@ -100,6 +100,11 @@
             </snapshots>
             <id>vaadin-prereleases</id>
             <url>https://maven.vaadin.com/vaadin-prereleases</url>
+        </repository>
+        <repository>
+            <id>liferay-public</id>
+            <name>Liferay Public Repository</name>
+            <url>https://repository.liferay.com/nexus/content/groups/public</url>
         </repository>
     </repositories>
     <pluginRepositories>

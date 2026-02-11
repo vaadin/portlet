@@ -142,6 +142,11 @@ class PortletUidlRequestHandler extends UidlRequestHandler {
             delegate.setNoCacheHeaders();
         }
 
+        @Override
+        public boolean containsHeader(String name) {
+            return delegate.containsHeader(name);
+        }
+
         private boolean noError() {
             return request.getPortletRequest().getAttribute(
                     DefaultPortletErrorHandler.ERROR_ATTRIBUTE_NAME) == null;

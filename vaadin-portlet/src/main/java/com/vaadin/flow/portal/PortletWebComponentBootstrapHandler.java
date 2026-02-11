@@ -39,7 +39,7 @@ import com.vaadin.flow.server.communication.WebComponentBootstrapHandler;
 import com.vaadin.flow.server.frontend.FrontendUtils;
 import com.vaadin.pro.licensechecker.LicenseChecker;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * For internal use only.

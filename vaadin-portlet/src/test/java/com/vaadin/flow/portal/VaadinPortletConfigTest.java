@@ -52,7 +52,8 @@ public class VaadinPortletConfigTest {
 
         properties = new HashMap<>();
         properties.put(InitParameters.SERVLET_PARAMETER_PRODUCTION_MODE, "true");
-        properties.put(InitParameters.SERVLET_PARAMETER_ENABLE_DEV_SERVER, "false");
+        // Note: SERVLET_PARAMETER_ENABLE_DEV_SERVER was removed in Vaadin 25
+        properties.put(InitParameters.SERVLET_PARAMETER_DEVMODE_OPTIMIZE_BUNDLE, "false");
 
         Mockito.when(portletConfig.getInitParameterNames())
                 .thenReturn(Collections.enumeration(properties.keySet()));

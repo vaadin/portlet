@@ -21,7 +21,7 @@ import org.openqa.selenium.WrapsElement;
 import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebElement;
 
-import com.vaadin.flow.component.html.testbench.LabelElement;
+import com.vaadin.flow.component.html.testbench.SpanElement;
 import com.vaadin.flow.component.upload.testbench.UploadElement;
 import com.vaadin.flow.portal.liferay.AbstractLiferayPortalTest;
 
@@ -39,13 +39,13 @@ public class LiferayUploadIT extends AbstractLiferayPortalTest {
 
         // check that label indicates size of file
         waitUntil(driver -> {
-            LabelElement label = getVaadinPortletRootElement()
-                    .$(LabelElement.class).id(LiferayUploadPortletContent.UPLOAD_LABEL_ID);
+            SpanElement label = getVaadinPortletRootElement()
+                    .$(SpanElement.class).id(LiferayUploadPortletContent.UPLOAD_LABEL_ID);
             return label != null && !"".equals(label.getText());
         });
 
-        LabelElement label = getVaadinPortletRootElement()
-                .$(LabelElement.class).id(LiferayUploadPortletContent.UPLOAD_LABEL_ID);
+        SpanElement label = getVaadinPortletRootElement()
+                .$(SpanElement.class).id(LiferayUploadPortletContent.UPLOAD_LABEL_ID);
         Assert.assertEquals(Long.toString(file.length()), label.getText());
     }
 

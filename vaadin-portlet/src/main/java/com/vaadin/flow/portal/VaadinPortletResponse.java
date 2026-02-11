@@ -198,6 +198,14 @@ public class VaadinPortletResponse implements VaadinResponse {
         response.addProperty(cookie);
     }
 
+    @Override
+    public boolean containsHeader(String name) {
+        // Portlet API does not provide a direct way to check if a header is set.
+        // This is a best-effort implementation - we return false as we cannot
+        // reliably determine if the header was set.
+        return false;
+    }
+
     /**
      * Gets the currently processed portlet response. The current portlet response
      * is automatically defined when the requests is started. The current portlet

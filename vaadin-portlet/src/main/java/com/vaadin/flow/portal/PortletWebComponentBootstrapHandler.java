@@ -37,6 +37,7 @@ import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.communication.WebComponentBootstrapHandler;
 import com.vaadin.flow.server.frontend.FrontendUtils;
+import com.vaadin.pro.licensechecker.BuildType;
 import com.vaadin.pro.licensechecker.LicenseChecker;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -153,7 +154,7 @@ class PortletWebComponentBootstrapHandler
             // written to the page. That check shows a message on the client
             // side
              LicenseChecker.checkLicense(VaadinPortletService.PROJECT_NAME,
-             VaadinPortletService.getPortletVersion());
+             VaadinPortletService.getPortletVersion(), BuildType.DEVELOPMENT);
         }
         return super.createAndInitUI(uiClass, request, response, session);
     }

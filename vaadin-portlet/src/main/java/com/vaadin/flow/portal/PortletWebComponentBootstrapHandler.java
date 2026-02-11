@@ -8,24 +8,38 @@
  */
 package com.vaadin.flow.portal;
 
+import jakarta.portlet.PortletRequest;
 import jakarta.portlet.PortletResponse;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.function.DeploymentConfiguration;
 import com.vaadin.flow.internal.DevModeHandler;
 import com.vaadin.flow.internal.DevModeHandlerManager;
+import com.vaadin.flow.server.BootstrapHandler;
+import com.vaadin.flow.server.Mode;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinResponse;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.communication.WebComponentBootstrapHandler;
+import com.vaadin.flow.server.frontend.FrontendUtils;
 import com.vaadin.pro.licensechecker.LicenseChecker;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * For internal use only.
@@ -35,6 +49,20 @@ import com.vaadin.pro.licensechecker.LicenseChecker;
  */
 class PortletWebComponentBootstrapHandler
         extends WebComponentBootstrapHandler {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(PortletWebComponentBootstrapHandler.class);
+
+    /**
+     * Cached web-component.html content fetched from the external static
+     * resources bundle WAR. Once fetched, the content does not change for the
+     * lifetime of the server (it is a production build artifact).
+     */
+    private static volatile String externalWebComponentHtmlCache;
+
+    PortletWebComponentBootstrapHandler() {
+        super(new PortletWebComponentPageBuilder());
+    }
 
     @Override
     protected String getServiceUrl(VaadinRequest request,
@@ -148,5 +176,187 @@ class PortletWebComponentBootstrapHandler
         VaadinPortlet.getCurrent().getPortletContext()
                 .setAttribute(DevModeHandler.class.getName(), false);
         return false;
+    }
+
+    /**
+     * Custom page builder that loads {@code web-component.html} from the
+     * external static resources URL when configured, instead of from the local
+     * classpath.
+     * <p>
+     * In portlet deployments, the frontend bundle is served by a separate
+     * static resources WAR (the "bundle WAR"). Each portlet WAR may not have
+     * its own {@code build-frontend} output, or may have one with different
+     * content hashes. This builder fetches {@code web-component.html} from the
+     * bundle WAR to ensure the script references match the actual JS files.
+     */
+    static class PortletWebComponentPageBuilder
+            extends BootstrapHandler.BootstrapPageBuilder {
+
+        @Override
+        public Document getBootstrapPage(
+                BootstrapHandler.BootstrapContext context) {
+            VaadinService service = context.getSession().getService();
+            DeploymentConfiguration config =
+                    service.getDeploymentConfiguration();
+
+            try {
+                String htmlContent = null;
+
+                // Source 1: externalStatsUrl from flow-build-info.json
+                // Note: flow-build-info.json key "externalStatsUrl" is mapped
+                // to internal property "external.stats.url" by Flow's config
+                // factory, so we must use the accessor method.
+                String externalStatsUrl = config.isStatsExternal()
+                        ? config.getExternalStatsUrl()
+                        : null;
+                if (externalStatsUrl != null
+                        && !externalStatsUrl.isEmpty()) {
+                    // Derive base path from stats URL:
+                    // /o/vaadin-portlet-static/VAADIN/config/stats.json
+                    //  -> /o/vaadin-portlet-static/
+                    int vaadinIdx = externalStatsUrl.indexOf("/VAADIN/");
+                    if (vaadinIdx >= 0) {
+                        htmlContent = fetchExternalWebComponentHtml(
+                                externalStatsUrl.substring(0, vaadinIdx + 1),
+                                context.getRequest());
+                    }
+                }
+
+                // Source 2: portlet.static.resources.mapping property
+                // (set via JVM arg -Dvaadin.portlet.static.resources.mapping)
+                // This avoids requiring externalStatsUrl in flow-build-info.json
+                if (htmlContent == null) {
+                    String staticMapping = config.getStringProperty(
+                            PortletConstants
+                                    .PORTLET_PARAMETER_STATIC_RESOURCES_MAPPING,
+                            null);
+                    if (staticMapping != null && !staticMapping.isEmpty()) {
+                        if (!staticMapping.startsWith("/")) {
+                            staticMapping = "/" + staticMapping;
+                        }
+                        if (!staticMapping.endsWith("/")) {
+                            staticMapping = staticMapping + "/";
+                        }
+                        htmlContent = fetchExternalWebComponentHtml(
+                                staticMapping, context.getRequest());
+                    }
+                }
+
+                // Source 3: classpath fallback
+                if (htmlContent == null) {
+                    htmlContent = FrontendUtils
+                            .getWebComponentHtmlContent(service);
+                }
+
+                if (htmlContent == null) {
+                    throw new IOException(
+                            "web-component.html not found. Ensure the static "
+                                    + "resources bundle WAR is deployed and "
+                                    + "accessible.");
+                }
+
+                Document document = Jsoup.parse(htmlContent);
+                Element head = document.head();
+
+                if (config.isProductionMode()) {
+                    // In production mode, web-component.html already includes
+                    // the entry point scripts from the bundle build
+                } else if (config.getMode()
+                        != Mode.DEVELOPMENT_FRONTEND_LIVERELOAD) {
+                    addGeneratedIndexContent(document,
+                            getStatsJson(config));
+                }
+
+                head.select("script[src]").attr("data-app-id",
+                        context.getUI().getInternals().getAppId());
+                head.select("script[src], link[href]")
+                        .attr("crossorigin", "true");
+
+                ObjectNode initialUIDL =
+                        getInitialUidl(context.getUI());
+
+                head.prependChild(createInlineJavaScriptElement(
+                        "window.JSCompiler_renameProperty = function(a) "
+                                + "{ return a; }"));
+                head.prependChild(
+                        getBootstrapScript(initialUIDL, context));
+
+                if (context.getPushMode().isEnabled()) {
+                    head.prependChild(createJavaScriptModuleElement(
+                            getPushScript(context), true));
+                }
+
+                setupCss(head, context);
+
+                return document;
+            } catch (IOException e) {
+                throw new RuntimeException(
+                        "Unable to read the web-component.html file.", e);
+            }
+        }
+
+        /**
+         * Fetches {@code web-component.html} from the external static
+         * resources bundle WAR.
+         *
+         * @param basePath the base path to the bundle WAR, e.g.
+         *                 {@code /o/vaadin-portlet-static/}
+         * @param request the current portlet request (for server info)
+         * @return the HTML content, or {@code null} if not available
+         */
+        private String fetchExternalWebComponentHtml(
+                String basePath, VaadinRequest request) {
+            String cached = externalWebComponentHtmlCache;
+            if (cached != null) {
+                return cached;
+            }
+
+            String webComponentPath = basePath + "web-component.html";
+
+            // Get server info from the portlet request
+            VaadinPortletRequest portletRequest =
+                    (VaadinPortletRequest) request;
+            PortletRequest pr = portletRequest.getPortletRequest();
+            String scheme = pr.getScheme();
+            String serverName = pr.getServerName();
+            int serverPort = pr.getServerPort();
+
+            String urlStr = scheme + "://" + serverName
+                    + ":" + serverPort + webComponentPath;
+
+            try {
+                URL url = new URL(urlStr);
+                HttpURLConnection conn =
+                        (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setConnectTimeout(5000);
+                conn.setReadTimeout(5000);
+
+                try {
+                    if (conn.getResponseCode() == 200) {
+                        try (InputStream is = conn.getInputStream()) {
+                            String content = new String(
+                                    is.readAllBytes(),
+                                    StandardCharsets.UTF_8);
+                            externalWebComponentHtmlCache = content;
+                            return content;
+                        }
+                    } else {
+                        logger.warn(
+                                "Failed to fetch web-component.html from {}"
+                                        + ": HTTP {}",
+                                urlStr, conn.getResponseCode());
+                    }
+                } finally {
+                    conn.disconnect();
+                }
+            } catch (IOException e) {
+                logger.warn(
+                        "Failed to fetch web-component.html from {}: {}",
+                        urlStr, e.getMessage());
+            }
+
+            return null;
+        }
     }
 }

@@ -79,7 +79,7 @@ class PortletWebComponentBootstrapHandler
     protected String modifyPath(String basePath, String path) {
         // Require that the static files are available from the server root
         path = path.replaceFirst("^.VAADIN/", "./VAADIN/");
-        if (path.startsWith("./VAADIN/")) {
+        if (path.startsWith("./VAADIN/") || isStaticResource(path)) {
             VaadinService vaadinService = VaadinPortletService.getCurrent();
             DeploymentConfiguration deploymentConfiguration =
                     vaadinService.getDeploymentConfiguration();
@@ -88,8 +88,14 @@ class PortletWebComponentBootstrapHandler
             if (deploymentConfiguration.isProductionMode()) {
                 // In production mode serve static files from the
                 // dedicated URI
-                return getStaticResourcesMappingURI(deploymentConfiguration)
-                        + path;
+                String prefix =
+                        getStaticResourcesMappingURI(deploymentConfiguration);
+                if (!path.startsWith("./")) {
+                    // Theme resources like lumo/lumo.css need the
+                    // prefix but don't start with ./
+                    return prefix + "./" + path;
+                }
+                return prefix + path;
             } else if (devModeHandler.isPresent() && checkDevServerConnection(
                     devModeHandler.get())) {
                 // With dev server running request directly from dev server
@@ -99,6 +105,15 @@ class PortletWebComponentBootstrapHandler
             return "/" + path;
         }
         return super.modifyPath(basePath, path);
+    }
+
+    /**
+     * Checks if the given path is a static resource that should be served
+     * from the static resources WAR (e.g. theme stylesheets from
+     * META-INF/resources/ in JARs).
+     */
+    private boolean isStaticResource(String path) {
+        return path.endsWith(".css") || path.endsWith(".js");
     }
 
     @Override

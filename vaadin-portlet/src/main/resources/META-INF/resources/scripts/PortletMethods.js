@@ -8,24 +8,28 @@
  */
 //<![CDATA[
 // Liferay parses this file as XML, so make it appear as a CDATA section
-window.Vaadin = window.Vaadin || {};
-window.Vaadin.Flow = window.Vaadin.Flow || {};
+// Liferay's portlet hub (register.es.js) references 'global' (Node.js convention)
+if (typeof global === 'undefined') {
+    globalThis.global = globalThis;
+}
+globalThis.Vaadin = globalThis.Vaadin || {};
+globalThis.Vaadin.Flow = globalThis.Vaadin.Flow || {};
 // <liferay>
 // 7.2.1-ga2 should create and populate these for us.
 // Forcing object generation for hub registration later on.
-window.portlet = window.portlet || {};
-window.portlet.data = window.portlet.data || {};
-window.portlet.data.pageRenderState = window.portlet.data.pageRenderState || {};
-window.portlet.data.pageRenderState.portlets = window.portlet.data.pageRenderState.portlets ||{};
-window.portlet.data.pageRenderState.encodedCurrentURL = window.portlet.data.pageRenderState.encodedCurrentURL || encodeURIComponent(window.location.origin);
+globalThis.portlet = globalThis.portlet || {};
+globalThis.portlet.data = globalThis.portlet.data || {};
+globalThis.portlet.data.pageRenderState = globalThis.portlet.data.pageRenderState || {};
+globalThis.portlet.data.pageRenderState.portlets = globalThis.portlet.data.pageRenderState.portlets ||{};
+globalThis.portlet.data.pageRenderState.encodedCurrentURL = globalThis.portlet.data.pageRenderState.encodedCurrentURL || encodeURIComponent(globalThis.location.origin);
 // </liferay>
 
-if (!window.Vaadin.Flow.Portlets) {
+if (!globalThis.Vaadin.Flow.Portlets) {
 
-    window.Vaadin.Flow.Portlets = {};
+    globalThis.Vaadin.Flow.Portlets = {};
 
-    window.Vaadin.Flow.Portlets.executeWhenHubIdle = function (hub, task) {
-        var poller = function () {
+    globalThis.Vaadin.Flow.Portlets.executeWhenHubIdle = function (hub, task) {
+        let poller = function () {
             if (hub.isInProgress()) {
                 setTimeout(poller, 10);
             } else {
@@ -35,118 +39,224 @@ if (!window.Vaadin.Flow.Portlets) {
         poller();
     };
 
-    window.Vaadin.Flow.Portlets.getHubRegistartion = function (portletRegistryName) {
-        return window.Vaadin.Flow.Portlets[portletRegistryName].hub;
+    globalThis.Vaadin.Flow.Portlets.getHubRegistartion = function (portletRegistryName) {
+        return globalThis.Vaadin.Flow.Portlets[portletRegistryName].hub;
     };
 
-    window.Vaadin.Flow.Portlets.setPortletState = function (portletRegistryName, windowState, portletMode, reloadAfterChange) {
-        const hub = window.Vaadin.Flow.Portlets.getHubRegistartion(portletRegistryName);
-
-        window.Vaadin.Flow.Portlets.executeWhenHubIdle(hub, function(hub) {
-            const state = hub.newState();
-            state.windowState = windowState;
-            state.portletMode = portletMode;
-            hub.setRenderState(state);
-
-            if (reloadAfterChange) {
-                window.Vaadin.Flow.Portlets.executeWhenHubIdle(hub, function (hub) { location.reload() });
+    globalThis.Vaadin.Flow.Portlets.setPortletState = function (portletRegistryName, windowState, portletMode, reloadAfterChange) {
+        let waitForHub = function() {
+            let portletObj = globalThis.Vaadin.Flow.Portlets[portletRegistryName];
+            if (!portletObj || !portletObj.hub) {
+                setTimeout(waitForHub, 10);
+                return;
             }
-        });
+            let hub = portletObj.hub;
+            globalThis.Vaadin.Flow.Portlets.executeWhenHubIdle(hub, function(hub) {
+                const state = hub.newState();
+                state.windowState = windowState;
+                state.portletMode = portletMode;
+                hub.setRenderState(state);
+
+                if (reloadAfterChange) {
+                    globalThis.Vaadin.Flow.Portlets.executeWhenHubIdle(hub, function (hub) { location.reload() });
+                }
+            });
+        };
+        waitForHub();
     }
 
-    window.Vaadin.Flow.Portlets.fireEvent = function (portletRegistryName, event, parameters) {
-        var hub = window.Vaadin.Flow.Portlets.getHubRegistartion(portletRegistryName);
+    globalThis.Vaadin.Flow.Portlets.fireEvent = function (portletRegistryName, event, parameters) {
+        const waitForHub = function() {
+            let portletObj = globalThis.Vaadin.Flow.Portlets[portletRegistryName];
+            if (!portletObj || !portletObj.hub) {
+                setTimeout(waitForHub, 10);
+                return;
+            }
+            let hub = portletObj.hub;
+            let params = hub.newParameters();
+            Object.getOwnPropertyNames(parameters).forEach(
+                function (prop) {
+                    params[prop] = parameters[prop];
+                });
 
-        var params = hub.newParameters();
-        Object.getOwnPropertyNames(parameters).forEach(
-            function (prop) {
-                params[prop] = parameters[prop];
-            });
-
-        hub.dispatchClientEvent(event, params);
+            hub.dispatchClientEvent(event, params);
+        };
+        waitForHub();
     };
 
-    window.Vaadin.Flow.Portlets.registerElement = function (tag, portletRegistryName, windowStates, portletModes, actionUrl) {
+    // Store Vaadin portlet data in a location Liferay won't overwrite
+    globalThis.Vaadin.Flow.Portlets._liferayData = globalThis.Vaadin.Flow.Portlets._liferayData || {};
+
+    globalThis.Vaadin.Flow.Portlets.registerElement = function (tag, portletRegistryName, windowStates, portletModes, actionUrl) {
         // <liferay>
         // Force objects, urls and arrays for liferay portlet data to enable hub registration and hub usage
-        window.portlet.data.pageRenderState.portlets[portletRegistryName] = window.portlet.data.pageRenderState.portlets[portletRegistryName] || {};
-        window.portlet.data.pageRenderState.portlets[portletRegistryName].allowedPM = portletModes;
-        window.portlet.data.pageRenderState.portlets[portletRegistryName].allowedWS = windowStates;
-        window.portlet.data.pageRenderState.portlets[portletRegistryName].encodedActionURL = encodeURIComponent(actionUrl);
-        // liferay 7.3 does not always check if the renderData is there
-        window.portlet.data.pageRenderState.portlets[portletRegistryName].renderData =
-            window.portlet.data.pageRenderState.portlets[portletRegistryName].renderData || { content: null, mimeType: "text/html" };
+        // IMPORTANT: Liferay's <aui:script> may replace the entire pageRenderState object after this runs,
+        // so we store a backup copy in _liferayData and re-inject before portlet.register() is called.
+        try {
+            const portletData = {
+                allowedPM: portletModes,
+                allowedWS: windowStates,
+                encodedActionURL: encodeURIComponent(actionUrl),
+                renderData: { content: null, mimeType: "text/html" },
+                state: {
+                    parameters: {},
+                    portletMode: portletModes && portletModes.length > 0 ? portletModes[0] : 'view',
+                    windowState: windowStates && windowStates.length > 0 ? windowStates[0] : 'normal'
+                }
+            };
+
+            // Store backup copy that Liferay won't touch
+            globalThis.Vaadin.Flow.Portlets._liferayData[portletRegistryName] = portletData;
+
+            // Also write to pageRenderState (may be overwritten by Liferay later)
+            globalThis.portlet.data.pageRenderState.portlets[portletRegistryName] =
+                globalThis.portlet.data.pageRenderState.portlets[portletRegistryName] || {};
+            Object.assign(globalThis.portlet.data.pageRenderState.portlets[portletRegistryName], portletData);
+        } catch (e) {
+            console.warn('Vaadin Portlet: Could not initialize Liferay pageRenderState for ' + portletRegistryName, e);
+        }
         // </liferay>
         customElements.whenDefined(tag).then(function () {
-            var elem = document.querySelector(tag);
+            let elem = document.querySelector(tag + "[data-portlet-id='" + portletRegistryName + "']");
+            if (!elem) {
+                // Fallback: try to find any element with this tag
+                elem = document.querySelector(tag);
+            }
+            if (!elem) {
+                console.error('Vaadin Portlet: Could not find element with tag ' + tag + ' for portlet ' + portletRegistryName);
+                return;
+            }
             elem.constructor._getClientStrategy = function (portletComponent) {
-                var clients = elem.constructor._getClients();
+                const clients = elem.constructor._getClients();
                 if (!clients) {
                     return undefined;
                 }
-                var portlet = window.Vaadin.Flow.Portlets[portletComponent.getAttribute('data-portlet-id')];
-                return clients[portlet.appId];
+                const portletObj = globalThis.Vaadin.Flow.Portlets[portletComponent.getAttribute('data-portlet-id')];
+                if (!portletObj) {
+                    return undefined;
+                }
+                return clients[portletObj.appId];
             };
-            window.Vaadin.Flow.Portlets.registerHub(tag, portletRegistryName, elem);
+            globalThis.Vaadin.Flow.Portlets.registerHub(tag, portletRegistryName, elem);
+        }).catch(function(error) {
+            console.error('Vaadin Portlet: Error waiting for custom element ' + tag + ' to be defined', error);
         });
     };
 
-    window.Vaadin.Flow.Portlets.registerHub = function (tag, portletRegistryName, elem) {
-        var targetElem;
-        var allPortletElems = document.querySelectorAll(tag);
-        for (var i = 0; i !== allPortletElems.length; i++) {
+    globalThis.Vaadin.Flow.Portlets.registerHub = function (tag, portletRegistryName, elem) {
+        let targetElem;
+        let allPortletElems = document.querySelectorAll(tag);
+        for (let i = 0; i !== allPortletElems.length; i++) {
             if (allPortletElems[i].getAttribute('data-portlet-id') === portletRegistryName) {
                 targetElem = allPortletElems[i];
                 break;
             }
         }
-        var afterServerUpdate = targetElem.afterServerUpdate;
-        targetElem.afterServerUpdate = function () {
-            if (afterServerUpdate) {
-                afterServerUpdate();
-            }
 
-            window.Vaadin.Flow.Portlets[portletRegistryName] = window.Vaadin.Flow.Portlets[portletRegistryName] || {};
+        if (!targetElem) {
+            console.error('Vaadin Portlet: Could not find element with tag ' + tag + ' and data-portlet-id ' + portletRegistryName);
+            return;
+        }
 
-            var portletObj = window.Vaadin.Flow.Portlets[portletRegistryName];
+        let doHubRegistration = function() {
+            globalThis.Vaadin.Flow.Portlets[portletRegistryName] = globalThis.Vaadin.Flow.Portlets[portletRegistryName] || {};
+
+            let portletObj = globalThis.Vaadin.Flow.Portlets[portletRegistryName];
             if (!portletObj.hub) {
-                if (portlet) {
+                if (typeof portlet !== 'undefined' && portlet && typeof portlet.register === 'function') {
+                    // <liferay>
+                    // Re-inject Vaadin portlet data if Liferay's <aui:script> replaced pageRenderState
+                    // This happens when Liferay fires its deferred scripts between registerElement and now
+                    try {
+                        let liferayData = globalThis.Vaadin.Flow.Portlets._liferayData;
+                        if (liferayData && liferayData[portletRegistryName]) {
+                            let portlets = globalThis.portlet.data.pageRenderState.portlets;
+                            if (!portlets[portletRegistryName]) {
+                                // Data was wiped by Liferay, re-inject from backup
+                                portlets[portletRegistryName] = liferayData[portletRegistryName];
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('Vaadin Portlet: Could not re-inject pageRenderState for ' + portletRegistryName, e);
+                    }
+                    // </liferay>
+
                     portlet.register(portletRegistryName).then(function (hub) {
                         portletObj.hub = hub;
 
                         hub.addEventListener('portlet.onStateChange', function (type, state) {
                         });
-                        portletObj.eventPoller = window.Vaadin.Flow.Portlets.eventPoller;
+                        portletObj.eventPoller = globalThis.Vaadin.Flow.Portlets.eventPoller;
                         if (portletObj.listeners) {
                             Object.getOwnPropertyNames(portletObj.listeners).forEach(
-                              function (uid) {
-                                  portletObj.registerListener(portletObj.listeners[uid], uid);
-                              }
+                                function (uid) {
+                                    portletObj.registerListener(portletObj.listeners[uid], uid);
+                                }
                             );
                             delete portletObj.listeners;
                         }
+                    }).catch(function(error) {
+                        console.error('Vaadin Portlet: Failed to register with Portlet Hub for ' + portletRegistryName, error);
                     });
-                    targetElem.afterServerUpdate = afterServerUpdate;
+                } else {
+                    console.warn('Vaadin Portlet: Portlet Hub (globalThis.portlet.register) not available for ' + portletRegistryName + '. IPC features will not work.');
                 }
             }
         };
-        window.Vaadin.Flow.Portlets.initListenerRegistration(portletRegistryName, elem);
+
+        let afterServerUpdate = targetElem.afterServerUpdate;
+        let hookInstalled = false;
+
+        targetElem.afterServerUpdate = function () {
+            hookInstalled = true;
+            if (afterServerUpdate) {
+                afterServerUpdate();
+            }
+            doHubRegistration();
+            targetElem.afterServerUpdate = afterServerUpdate;
+        };
+
+        // If the element is already connected and has a client, try registering immediately
+        // This handles the case where afterServerUpdate was already called before we hooked in
+        if (targetElem.isConnected) {
+            // Check if the element has already been initialized by Vaadin
+            let clients = elem.constructor._getClients && elem.constructor._getClients();
+            let portletData = globalThis.Vaadin.Flow.Portlets[portletRegistryName];
+            if (clients && portletData && portletData.appId && clients[portletData.appId]) {
+                // Element is already initialized, register immediately
+                doHubRegistration();
+            } else {
+                // Element is connected but not yet initialized, wait a bit and check again
+                setTimeout(function() {
+                    if (!hookInstalled) {
+                        // afterServerUpdate wasn't called yet, but element might be ready
+                        let retryClients = elem.constructor._getClients && elem.constructor._getClients();
+                        let retryPortletData = globalThis.Vaadin.Flow.Portlets[portletRegistryName];
+                        if (retryClients && retryPortletData && retryPortletData.appId && retryClients[retryPortletData.appId]) {
+                            doHubRegistration();
+                        }
+                    }
+                }, 100);
+            }
+        }
+
+        globalThis.Vaadin.Flow.Portlets.initListenerRegistration(portletRegistryName, elem);
     };
 
-    window.Vaadin.Flow.Portlets.eventPoller = function (portletObj, type, payload, uid, elem) {
-        var hub = portletObj.hub;
+    globalThis.Vaadin.Flow.Portlets.eventPoller = function (portletObj, type, payload, uid, elem) {
+        let hub = portletObj.hub;
         if (hub.isInProgress()) {
             setTimeout(function () {
                 portletObj.eventPoller(portletObj, type, payload, uid, elem);
             }, 10);
         } else {
-            var params = hub.newParameters();
+            let params = hub.newParameters();
             params['vaadin.ev'] = [];
             params['vaadin.ev'][0] = type;
             params['vaadin.uid'] = [];
             params['vaadin.uid'][0] = uid;
             params['vaadin.wn'] = [];
-            params['vaadin.wn'][0] = window.name;
+            params['vaadin.wn'][0] = globalThis.name;
             if (payload) {
                 Object.getOwnPropertyNames(payload).forEach(
                     function (prop) {
@@ -159,16 +269,16 @@ if (!window.Vaadin.Flow.Portlets) {
                  * that the client state is updated according to the server side
                  * state.
                  */
-                var clients = elem.constructor._getClients();
+                let clients = elem.constructor._getClients();
                 clients[portletObj.appId].poll();
             });
         }
     };
 
-    window.Vaadin.Flow.Portlets.initListenerRegistration = function (portletRegistryName, elem) {
-        window.Vaadin.Flow.Portlets[portletRegistryName] = window.Vaadin.Flow.Portlets[portletRegistryName] || {};
+    globalThis.Vaadin.Flow.Portlets.initListenerRegistration = function (portletRegistryName, elem) {
+        globalThis.Vaadin.Flow.Portlets[portletRegistryName] = globalThis.Vaadin.Flow.Portlets[portletRegistryName] || {};
 
-        var portletObj = window.Vaadin.Flow.Portlets[portletRegistryName];
+        let portletObj = globalThis.Vaadin.Flow.Portlets[portletRegistryName];
         portletObj._regListener = function (eventType, uid) {
             let poller = portletObj.eventPoller;
             let handle = portletObj.hub.addEventListener(eventType, function (type, payload) {

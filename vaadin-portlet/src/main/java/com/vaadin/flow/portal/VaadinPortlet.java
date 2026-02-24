@@ -352,8 +352,8 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         } else if (names.contains(VAADIN_EVENT)) {
             String event = request.getActionParameters().getValue(VAADIN_EVENT);
             String uid = request.getActionParameters().getValue(VAADIN_UID);
-            String windowName = request.getActionParameters()
-                    .getValue(VAADIN_WINDOW_NAME);
+            String windowName = normalizeWindowName(
+                    request.getActionParameters().getValue(VAADIN_WINDOW_NAME));
             Map<String, String[]> map = new HashMap<>(
                     request.getParameterMap());
             map.remove(VAADIN_EVENT);
@@ -588,6 +588,22 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
         }
     }
 
+    /**
+     * Normalizes a window name to ensure consistent session key lookup.
+     * <p>
+     * In Vaadin 25 web component mode, {@code ExtendedClientDetails.getWindowName()}
+     * may return the string {@code "null"} when {@code window.name} is empty,
+     * while the client-side portlet hub sends an empty string. This method
+     * normalizes both to an empty string to prevent session key mismatches
+     * that would silently prevent IPC events from being delivered.
+     */
+    static String normalizeWindowName(String windowName) {
+        if (windowName == null || "null".equals(windowName)) {
+            return "";
+        }
+        return windowName;
+    }
+
     private Logger getLogger() {
         return LoggerFactory.getLogger(VaadinPortlet.class);
     }
@@ -622,8 +638,8 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
                 "Unable to initialize component, UI instance not available from "
                         + component.getClass().getName()));
 
-        String windowName = ui.getInternals().getExtendedClientDetails()
-                .getWindowName();
+        String windowName = normalizeWindowName(
+                ui.getInternals().getExtendedClientDetails().getWindowName());
         String namespace = VaadinPortletResponse.getCurrentPortletResponse()
                 .getNamespace();
         VaadinSession session = ui.getSession();

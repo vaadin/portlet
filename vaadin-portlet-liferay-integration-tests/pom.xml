@@ -239,7 +239,7 @@
                     <name>!skipTests</name>
                 </property>
                 <file>
-                    <exists>${basedir}/src/main/webapp</exists>
+                    <exists>${tomcat.home.directory}</exists>
                 </file>
             </activation>
             <build>

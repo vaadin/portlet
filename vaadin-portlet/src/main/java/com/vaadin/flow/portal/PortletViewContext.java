@@ -1,20 +1,20 @@
 /**
  * Copyright (C) 2019-2022 Vaadin Ltd
- *
+ * <p>
  * This program is available under Vaadin Commercial License and Service Terms.
- *
+ * <p>
  * See <https://vaadin.com/commercial-license-and-service-terms> for the full
  * license.
  */
 package com.vaadin.flow.portal;
 
-import jakarta.portlet.ActionURL;
-import jakarta.portlet.MimeResponse;
-import jakarta.portlet.PortletMode;
-import jakarta.portlet.PortletModeException;
-import jakarta.portlet.PortletResponse;
-import jakarta.portlet.WindowState;
-import jakarta.portlet.WindowStateException;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.internal.Pair;
+import com.vaadin.flow.portal.lifecycle.*;
+import com.vaadin.flow.shared.Registration;
+import jakarta.portlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -25,22 +25,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.internal.Pair;
-import com.vaadin.flow.portal.lifecycle.EventHandler;
-import com.vaadin.flow.portal.lifecycle.PortletEvent;
-import com.vaadin.flow.portal.lifecycle.PortletEventListener;
-import com.vaadin.flow.portal.lifecycle.PortletModeEvent;
-import com.vaadin.flow.portal.lifecycle.PortletModeHandler;
-import com.vaadin.flow.portal.lifecycle.PortletModeListener;
-import com.vaadin.flow.portal.lifecycle.WindowStateEvent;
-import com.vaadin.flow.portal.lifecycle.WindowStateHandler;
-import com.vaadin.flow.portal.lifecycle.WindowStateListener;
-import com.vaadin.flow.shared.Registration;
 
 /**
  * A portlet event context object allows to fire and send portlet events via
@@ -72,6 +56,8 @@ public final class PortletViewContext implements Serializable {
 
     private String windowState;
 
+    private String cachedNamespace;
+
     PortletViewContext(Component view, AtomicBoolean portlet3,
                        PortletMode portletMode, WindowState windowState) {
 
@@ -98,6 +84,12 @@ public final class PortletViewContext implements Serializable {
      * (Re)initializes the context.
      */
     void init() {
+        VaadinPortletResponse currentResponse = VaadinPortletService
+                .getCurrentResponse();
+        if (currentResponse != null) {
+            cachedNamespace = currentResponse.getPortletResponse()
+                    .getNamespace();
+        }
         eventListeners.forEach((uid, pair) -> registerEventChangeListener(uid,
                 pair.getFirst(), pair.getSecond()));
     }
@@ -162,7 +154,7 @@ public final class PortletViewContext implements Serializable {
      * @return an event registration handle for removing the listener
      */
     public Registration addEventChangeListener(String eventType,
-            PortletEventListener listener) {
+                                               PortletEventListener listener) {
         return doAddEventChangeListener(eventType, listener);
     }
 
@@ -337,7 +329,7 @@ public final class PortletViewContext implements Serializable {
     }
 
     private Registration doAddEventChangeListener(String eventType,
-            PortletEventListener listener) {
+                                                  PortletEventListener listener) {
         checkPortletHubRequired();
         String uid = Long.toString(nextUid.getAndIncrement());
         String namespace = registerEventChangeListener(uid, eventType,
@@ -391,11 +383,10 @@ public final class PortletViewContext implements Serializable {
     }
 
     private String registerEventChangeListener(String uid, String eventType,
-            PortletEventListener listener) {
+                                               PortletEventListener listener) {
         Objects.requireNonNull(listener);
 
-        String namespace = VaadinPortletService.getCurrentResponse()
-                .getPortletResponse().getNamespace();
+        String namespace = getNamespace();
 
         executeJS("window.Vaadin.Flow.Portlets[$0].registerListener($1, $2);",
                 namespace, eventType, uid);
@@ -416,7 +407,7 @@ public final class PortletViewContext implements Serializable {
      */
     private void executeJS(String script, Serializable... params) {
         if (view != null && view.getElement().getNode().isAttached()
-                && script != null && !script.isEmpty()) {
+            && script != null && !script.isEmpty()) {
             view.getElement().executeJs(script, params);
         }
     }
@@ -424,8 +415,8 @@ public final class PortletViewContext implements Serializable {
     private void checkPortletHubRequired() {
         if (!isPortlet3.get()) {
             String message = "Portlet Hub not available; to use Vaadin "
-                    + "Portlet IPC, ensure that portlet.xml specifies at "
-                    + "least portlet version 3.0";
+                             + "Portlet IPC, ensure that portlet.xml specifies at "
+                             + "least portlet version 3.0";
             throw new IllegalStateException(message);
         }
     }
@@ -443,10 +434,9 @@ public final class PortletViewContext implements Serializable {
      * @param portletMode
      *            portlet mode to send
      */
-    private static String getUpdatePortletStateScript(String windowState,
-            String portletMode) {
-        String portletRegistryName = VaadinPortletService.getCurrentResponse()
-                .getPortletResponse().getNamespace();
+    private String getUpdatePortletStateScript(String windowState,
+                                               String portletMode) {
+        String portletRegistryName = getNamespace();
         boolean reloadAfterChange =
                 !(VaadinPortletService.getCurrentRequest() instanceof VaadinLiferayRequest);
         return String
@@ -463,20 +453,38 @@ public final class PortletViewContext implements Serializable {
      *            Event parameters
      * @return event firing script
      */
-    private static String getFireEventScript(String eventName,
-            Map<String, String> parameters) {
-        String portletRegistryName = VaadinPortletService.getCurrentResponse()
-                .getPortletResponse().getNamespace();
+    private String getFireEventScript(String eventName,
+                                      Map<String, String> parameters) {
+        String portletRegistryName = getNamespace();
 
         // Create parameter object
         String params = parameters.entrySet().stream().map(entry -> String
-                .format("%s: ['%s']", escape(entry.getKey()),
-                        escape(entry.getValue())))
+                        .format("%s: ['%s']", escape(entry.getKey()),
+                                escape(entry.getValue())))
                 .collect(Collectors.joining(",", "{", "}"));
 
         return String
                 .format("window.Vaadin.Flow.Portlets.fireEvent('%s', '%s', %s)",
                         portletRegistryName, escape(eventName), params);
+    }
+
+    /**
+     * Returns the portlet namespace, using the cached value if the current
+     * response is not available (e.g. during upload handler callbacks).
+     */
+    private String getNamespace() {
+        VaadinPortletResponse currentResponse = VaadinPortletService
+                .getCurrentResponse();
+        if (currentResponse != null) {
+            String ns = currentResponse.getPortletResponse().getNamespace();
+            cachedNamespace = ns;
+            return ns;
+        }
+        if (cachedNamespace != null) {
+            return cachedNamespace;
+        }
+        throw new IllegalStateException(
+                "Portlet namespace is not available: no current response and no cached value");
     }
 
     private static Logger getLogger() {

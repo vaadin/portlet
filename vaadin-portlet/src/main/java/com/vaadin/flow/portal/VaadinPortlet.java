@@ -264,8 +264,8 @@ public abstract class VaadinPortlet<C extends Component> extends GenericPortlet
     private static String getServerUrl(RenderRequest req) {
         int port = req.getServerPort();
         String scheme = req.getScheme();
-        boolean isDefaultPort = (scheme == "http" && port == 80)
-                || (scheme == "https" && port == 443);
+        boolean isDefaultPort = ("http".equals(scheme) && port == 80)
+                || ("https".equals(scheme) && port == 443);
 
         return String.format("%s://%s%s", scheme, req.getServerName(),
                 (isDefaultPort ? "" : ":" + port));

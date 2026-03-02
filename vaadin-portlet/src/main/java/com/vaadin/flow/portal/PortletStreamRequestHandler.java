@@ -23,6 +23,7 @@ import com.vaadin.flow.server.communication.StreamRequestHandler;
 import com.vaadin.flow.server.communication.StreamResourceHandler;
 import com.vaadin.flow.server.streams.UploadEvent;
 import com.vaadin.flow.server.streams.UploadHandler;
+import com.vaadin.flow.server.streams.UploadResult;
 import jakarta.portlet.ClientDataRequest;
 import jakarta.portlet.PortletRequest;
 import jakarta.servlet.http.Part;
@@ -220,7 +221,7 @@ class PortletStreamRequestHandler extends StreamRequestHandler {
 
         if (parts.isEmpty()) {
             getLogger().warn("Multipart portlet request has no parts");
-            handler.responseHandled(false, response);
+            handler.responseHandled(new UploadResult(false, response));
             return;
         }
 
@@ -233,7 +234,7 @@ class PortletStreamRequestHandler extends StreamRequestHandler {
 
                 UploadEvent event = new UploadEvent(request, response, session,
                         part.getSubmittedFileName(), part.getSize(),
-                        part.getContentType(), owner, null, part);
+                        part.getContentType(), owner, part);
 
                 Component ownerComponent = owner.getComponent().orElse(null);
                 try {
@@ -247,10 +248,10 @@ class PortletStreamRequestHandler extends StreamRequestHandler {
                     }
                 }
             }
-            handler.responseHandled(true, response);
+            handler.responseHandled(new UploadResult(true, response));
         } catch (Exception e) {
             getLogger().error("Exception during portlet upload", e);
-            handler.responseHandled(false, response);
+            handler.responseHandled(new UploadResult(false, response, e));
         }
     }
 
